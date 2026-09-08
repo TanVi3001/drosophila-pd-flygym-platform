@@ -9,7 +9,13 @@ from .exceptions import (
     RolloutExportError,
     UnsupportedFlyGymConfigurationError,
 )
-from .export import export_rollout
+from .export import (
+    LEGACY_ARTIFACT_PROFILE,
+    MEMORY_SAFE_ARTIFACT_PROFILE,
+    export_memory_safe_rollout,
+    export_rollout,
+    refresh_memory_safe_manifest,
+)
 from .recorder import RolloutRecorder
 from .rollout import ExportedRollout, ObservationFrame, RolloutData
 from .runtime import FlyGymRuntime, RuntimeState
@@ -23,6 +29,8 @@ __all__ = [
     "FlyGymConfig",
     "FlyGymRuntime",
     "FlyGymUnavailableError",
+    "LEGACY_ARTIFACT_PROFILE",
+    "MEMORY_SAFE_ARTIFACT_PROFILE",
     "ObservationFrame",
     "RendererConfig",
     "RolloutData",
@@ -34,5 +42,7 @@ __all__ = [
     "UnsupportedFlyGymConfigurationError",
     "WorldBuilder",
     "WorldConfig",
+    "export_memory_safe_rollout",
     "export_rollout",
+    "refresh_memory_safe_manifest",
 ]

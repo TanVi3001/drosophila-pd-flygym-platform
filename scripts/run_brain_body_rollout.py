@@ -190,6 +190,7 @@ def _run_simulation(
     stimulus: str,
     device: str,
     disease_config: Path,
+    artifact_profile: str = "LEGACY",
 ) -> dict[str, Any]:
     if str(SOURCE_ROOT) not in sys.path:
         sys.path.insert(0, str(SOURCE_ROOT))
@@ -212,7 +213,13 @@ def _run_simulation(
         make_locomotion_fly,
         make_tripod_cpg_network,
     )
-    from drosophila_pd.flygym_adapter import RolloutRecorder, export_rollout
+    from drosophila_pd.flygym_adapter import (
+        MEMORY_SAFE_ARTIFACT_PROFILE,
+        RolloutRecorder,
+        export_memory_safe_rollout,
+        export_rollout,
+        refresh_memory_safe_manifest,
+    )
     from drosophila_pd.perturbations import (
         ActionPerturbationContext,
         ControllerPerturbationContext,
@@ -333,6 +340,44 @@ def _run_simulation(
             recorder.record()
             if (step_index + 1) % max(steps // 5, 1) == 0:
                 print(f"Progress: {step_index + 1}/{steps}", flush=True)
+
+        frame_count = recorder.rollout.frame_count
+        if artifact_profile == MEMORY_SAFE_ARTIFACT_PROFILE:
+            exported = export_memory_safe_rollout(recorder.rollout, output)
+            action_history.clear()
+            recorder.rollout.frames.clear()
+            del action_history
+            from drosophila_pd.analysis import analyze_memory_safe_rollout
+
+            analysis = analyze_memory_safe_rollout(output, output)
+            duration = time.perf_counter() - started
+            scalar_metrics = analysis.metrics["scalar_metrics"]
+            summary = {
+                "created_at": datetime.now(UTC).isoformat(),
+                "condition": condition,
+                "seed": seed,
+                "steps": steps,
+                "frame_count": frame_count,
+                "brain_device": str(brain.device),
+                "brain_neuron_count": int(brain.num_neurons),
+                "brain_synapse_count": int(brain.model.weights._nnz()),
+                "thorax_displacement_xy_mm": scalar_metrics["thorax_displacement_xy_mm"],
+                "duration_wall_s": duration,
+                "artifact_profile": MEMORY_SAFE_ARTIFACT_PROFILE,
+                "rollout_files": exported.files,
+                "analysis_files": {key: str(value) for key, value in analysis.files.items()},
+                "biomarker_status": "SKIPPED_OPTIONAL_POSTPROCESS",
+                "viewer_export": "SKIPPED_NOT_REQUIRED_FOR_GATE24E_PRIMARY_VALIDATION",
+                "viewer_is_scientific_metric": False,
+                "video": False,
+                "full_frame_rollout_json": False,
+                "scientific_scope": metadata["scientific_scope"],
+            }
+            (output / "brain_body_summary.json").write_text(
+                json.dumps(summary, indent=2, allow_nan=False) + "\n", encoding="utf-8"
+            )
+            refresh_memory_safe_manifest(output)
+            return summary
 
         exported = export_rollout(recorder.rollout, output)
         from drosophila_pd.analysis import analyze_rollout
@@ -463,6 +508,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--device", choices=("auto", "cuda", "cpu"), default="auto")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--compare-to", type=Path, default=None, help="Optional healthy run directory for metric comparison.")
+    parser.add_argument(
+        "--artifact-profile",
+        choices=("LEGACY", "GATE24E_MEMORY_SAFE"),
+        default="LEGACY",
+        help="Artifact profile; legacy remains the default.",
+    )
     return parser
 
 
@@ -498,6 +549,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             stimulus=args.stimulus,
             device=selected_device,
             disease_config=disease_config,
+            artifact_profile=args.artifact_profile,
         )
         if args.compare_to is not None:
             _write_comparison_if_requested(output, _resolve(args.compare_to))
