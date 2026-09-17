@@ -1,0 +1,18 @@
+{
+  "model": "healthy_day25",
+  "condition": "healthy",
+  "age_days": 25,
+  "motor_scale": 0.93,
+  "coupling_scale": 0.92,
+  "biological_mechanism": {
+    "gene_condition": "Wild-type control natural aging",
+    "age_in_days": 25,
+    "da_neuron_loss_estimated_pct": 0.0,
+    "primary_citation": "Normal baseline aging series"
+  },
+  "provenance": {
+    "framework": "30-day longitudinal progression model",
+    "source": "Mathematical aging trajectory grounded in Drosophila literature",
+    "created": "2026-08-25"
+  }
+}

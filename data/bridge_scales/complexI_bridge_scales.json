@@ -1,0 +1,17 @@
+{
+  "model": "complexI",
+  "motor_scale": 1.108911,
+  "coupling_scale": 0.857143,
+  "biological_mechanism": {
+    "gene_mutation": "Mitochondrial Complex I deficiency / Environmental toxin model (Rotenone / MPTP mimic)",
+    "cellular_pathology": "Impaired oxidative phosphorylation and electron transport chain failure leading to aberrant neuronal firing before terminal motor failure",
+    "lif_intervention": "Altered membrane integration threshold and phase disruption in descending motor outputs",
+    "primary_citation": "Coulom & Birman, 2004 (J. Neurosci, DOI: 10.1523/JNEUROSCI.3348-04.2004); Poddighe et al., 2013 (PLOS ONE)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py DN spike-rate ratios",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}

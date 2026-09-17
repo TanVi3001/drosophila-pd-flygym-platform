@@ -1,0 +1,17 @@
+{
+  "model": "pink1",
+  "motor_scale": 1.148515,
+  "coupling_scale": 1.047619,
+  "biological_mechanism": {
+    "gene_mutation": "PINK1 loss-of-function (Early stage / Young adult)",
+    "cellular_pathology": "Mitochondrial dysfunction leading to early compensatory neuronal hyperexcitability prior to severe cell death",
+    "lif_intervention": "Elevated bias current I_bias in ascending motor pathway reflecting compensatory membrane depolarization",
+    "primary_citation": "Clark et al., 2006 (Nature, DOI: 10.1038/nature04659); Park et al., 2006 (Nature, DOI: 10.1038/nature04623)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py DN spike-rate ratios",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}

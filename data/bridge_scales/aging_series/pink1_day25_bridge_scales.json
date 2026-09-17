@@ -1,0 +1,18 @@
+{
+  "model": "pink1_day25",
+  "condition": "pink1",
+  "age_days": 25,
+  "motor_scale": 0.783,
+  "coupling_scale": 0.5,
+  "biological_mechanism": {
+    "gene_condition": "PINK1 loss-of-function progressive neurodegeneration",
+    "age_in_days": 25,
+    "da_neuron_loss_estimated_pct": 32.5,
+    "primary_citation": "Park et al., 2006 (Nature); Clark et al., 2006 (Nature)"
+  },
+  "provenance": {
+    "framework": "30-day longitudinal progression model",
+    "source": "Mathematical aging trajectory grounded in Drosophila literature",
+    "created": "2026-08-25"
+  }
+}

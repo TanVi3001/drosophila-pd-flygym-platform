@@ -1,5 +1,13 @@
 # drosophila-pd-flygym
 
+## Fly Research Workbench v0.1
+
+The shared study/job coordination layer is documented in
+[`docs/workbench_v0_1.md`](docs/workbench_v0_1.md). It provides auditable
+`StudySpec`, backend adapters, SQLite job state, per-run manifests, a local
+CLI, and an optional FastAPI surface. A completed subprocess is a
+computational result, not biological validation.
+
 [![Release](https://img.shields.io/github/v/release/TanVi3001/drosophila-pd-flygym?display_name=tag&sort=semver)](https://github.com/TanVi3001/drosophila-pd-flygym/releases)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

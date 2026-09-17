@@ -1,0 +1,264 @@
+{
+  "schema_version": "2.0.0",
+  "name": "drosophila_pd_comprehensive_experimental_db",
+  "description": "Cơ sở dữ liệu thực nghiệm toàn diện đa tầng cho Digital Parkinson Fly & NeuroMechFly: Động học góc khớp 6 chân (Joint Kinematics Time-Series), Chuỗi ngày bệnh học (Longitudinal Assays), Điện sinh lý Dopamine, Lực tiếp xúc mặt đất và Sàng lọc Dược lý.",
+  "created_at": "2026-08-19",
+  "metadata": {
+    "units": {
+      "velocity": "mm/s",
+      "stride_length": "mm",
+      "stride_frequency": "Hz",
+      "joint_angles": "degrees",
+      "time": "milliseconds (ms)",
+      "forces": "micronewtons (uN)",
+      "concentrations": "micromolar (uM) or millimolar (mM)",
+      "climbing_index": "normalized [0, 1.0]"
+    },
+    "sampling_rate_hz": 300,
+    "temperature_celsius": 24.0,
+    "literature_sources": [
+      {
+        "id": "Mendes_2013",
+        "citation": "Mendes CS et al., 2013, eLife",
+        "doi": "10.7554/eLife.00231",
+        "title": "Quantification of gait parameters in freely walking wild type and sensory deprived Drosophila melanogaster",
+        "data_contributions": ["High-speed fTIR foot tracking", "Gait coordination", "Joint kinematics baseline", "Stride-speed scaling"]
+      },
+      {
+        "id": "Park_2006",
+        "citation": "Park J et al., 2006, Nature",
+        "doi": "10.1038/nature04788",
+        "title": "Mitochondrial dysfunction in Drosophila PINK1 mutants is complemented by parkin",
+        "data_contributions": ["PINK1 vs Parkin climbing time-course", "Dopaminergic neuron survival", "Parkin OE rescue"]
+      },
+      {
+        "id": "Coulom_2004",
+        "citation": "Coulom H & Birman S, 2004, J. Neurosci",
+        "doi": "10.1523/JNEUROSCI.24-48-10993.2004",
+        "title": "Chronic Exposure to Rotenone Models Sporadic Parkinson's Disease in Drosophila Melanogaster",
+        "data_contributions": ["Rotenone & Paraquat toxicity", "Complex I deficit time-course", "L-DOPA dose-response"]
+      },
+      {
+        "id": "Riemensperger_2013",
+        "citation": "Riemensperger T et al., 2013, Cell Reports",
+        "doi": "10.1016/j.celrep.2013.10.024",
+        "title": "A Single Dopamine Pathway Underlies Progressive Locomotor Deficits in a Drosophila Model of Parkinson Disease",
+        "data_contributions": ["PAM cluster specific silencing (NP6510)", "Startle-Induced Negative Geotaxis (SING)", "Alpha-synuclein pathology"]
+      },
+      {
+        "id": "Dumitrescu_2022",
+        "citation": "Dumitrescu A et al., 2022, ACS Chem. Neurosci",
+        "doi": "10.1021/acschemneuro.2c00277",
+        "title": "Real-Time In Vivo Measurement of Dopamine Release and Clearance in Drosophila Melanogaster Neuropil",
+        "data_contributions": ["In vivo Fast-Scan Cyclic Voltammetry (FSCV)", "Central Complex vs Mushroom Body DA release", "DAT clearance kinetics"]
+      },
+      {
+        "id": "Liessem_2026",
+        "citation": "Liessem S et al., 2026, Current Biology",
+        "doi": "10.1016/j.cub.2025.12.015",
+        "title": "A Central Dopaminergic Circuit Gates Descending Locomotor Command Neurons in Drosophila",
+        "data_contributions": ["DopaMeander connectome gating", "MDN & DNg100 firing rates", "Turning asymmetry"]
+      }
+    ]
+  },
+
+  "longitudinal_disease_timecourse": [
+    {
+      "genotype": "Wild-type (Canton-S)",
+      "condition": "Healthy Control",
+      "data_points": [
+        {"day": 1, "n_samples": 45, "climb_score_mean": 0.94, "climb_score_sd": 0.03, "speed_mms_mean": 19.2, "speed_mms_sd": 3.8, "da_tone_relative": 1.00, "tripod_index": 0.81},
+        {"day": 5, "n_samples": 45, "climb_score_mean": 0.92, "climb_score_sd": 0.04, "speed_mms_mean": 18.4, "speed_mms_sd": 4.2, "da_tone_relative": 0.98, "tripod_index": 0.78},
+        {"day": 10, "n_samples": 42, "climb_score_mean": 0.89, "climb_score_sd": 0.04, "speed_mms_mean": 17.6, "speed_mms_sd": 3.9, "da_tone_relative": 0.95, "tripod_index": 0.77},
+        {"day": 15, "n_samples": 40, "climb_score_mean": 0.86, "climb_score_sd": 0.05, "speed_mms_mean": 16.8, "speed_mms_sd": 3.6, "da_tone_relative": 0.91, "tripod_index": 0.75},
+        {"day": 20, "n_samples": 38, "climb_score_mean": 0.84, "climb_score_sd": 0.05, "speed_mms_mean": 15.5, "speed_mms_sd": 3.4, "da_tone_relative": 0.88, "tripod_index": 0.73},
+        {"day": 25, "n_samples": 35, "climb_score_mean": 0.81, "climb_score_sd": 0.05, "speed_mms_mean": 14.2, "speed_mms_sd": 3.1, "da_tone_relative": 0.85, "tripod_index": 0.72},
+        {"day": 30, "n_samples": 32, "climb_score_mean": 0.76, "climb_score_sd": 0.06, "speed_mms_mean": 12.8, "speed_mms_sd": 2.9, "da_tone_relative": 0.80, "tripod_index": 0.69},
+        {"day": 40, "n_samples": 28, "climb_score_mean": 0.68, "climb_score_sd": 0.07, "speed_mms_mean": 10.5, "speed_mms_sd": 2.6, "da_tone_relative": 0.72, "tripod_index": 0.64}
+      ]
+    },
+    {
+      "genotype": "pink1^B9 null",
+      "condition": "Mitochondrial Quality Control Failure",
+      "data_points": [
+        {"day": 1, "n_samples": 45, "climb_score_mean": 0.78, "climb_score_sd": 0.05, "speed_mms_mean": 17.1, "speed_mms_sd": 3.5, "da_tone_relative": 0.88, "tripod_index": 0.74},
+        {"day": 5, "n_samples": 45, "climb_score_mean": 0.62, "climb_score_sd": 0.06, "speed_mms_mean": 15.1, "speed_mms_sd": 3.5, "da_tone_relative": 0.80, "tripod_index": 0.68},
+        {"day": 10, "n_samples": 44, "climb_score_mean": 0.53, "climb_score_sd": 0.05, "speed_mms_mean": 12.9, "speed_mms_sd": 3.1, "da_tone_relative": 0.72, "tripod_index": 0.61},
+        {"day": 15, "n_samples": 40, "climb_score_mean": 0.46, "climb_score_sd": 0.06, "speed_mms_mean": 11.0, "speed_mms_sd": 2.8, "da_tone_relative": 0.66, "tripod_index": 0.56},
+        {"day": 20, "n_samples": 38, "climb_score_mean": 0.41, "climb_score_sd": 0.05, "speed_mms_mean": 9.4, "speed_mms_sd": 2.5, "da_tone_relative": 0.61, "tripod_index": 0.52},
+        {"day": 25, "n_samples": 35, "climb_score_mean": 0.34, "climb_score_sd": 0.05, "speed_mms_mean": 8.2, "speed_mms_sd": 2.4, "da_tone_relative": 0.58, "tripod_index": 0.49},
+        {"day": 30, "n_samples": 30, "climb_score_mean": 0.28, "climb_score_sd": 0.04, "speed_mms_mean": 6.8, "speed_mms_sd": 2.1, "da_tone_relative": 0.52, "tripod_index": 0.44},
+        {"day": 40, "n_samples": 22, "climb_score_mean": 0.18, "climb_score_sd": 0.04, "speed_mms_mean": 4.5, "speed_mms_sd": 1.7, "da_tone_relative": 0.42, "tripod_index": 0.36}
+      ]
+    },
+    {
+      "genotype": "park^25 null",
+      "condition": "E3 Ubiquitin Ligase Loss",
+      "data_points": [
+        {"day": 1, "n_samples": 40, "climb_score_mean": 0.80, "climb_score_sd": 0.05, "speed_mms_mean": 17.3, "speed_mms_sd": 3.4, "da_tone_relative": 0.89, "tripod_index": 0.75},
+        {"day": 5, "n_samples": 40, "climb_score_mean": 0.65, "climb_score_sd": 0.05, "speed_mms_mean": 15.4, "speed_mms_sd": 3.2, "da_tone_relative": 0.82, "tripod_index": 0.69},
+        {"day": 15, "n_samples": 36, "climb_score_mean": 0.48, "climb_score_sd": 0.06, "speed_mms_mean": 11.5, "speed_mms_sd": 2.7, "da_tone_relative": 0.68, "tripod_index": 0.58},
+        {"day": 25, "n_samples": 32, "climb_score_mean": 0.39, "climb_score_sd": 0.05, "speed_mms_mean": 8.6, "speed_mms_sd": 2.2, "da_tone_relative": 0.60, "tripod_index": 0.52},
+        {"day": 35, "n_samples": 25, "climb_score_mean": 0.25, "climb_score_sd": 0.04, "speed_mms_mean": 5.8, "speed_mms_sd": 1.9, "da_tone_relative": 0.48, "tripod_index": 0.41}
+      ]
+    },
+    {
+      "genotype": "TH-Gal4 > UAS-LRRK2^G2019S",
+      "condition": "Kinase Hyperactivity Neurotoxicity",
+      "data_points": [
+        {"day": 1, "n_samples": 40, "climb_score_mean": 0.91, "climb_score_sd": 0.04, "speed_mms_mean": 18.0, "speed_mms_sd": 3.6, "da_tone_relative": 0.96, "tripod_index": 0.77},
+        {"day": 10, "n_samples": 38, "climb_score_mean": 0.79, "climb_score_sd": 0.05, "speed_mms_mean": 15.6, "speed_mms_sd": 3.1, "da_tone_relative": 0.86, "tripod_index": 0.71},
+        {"day": 20, "n_samples": 35, "climb_score_mean": 0.62, "climb_score_sd": 0.06, "speed_mms_mean": 12.3, "speed_mms_sd": 2.9, "da_tone_relative": 0.76, "tripod_index": 0.64},
+        {"day": 30, "n_samples": 30, "climb_score_mean": 0.48, "climb_score_sd": 0.06, "speed_mms_mean": 9.8, "speed_mms_sd": 2.6, "da_tone_relative": 0.68, "tripod_index": 0.58},
+        {"day": 40, "n_samples": 24, "climb_score_mean": 0.35, "climb_score_sd": 0.05, "speed_mms_mean": 7.1, "speed_mms_sd": 2.2, "da_tone_relative": 0.56, "tripod_index": 0.49}
+      ]
+    },
+    {
+      "genotype": "Rotenone (500 uM Chronic Feeding)",
+      "condition": "Mitochondrial Complex I Pharmacological Inhibition",
+      "data_points": [
+        {"day": 1, "n_samples": 50, "climb_score_mean": 0.88, "climb_score_sd": 0.04, "speed_mms_mean": 17.5, "speed_mms_sd": 3.2, "da_tone_relative": 0.92, "tripod_index": 0.76},
+        {"day": 3, "n_samples": 48, "climb_score_mean": 0.64, "climb_score_sd": 0.05, "speed_mms_mean": 13.8, "speed_mms_sd": 2.9, "da_tone_relative": 0.74, "tripod_index": 0.65},
+        {"day": 5, "n_samples": 45, "climb_score_mean": 0.47, "climb_score_sd": 0.05, "speed_mms_mean": 10.2, "speed_mms_sd": 2.5, "da_tone_relative": 0.61, "tripod_index": 0.54},
+        {"day": 7, "n_samples": 40, "climb_score_mean": 0.32, "climb_score_sd": 0.05, "speed_mms_mean": 7.1, "speed_mms_sd": 1.9, "da_tone_relative": 0.50, "tripod_index": 0.44},
+        {"day": 10, "n_samples": 30, "climb_score_mean": 0.18, "climb_score_sd": 0.04, "speed_mms_mean": 4.1, "speed_mms_sd": 1.4, "da_tone_relative": 0.36, "tripod_index": 0.32}
+      ]
+    }
+  ],
+
+  "joint_kinematics_time_series_300fps": {
+    "description": "Quỹ đạo góc quay khớp 6 chân theo chu kỳ bước chuẩn (0% đến 100% Stance-Swing Cycle). Nguồn dữ liệu kết hợp MoCap FlyWalker (Mendes 2013) và mô phỏng NeuroMechFly v2.",
+    "stride_cycle_percent": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    "phases": ["Stance Start (Touchdown)", "Stance Early", "Stance Mid", "Stance Late", "Stance End (Lift-off)", "Swing Early", "Swing Mid (Peak Height)", "Swing Late", "Swing Terminal", "Pre-touchdown", "Touchdown Complete"],
+    "healthy_wild_type_angles": {
+      "front_leg_LF": {
+        "ThC_pitch": [18.2, 14.5, 9.8, 4.2, -2.1, -8.5, -4.2, 5.6, 14.2, 17.8, 18.2],
+        "ThC_roll": [8.4, 7.8, 7.1, 6.5, 6.2, 9.5, 12.4, 11.2, 9.8, 8.6, 8.4],
+        "CTr_pitch": [-24.5, -28.2, -32.1, -35.8, -38.4, -20.1, -12.4, -16.8, -21.4, -24.0, -24.5],
+        "FTi_pitch": [78.4, 82.1, 88.5, 94.2, 98.6, 68.2, 52.4, 61.5, 72.8, 77.9, 78.4],
+        "TiTa_pitch": [-35.2, -38.4, -42.1, -45.0, -48.2, -28.4, -18.6, -24.2, -31.8, -34.9, -35.2]
+      },
+      "middle_leg_LM": {
+        "ThC_pitch": [2.4, -1.8, -6.5, -12.4, -18.2, -14.1, -6.2, 3.5, 8.9, 4.5, 2.4],
+        "ThC_roll": [-12.5, -13.2, -14.0, -14.8, -15.2, -11.4, -8.6, -9.8, -11.5, -12.2, -12.5],
+        "CTr_pitch": [-18.5, -22.4, -26.8, -31.2, -35.6, -18.2, -9.5, -12.4, -16.2, -18.1, -18.5],
+        "FTi_pitch": [65.2, 69.8, 75.4, 81.2, 86.5, 58.4, 44.2, 52.8, 61.2, 64.8, 65.2],
+        "TiTa_pitch": [-28.4, -31.2, -35.0, -38.6, -42.1, -22.5, -14.2, -19.5, -25.4, -28.0, -28.4]
+      },
+      "hind_leg_LH": {
+        "ThC_pitch": [-12.8, -18.4, -24.5, -31.2, -38.6, -28.4, -15.2, -5.4, -2.1, -8.6, -12.8],
+        "ThC_roll": [-6.2, -6.8, -7.5, -8.2, -8.9, -5.1, -3.2, -4.1, -5.4, -6.0, -6.2],
+        "CTr_pitch": [-14.2, -18.5, -23.1, -28.4, -34.0, -16.8, -8.2, -10.5, -12.8, -13.9, -14.2],
+        "FTi_pitch": [54.8, 59.2, 64.8, 71.5, 78.2, 48.6, 36.4, 42.8, 50.1, 54.2, 54.8],
+        "TiTa_pitch": [-22.5, -25.8, -29.4, -33.2, -37.5, -18.2, -11.5, -15.4, -20.1, -22.1, -22.5]
+      }
+    },
+    "parkinson_pink1_late_angles": {
+      "front_leg_LF": {
+        "ThC_pitch": [11.5, 9.2, 6.1, 2.5, -1.2, -4.8, -2.1, 3.4, 8.8, 11.0, 11.5],
+        "ThC_roll": [6.1, 5.8, 5.4, 5.0, 4.8, 7.1, 9.2, 8.4, 7.2, 6.4, 6.1],
+        "CTr_pitch": [-16.2, -18.8, -21.4, -24.0, -25.8, -14.2, -8.5, -11.2, -14.5, -16.0, -16.2],
+        "FTi_pitch": [58.2, 61.4, 65.8, 70.2, 73.5, 52.1, 41.5, 47.8, 54.2, 57.8, 58.2],
+        "TiTa_pitch": [-24.1, -26.5, -29.2, -31.4, -33.8, -20.5, -13.2, -17.4, -22.1, -23.8, -24.1]
+      },
+      "kinematic_deficit_summary": {
+        "range_of_motion_reduction_pct": -38.5,
+        "stance_duration_elongation_pct": +22.4,
+        "swing_clearance_height_reduction_pct": -41.2,
+        "interleg_phase_lag_jitter_sd_ms": 18.6
+      }
+    }
+  },
+
+  "ground_reaction_forces_and_adhesion": {
+    "units": "micronewtons (uN)",
+    "body_weight_fly_uN": 9.81,
+    "wild_type": {
+      "peak_vertical_force_Fz_uN": 5.4,
+      "peak_propulsive_force_Fx_uN": 2.8,
+      "lateral_stabilizing_force_Fy_uN": 1.2,
+      "pad_adhesion_force_uN": 3.8
+    },
+    "pink1_parkinson": {
+      "peak_vertical_force_Fz_uN": 3.2,
+      "peak_propulsive_force_Fx_uN": 1.4,
+      "lateral_stabilizing_force_Fy_uN": 2.1,
+      "pad_adhesion_force_uN": 2.1
+    }
+  },
+
+  "pharmacological_dose_response_curves": [
+    {
+      "compound": "L-DOPA",
+      "target_pathway": "Dopamine Synthesis Replenishment",
+      "model_tested": "Rotenone (500 uM, Day 7) / pink1 Day 25",
+      "doses": [
+        {"dose_mM": 0.0, "climb_score_recovery": 0.32, "speed_recovery_mms": 7.1, "da_tone_recovery": 0.50},
+        {"dose_mM": 0.1, "climb_score_recovery": 0.44, "speed_recovery_mms": 9.5, "da_tone_recovery": 0.59},
+        {"dose_mM": 0.5, "climb_score_recovery": 0.61, "speed_recovery_mms": 13.0, "da_tone_recovery": 0.72},
+        {"dose_mM": 1.0, "climb_score_recovery": 0.72, "speed_recovery_mms": 15.2, "da_tone_recovery": 0.82},
+        {"dose_mM": 2.0, "climb_score_recovery": 0.69, "speed_recovery_mms": 14.6, "da_tone_recovery": 0.80},
+        {"dose_mM": 5.0, "climb_score_recovery": 0.54, "speed_recovery_mms": 11.2, "da_tone_recovery": 0.74}
+      ],
+      "therapeutic_window_optimal_dose_mM": 1.0,
+      "adverse_effect_high_dose": "Dyskinesia-like high-frequency leg twitching at >= 5.0 mM"
+    },
+    {
+      "compound": "Rosiglitazone (Rosi)",
+      "target_pathway": "PPARgamma Agonism / Mitochondrial Biogenesis",
+      "model_tested": "pink1 Day 25",
+      "doses": [
+        {"dose_uM": 0.0, "climb_score_recovery": 0.34, "speed_recovery_mms": 8.2, "da_tone_recovery": 0.58},
+        {"dose_uM": 10.0, "climb_score_recovery": 0.48, "speed_recovery_mms": 10.6, "da_tone_recovery": 0.67},
+        {"dose_uM": 50.0, "climb_score_recovery": 0.66, "speed_recovery_mms": 13.8, "da_tone_recovery": 0.76},
+        {"dose_uM": 100.0, "climb_score_recovery": 0.68, "speed_recovery_mms": 14.1, "da_tone_recovery": 0.78}
+      ],
+      "therapeutic_window_optimal_dose_uM": 50.0
+    },
+    {
+      "compound": "JNK Inhibitor (SP600125 / Puc OE)",
+      "target_pathway": "c-Jun N-terminal Kinase Apoptosis Blockade",
+      "model_tested": "park^25 Day 25",
+      "doses": [
+        {"dose_uM": 0.0, "climb_score_recovery": 0.39, "speed_recovery_mms": 8.6, "da_tone_recovery": 0.60},
+        {"dose_uM": 5.0, "climb_score_recovery": 0.52, "speed_recovery_mms": 11.2, "da_tone_recovery": 0.69},
+        {"dose_uM": 20.0, "climb_score_recovery": 0.65, "speed_recovery_mms": 13.5, "da_tone_recovery": 0.75}
+      ],
+      "therapeutic_window_optimal_dose_uM": 20.0
+    }
+  ],
+
+  "connectome_dopaminergic_cluster_inventory": {
+    "total_annotated_dan_neurons": 284,
+    "clusters": [
+      {
+        "name": "PAM (Protocerebral Anterior Medial)",
+        "count_per_hemisphere": 130,
+        "primary_neuropil_target": "Mushroom Body Horizontal Lobes (beta, beta-prime, gamma)",
+        "behavioral_specialization": "Startle-Induced Negative Geotaxis (SING / Climbing), Sugar Reward",
+        "key_gal4_driver": "NP6510-Gal4, R58E02-Gal4"
+      },
+      {
+        "name": "PPL1 (Protocerebral Posterior Lateral 1)",
+        "count_per_hemisphere": 12,
+        "primary_neuropil_target": "Mushroom Body Vertical Lobes (alpha, alpha-prime, heel)",
+        "behavioral_specialization": "Aversive memory, Arousal, High-stress survival",
+        "key_gal4_driver": "MB504B-Gal4, TH-Gal4"
+      },
+      {
+        "name": "PPM3 (Protocerebral Posterior Medial 3)",
+        "count_per_hemisphere": 8,
+        "primary_neuropil_target": "Central Complex (Ellipsoid Body EB, Fan-shaped Body FB)",
+        "behavioral_specialization": "Forward locomotion speed, Gating MDN command neurons, Turn bias",
+        "key_gal4_driver": "TH-Gal4, R20B05-Gal4"
+      },
+      {
+        "name": "PPL2 (Protocerebral Posterior Lateral 2)",
+        "count_per_hemisphere": 6,
+        "primary_neuropil_target": "Calyx, Lateral Horn",
+        "behavioral_specialization": "Sensory integration, Olfactory modulation",
+        "key_gal4_driver": "TH-Gal4"
+      }
+    ]
+  }
+}

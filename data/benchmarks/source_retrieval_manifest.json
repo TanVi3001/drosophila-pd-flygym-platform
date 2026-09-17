@@ -1,0 +1,8 @@
+{
+  "artifact": "41586_2024_7763_MOESM2_ESM.xlsx",
+  "retrieved_at_utc": "2026-09-16T15:49:21.9949653Z",
+  "source_url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-024-07763-9/MediaObjects/41586_2024_7763_MOESM2_ESM.xlsx",
+  "sha256": "6922E16825AA0C92A28E2A634B073DCAD7641E9C9283C4B9D8EE1E34E6D9B8D9",
+  "validation": "scripts/validate_shiu_benchmark_registry.py",
+  "scope": "Public retrospective source-integrity artifact; not independent biological validation."
+}

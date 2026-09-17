@@ -1,0 +1,17 @@
+{
+  "model": "parkin",
+  "motor_scale": 0.985149,
+  "coupling_scale": 0.47619,
+  "biological_mechanism": {
+    "gene_mutation": "parkin null mutant (park25 / park1)",
+    "cellular_pathology": "Defective ubiquitination and accumulation of toxic substrates in dopaminergic PPL1/PPM3 clusters causing severe coordination deficits",
+    "lif_intervention": "Reduced synaptic transmission weights W_syn between coordination interneurons and steering Descending Neurons (DNs)",
+    "primary_citation": "Greene et al., 2003 (PNAS, DOI: 10.1073/pnas.0737556100); Cha et al., 2005 (J. Biol. Chem.)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py DN spike-rate ratios",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}

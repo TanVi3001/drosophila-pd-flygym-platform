@@ -1,0 +1,17 @@
+{
+  "model": "lrrk2",
+  "motor_scale": 1.143564,
+  "coupling_scale": 0.904762,
+  "biological_mechanism": {
+    "gene_mutation": "LRRK2 G2019S pathogenic gain-of-kinase-function",
+    "cellular_pathology": "Increased kinase activity leading to altered dopamine transporter (DAT) recycling and elevated baseline excitability with late-onset synaptic destabilization",
+    "lif_intervention": "Elevated baseline current input with moderate degradation of lateral coordination synaptic efficacy",
+    "primary_citation": "Liu et al., 2008 (J. Neurosci, DOI: 10.1523/JNEUROSCI.3528-08.2008); Imai et al., 2008 (EMBO J.)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py DN spike-rate ratios",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}

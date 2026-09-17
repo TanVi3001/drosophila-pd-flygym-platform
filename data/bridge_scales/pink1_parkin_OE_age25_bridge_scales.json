@@ -1,0 +1,17 @@
+{
+  "model": "pink1_parkin_OE_age25",
+  "motor_scale": 0.956522,
+  "coupling_scale": 0.888889,
+  "biological_mechanism": {
+    "gene_mutation": "PINK1 mutant rescued by Parkin Overexpression (pink1[B9]; UAS-parkin / 25-day-old)",
+    "cellular_pathology": "Transgenic overexpression of Parkin acts downstream of PINK1 to clear damaged mitochondria (mitophagy), suppressing dopaminergic neuron apoptosis and restoring locomotor capability near wild-type levels",
+    "lif_intervention": "Computational restoration of 85-90% of dopaminergic synaptic inputs in the descending pathway, rescuing forward drive and inter-leg coordination",
+    "primary_citation": "Yang et al., 2006 (PNAS, DOI: 10.1073/pnas.0602493103); Park et al., 2006 (Nature, DOI: 10.1038/nature04623)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py genetic rescue model",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}

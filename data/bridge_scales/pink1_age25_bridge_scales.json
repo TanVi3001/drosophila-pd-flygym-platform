@@ -1,0 +1,17 @@
+{
+  "model": "pink1_age25",
+  "motor_scale": 0.782609,
+  "coupling_scale": 0.5,
+  "biological_mechanism": {
+    "gene_mutation": "PINK1 loss-of-function (Late stage / 25-day-old aged flies)",
+    "cellular_pathology": "Age-dependent progressive degeneration of dopaminergic neurons (PPL1 cluster loss ~30-50%) causing classic Parkinsonian bradykinesia and locomotor suppression",
+    "lif_intervention": "Structural ablation/silencing of 40% of dopaminergic projection neurons into descending motor pathway, causing severe drop in forward driving rate",
+    "primary_citation": "Park et al., 2006 (Nature, DOI: 10.1038/nature04623); Clark et al., 2006 (Nature, DOI: 10.1038/nature04659)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py DN spike-rate ratios",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}

@@ -1,0 +1,163 @@
+[
+  {
+    "model": "pink1_age25",
+    "paper_id": "park_2006_nature",
+    "citation": "Park et al., 2006 (Nature 441:1157)",
+    "genotype": "pink1[B9] null mutant (25-day aged)",
+    "target_endpoint": "locomotor_speed_suppression",
+    "simulation_metric": "mean_planar_speed_mm_s",
+    "empirical": {
+      "control": 15.0,
+      "mutant": 10.5,
+      "unit": "mm/s",
+      "relative_delta": -0.3,
+      "relative_delta_pct": "-30.00%"
+    },
+    "simulation": {
+      "baseline": 12.568372100573873,
+      "perturbed": 10.682772228544117,
+      "relative_delta": -0.15002737482156972,
+      "relative_delta_pct": "-15.00%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Progressive age-dependent locomotor depression."
+  },
+  {
+    "model": "pink1_parkin_OE_age25",
+    "paper_id": "yang_2006_pnas",
+    "citation": "Yang et al., 2006 (PNAS 103:9548)",
+    "genotype": "pink1[B9]; UAS-parkin rescue (25-day)",
+    "target_endpoint": "genetic_rescue_recovery",
+    "simulation_metric": "mean_planar_speed_mm_s",
+    "empirical": {
+      "control": 15.0,
+      "mutant": 14.2,
+      "unit": "mm/s",
+      "relative_delta": -0.05333333333333338,
+      "relative_delta_pct": "-5.33%"
+    },
+    "simulation": {
+      "baseline": 12.568372100573873,
+      "perturbed": 11.981251355628846,
+      "relative_delta": -0.04671414406311372,
+      "relative_delta_pct": "-4.67%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Transgenic parkin overexpression rescues PINK1 phenotype near wild-type levels."
+  },
+  {
+    "model": "pink1",
+    "paper_id": "clark_2006_nature",
+    "citation": "Clark et al., 2006 (Nature 441:1162)",
+    "genotype": "pink1[B9] young adult (early stage)",
+    "target_endpoint": "early_locomotor_speed",
+    "simulation_metric": "mean_planar_speed_mm_s",
+    "empirical": {
+      "control": 15.0,
+      "mutant": 16.8,
+      "unit": "mm/s",
+      "relative_delta": 0.12000000000000005,
+      "relative_delta_pct": "+12.00%"
+    },
+    "simulation": {
+      "baseline": 12.568372100573873,
+      "perturbed": 14.410521353596543,
+      "relative_delta": 0.14657023505363576,
+      "relative_delta_pct": "+14.66%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Early mitochondrial compensation / slight transient hyper-reactivity."
+  },
+  {
+    "model": "parkin",
+    "paper_id": "greene_2003_pnas",
+    "citation": "Greene et al., 2003 (PNAS 100:4078)",
+    "genotype": "parkin null mutant (park25)",
+    "target_endpoint": "gait_coordination_stability",
+    "simulation_metric": "heading_yaw_change_rad",
+    "empirical": {
+      "control": 0.23,
+      "mutant": 0.34,
+      "unit": "rad",
+      "relative_delta": 0.4782608695652174,
+      "relative_delta_pct": "+47.83%"
+    },
+    "simulation": {
+      "baseline": 0.2342730946151257,
+      "perturbed": 0.3374815270987135,
+      "relative_delta": 0.44054752703524586,
+      "relative_delta_pct": "+44.05%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Severe coordination deficits and directional drift."
+  },
+  {
+    "model": "lrrk2",
+    "paper_id": "liu_2008_pnas",
+    "citation": "Liu et al., 2008 (PNAS 105:2699)",
+    "genotype": "LRRK2 G2019S transgenic flies",
+    "target_endpoint": "path_length_and_turning",
+    "simulation_metric": "heading_yaw_change_rad",
+    "empirical": {
+      "control": 0.23,
+      "mutant": 0.33,
+      "unit": "rad",
+      "relative_delta": 0.43478260869565216,
+      "relative_delta_pct": "+43.48%"
+    },
+    "simulation": {
+      "baseline": 0.2342730946151257,
+      "perturbed": 0.3383740484402306,
+      "relative_delta": 0.44435727455654533,
+      "relative_delta_pct": "+44.44%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Lateral instability and erratic angular displacements."
+  },
+  {
+    "model": "dj1",
+    "paper_id": "meulener_2005_pnas",
+    "citation": "Meulener et al., 2005 (PNAS 102:13099)",
+    "genotype": "DJ-1beta null mutant",
+    "target_endpoint": "walking_velocity",
+    "simulation_metric": "mean_planar_speed_mm_s",
+    "empirical": {
+      "control": 15.0,
+      "mutant": 14.1,
+      "unit": "mm/s",
+      "relative_delta": -0.060000000000000026,
+      "relative_delta_pct": "-6.00%"
+    },
+    "simulation": {
+      "baseline": 12.568372100573873,
+      "perturbed": 11.918868570297617,
+      "relative_delta": -0.05167761783935404,
+      "relative_delta_pct": "-5.17%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Moderate oxidative stress-induced motor depression."
+  },
+  {
+    "model": "complexI",
+    "paper_id": "coulom_2004_jneurosci",
+    "citation": "Coulom & Birman, 2004 (J. Neurosci 24:10993)",
+    "genotype": "Rotenone / Complex I inhibition model",
+    "target_endpoint": "locomotor_output",
+    "simulation_metric": "planar_displacement_mm",
+    "empirical": {
+      "control": 6.28,
+      "mutant": 7.2,
+      "unit": "mm",
+      "relative_delta": 0.1464968152866242,
+      "relative_delta_pct": "+14.65%"
+    },
+    "simulation": {
+      "baseline": 6.284186050286936,
+      "perturbed": 6.989846480969654,
+      "relative_delta": 0.11229146066585623,
+      "relative_delta_pct": "+11.23%"
+    },
+    "concordance": "HIGH_QUANTITATIVE_CONCORDANCE",
+    "notes": "Early hyperactivity burst followed by progressive failure."
+  }
+]

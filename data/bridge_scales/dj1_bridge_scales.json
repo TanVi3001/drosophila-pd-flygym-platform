@@ -1,0 +1,17 @@
+{
+  "model": "dj1",
+  "motor_scale": 0.960396,
+  "coupling_scale": 0.714286,
+  "biological_mechanism": {
+    "gene_mutation": "DJ-1beta loss-of-function (Oxidative stress susceptibility)",
+    "cellular_pathology": "Hypersensitivity to reactive oxygen species (ROS) causing loss of dopaminergic tone and general motor depression",
+    "lif_intervention": "Generalized reduction in tonic excitatory drive I_bias and moderate inter-leg coordination decoupling",
+    "primary_citation": "Meulener et al., 2005 (PNAS, DOI: 10.1073/pnas.0505599102); Menzies et al., 2005 (Brain)"
+  },
+  "provenance": {
+    "source": "fly-brain brain_body_bridge.py DN spike-rate ratios",
+    "simulation_engine": "LIF neural network simulation on Google Colab",
+    "verified": true,
+    "last_updated": "2026-08-25"
+  }
+}
