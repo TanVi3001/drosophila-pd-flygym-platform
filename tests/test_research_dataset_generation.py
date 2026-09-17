@@ -146,7 +146,7 @@ def test_real_generation_pipeline_when_flygym_is_available(tmp_path: Path) -> No
         run_suite=True,
     )
 
-    assert summary["counts"]["COMPLETED"] == 1
+    assert summary["counts"]["COMPLETED"] == len(MODULE.DATASET_GROUPS)
     dataset = tmp_path / "datasets" / "healthy" / "Healthy_001"
     assert (dataset / "rollout.json").is_file()
     assert (dataset / "rollout.npz").is_file()

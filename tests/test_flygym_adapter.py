@@ -96,7 +96,7 @@ def test_configuration_and_yaml_contract() -> None:
     assert config.metadata["flygym_version"] == "2.1.0"
 
 
-def test_builders_are_fluent_and_do_not_import_flygym_until_build() -> None:
+def test_builders_are_fluent_and_do_not_import_flygym_until_build(monkeypatch: pytest.MonkeyPatch) -> None:
     fly_builder = (
         FlyBuilder()
         .healthy()
@@ -107,6 +107,8 @@ def test_builders_are_fluent_and_do_not_import_flygym_until_build() -> None:
     assert fly_builder.spawn_position == (1.0, 2.0, 0.5)
     assert WorldBuilder().blocks(rand_seed=3)._config.kind == "blocks"
 
+    import sys
+    monkeypatch.setitem(sys.modules, "flygym", None)
     with pytest.raises(FlyGymUnavailableError):
         fly_builder.build()
 

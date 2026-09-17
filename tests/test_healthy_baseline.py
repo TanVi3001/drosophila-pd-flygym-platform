@@ -5,6 +5,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 import sys
 
+import numpy as np
 import pytest
 
 
@@ -21,6 +22,7 @@ from drosophila_pd.experiments.healthy_baseline import (  # noqa: E402
     load_healthy_baseline_config,
     run_healthy_baseline,
 )
+from drosophila_pd.experiments import healthy_baseline as healthy_baseline_module  # noqa: E402
 
 
 def test_default_config_records_official_cpg_baseline_choices():
@@ -79,6 +81,25 @@ def test_unavailable_report_never_claims_pass():
     assert report["python_version"] is not None
     assert report["configuration"]["controller"]["type"] == "official_flygym_cpg_tripod"
     assert "No locomotion baseline PASS is claimed" in report["scientific_scope"]
+
+
+def test_invalid_orientation_is_retained_as_nan_instead_of_reusing_previous_sample():
+    class SimulationStub:
+        def get_body_positions(self, _name):
+            return [[0.0, 0.0, 1.0]]
+
+        def get_body_rotations(self, _name):
+            return [[0.0, 0.0, 0.0, 0.0]]
+
+    positions = np.full((1, 3), np.nan)
+    quaternions = np.full((1, 4), np.nan)
+
+    invalid = healthy_baseline_module._collect_thorax_state(
+        SimulationStub(), "fly", 0, positions, quaternions, 0
+    )
+
+    assert invalid is True
+    assert not np.isfinite(quaternions).any()
 
 
 def test_healthy_baseline_integration_with_real_flygym_if_available():

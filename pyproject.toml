@@ -34,6 +34,10 @@ simulation = [
   "flygym==2.1.0",
   "mujoco==3.9.0",
 ]
+workbench = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.30,<1",
+]
 
 [project.urls]
 Homepage = "https://github.com/TanVi3001/drosophila-pd-flygym"

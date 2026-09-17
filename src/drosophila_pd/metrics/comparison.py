@@ -65,7 +65,20 @@ def compare_locomotion_reports(
             relative_epsilon=relative_epsilon,
         ),
     }
-    for optional_metric in ("planar_path_length_mm", "trajectory_efficiency"):
+    for optional_metric in (
+        "planar_path_length_mm",
+        "trajectory_efficiency",
+        "walking_duty_cycle",
+        "walking_bout_count",
+        "pause_bout_count",
+        "walking_duration_s",
+        "pause_duration_s",
+        "mean_planar_displacement_speed_mm_s",
+        "mean_planar_path_speed_mm_s",
+        "cumulative_turning_rad",
+        "left_right_asymmetry",
+        "yaw_rate_mean_rad_s",
+    ):
         if optional_metric in baseline and optional_metric in perturbed:
             scalars[optional_metric] = _scalar_delta(
                 baseline[optional_metric],

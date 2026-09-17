@@ -49,6 +49,9 @@ def test_compute_locomotion_metrics_reports_displacement_and_speed():
     assert metrics["planar_path_length_mm"] == 1.0
     assert metrics["trajectory_efficiency"] == 1.0
     assert metrics["mean_planar_speed_mm_s"] == 5.0
+    assert metrics["mean_planar_displacement_speed_mm_s"] == 5.0
+    assert metrics["mean_planar_path_speed_mm_s"] == 5.0
+    assert metrics["metric_definition_version"] == "locomotion-metrics-2"
     assert metrics["body_height_mm"]["min"] == 1.0
     assert metrics["observations_are_finite"] is True
     assert metrics["controller_action_summary"]["adhesion"]["available"] is True
@@ -126,6 +129,33 @@ def test_body_height_check_records_below_floor_semantics():
         "pass": True,
     }
     assert "body_height_above_numerical_floor" not in checks
+
+
+def test_path_speed_is_distinct_from_displacement_speed_for_a_looping_path():
+    positions = np.array(
+        [
+            [0.0, 0.0, 1.0],
+            [1.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    quaternions = np.tile(np.array([[1.0, 0.0, 0.0, 0.0]]), (3, 1))
+    actions = np.zeros((2, 42))
+
+    metrics = compute_locomotion_metrics(
+        thorax_positions=positions,
+        thorax_quaternions=quaternions,
+        joint_angle_actions=actions,
+        adhesion_onoff=None,
+        timestep_s=0.1,
+        requested_duration_s=0.2,
+        instability_height_floor_mm=-1.0,
+    )
+
+    assert metrics["planar_displacement_mm"] == 0.0
+    assert metrics["planar_path_length_mm"] == 2.0
+    assert metrics["mean_planar_displacement_speed_mm_s"] == 0.0
+    assert metrics["mean_planar_path_speed_mm_s"] == 10.0
 
 
 def test_metric_shape_validation_rejects_missing_initial_sample():

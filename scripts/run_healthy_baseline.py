@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import sys
 from typing import Sequence
@@ -40,12 +41,27 @@ def build_parser() -> argparse.ArgumentParser:
             "results/baseline/healthy_baseline.json."
         ),
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        help="Override the validated configuration random_seed explicitly.",
+    )
+    parser.add_argument(
+        "--override-json",
+        type=str,
+        help="JSON object of strict dotted-path parameter overrides.",
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     config = load_healthy_baseline_config(args.config)
+    if args.seed is not None:
+        config = config.with_random_seed(args.seed)
+    if args.override_json is not None:
+        overrides = json.loads(args.override_json)
+        config = config.with_overrides(overrides)
     print("Milestone C unperturbed locomotion baseline")
     print(f"Config: {args.config}")
     try:

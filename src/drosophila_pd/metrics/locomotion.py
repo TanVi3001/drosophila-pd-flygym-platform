@@ -49,8 +49,13 @@ def compute_locomotion_metrics(
         if math.isfinite(planar_path_length_mm) and planar_path_length_mm > 1e-12
         else None
     )
-    mean_planar_speed_mm_s = (
+    mean_planar_displacement_speed_mm_s = (
         planar_displacement_mm / executed_duration_s
+        if executed_duration_s > 0
+        else math.nan
+    )
+    mean_planar_path_speed_mm_s = (
+        planar_path_length_mm / executed_duration_s
         if executed_duration_s > 0
         else math.nan
     )
@@ -76,6 +81,37 @@ def compute_locomotion_metrics(
             "transition_count_by_leg": None,
         }
 
+    from drosophila_pd.metrics.bouts import compute_walking_bouts_from_positions
+    from drosophila_pd.metrics.turning import compute_turning_metrics
+
+    if finite["thorax_positions"]:
+        bout_metrics = compute_walking_bouts_from_positions(
+            thorax_positions=positions,
+            timestep_s=timestep_s,
+            speed_threshold_mm_s=1.0,
+        )
+    else:
+        bout_metrics = {
+            "walking_duty_cycle": math.nan,
+            "bout_count": 0,
+            "pause_count": 0,
+            "walking_duration_s": math.nan,
+            "pause_duration_s": math.nan,
+        }
+
+    if finite["thorax_quaternions"]:
+        turning_metrics = compute_turning_metrics(
+            heading_rad=yaws,
+            timestep_s=timestep_s,
+            turn_rate_threshold_rad_s=0.5,
+        )
+    else:
+        turning_metrics = {
+            "cumulative_turning_rad": math.nan,
+            "left_right_asymmetry": math.nan,
+            "yaw_rate_summary_rad_s": {"mean": math.nan},
+        }
+
     height_summary = _summary(positions[:, 2])
     metrics = {
         "requested_duration_s": _json_float(requested_duration_s),
@@ -89,11 +125,31 @@ def compute_locomotion_metrics(
         "planar_displacement_mm": _json_float(planar_displacement_mm),
         "planar_path_length_mm": _json_float(planar_path_length_mm),
         "trajectory_efficiency": _json_float(trajectory_efficiency),
-        "mean_planar_speed_mm_s": _json_float(mean_planar_speed_mm_s),
+        # Historical field retained for artifact compatibility. Its exact
+        # definition is displacement-over-time, not distance travelled.
+        "mean_planar_speed_mm_s": _json_float(mean_planar_displacement_speed_mm_s),
+        "mean_planar_displacement_speed_mm_s": _json_float(
+            mean_planar_displacement_speed_mm_s
+        ),
+        "mean_planar_path_speed_mm_s": _json_float(mean_planar_path_speed_mm_s),
+        "metric_definition_version": "locomotion-metrics-2",
+        "metric_definitions": {
+            "mean_planar_speed_mm_s": "historical_planar_displacement_over_time",
+            "mean_planar_displacement_speed_mm_s": "planar_displacement_over_time",
+            "mean_planar_path_speed_mm_s": "planar_path_length_over_time",
+        },
         "body_height_mm": height_summary,
         "heading_yaw_change_rad": _json_float(yaw_change_rad),
         "heading_yaw_initial_rad": _json_float(yaws[0]),
         "heading_yaw_final_rad": _json_float(yaws[-1]),
+        "walking_duty_cycle": _json_float(bout_metrics["walking_duty_cycle"]),
+        "walking_bout_count": int(bout_metrics["bout_count"]),
+        "pause_bout_count": int(bout_metrics["pause_count"]),
+        "walking_duration_s": _json_float(bout_metrics["walking_duration_s"]),
+        "pause_duration_s": _json_float(bout_metrics["pause_duration_s"]),
+        "cumulative_turning_rad": _json_float(turning_metrics["cumulative_turning_rad"]),
+        "left_right_asymmetry": _json_float(turning_metrics["left_right_asymmetry"]),
+        "yaw_rate_mean_rad_s": _json_float(turning_metrics["yaw_rate_summary_rad_s"]["mean"]),
         "body_height_below_floor": (
             height_summary["min"] is not None
             and height_summary["min"] < instability_height_floor_mm

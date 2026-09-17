@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 import yaml
@@ -132,6 +132,36 @@ class HealthyBaselineConfig:
     @property
     def random_seed(self) -> int:
         return int(self.data["random_seed"])
+
+    def with_random_seed(self, seed: int) -> "HealthyBaselineConfig":
+        """Return a separately validated config with one explicit seed."""
+
+        if isinstance(seed, bool) or not isinstance(seed, int) or seed < 0:
+            raise ValueError("random_seed override must be a non-negative integer")
+        updated = deepcopy(self.data)
+        updated["random_seed"] = seed
+        return HealthyBaselineConfig.from_mapping(updated)
+
+    def with_overrides(self, overrides: Mapping[str, Any]) -> "HealthyBaselineConfig":
+        """Return a separately validated config after strict dotted-path overrides."""
+
+        if not isinstance(overrides, Mapping):
+            raise ValueError("parameter overrides must be a mapping")
+        updated = deepcopy(self.data)
+        for raw_path, value in overrides.items():
+            path = str(raw_path).strip()
+            if not path:
+                raise ValueError("parameter override path must not be empty")
+            parts = path.split(".")
+            current: Any = updated
+            for part in parts[:-1]:
+                if not isinstance(current, dict) or part not in current or not isinstance(current[part], dict):
+                    raise ValueError(f"parameter override path does not exist: {path}")
+                current = current[part]
+            if not isinstance(current, dict) or parts[-1] not in current:
+                raise ValueError(f"parameter override path does not exist: {path}")
+            current[parts[-1]] = value
+        return HealthyBaselineConfig.from_mapping(updated)
 
     @property
     def fly(self) -> dict[str, Any]:
@@ -293,7 +323,9 @@ def run_locomotion(
     )
     cpg_phases = np.full((step_count + 1, 6), np.nan, dtype=float)
 
-    _collect_thorax_state(
+    orientation_invalid_count = 0
+    orientation_fallback_count = 0
+    initial_orientation_invalid = _collect_thorax_state(
         sim,
         fly.name,
         thorax_index,
@@ -301,6 +333,16 @@ def run_locomotion(
         thorax_quaternions,
         0,
     )
+    orientation_invalid_count += int(initial_orientation_invalid)
+    if initial_orientation_invalid:
+        # FlyGym can expose an uninitialized quaternion at t=0 immediately
+        # after reset.  The declared spawn orientation is an explicit initial
+        # condition, not a previous observation, so using it here does not
+        # hide a later orientation failure or repeat a stale value.
+        spawn_quaternion = np.asarray(config.spawn_orientation_quat, dtype=float)
+        if spawn_quaternion.shape == (4,) and np.isfinite(spawn_quaternion).all():
+            thorax_quaternions[0] = spawn_quaternion / np.linalg.norm(spawn_quaternion)
+            orientation_fallback_count = 1
     cpg_phases[0] = controller.cpg_network.curr_phases % (2 * np.pi)
 
     for step_index in range(step_count):
@@ -323,13 +365,15 @@ def run_locomotion(
         joint_angle_actions[step_index] = action.joint_angles
         if adhesion_onoff is not None:
             adhesion_onoff[step_index] = action.adhesion_onoff
-        _collect_thorax_state(
-            sim,
-            fly.name,
-            thorax_index,
-            thorax_positions,
-            thorax_quaternions,
-            step_index + 1,
+        orientation_invalid_count += int(
+            _collect_thorax_state(
+                sim,
+                fly.name,
+                thorax_index,
+                thorax_positions,
+                thorax_quaternions,
+                step_index + 1,
+            )
         )
         cpg_phases[step_index + 1] = controller.cpg_network.curr_phases % (
             2 * np.pi
@@ -400,6 +444,13 @@ def run_locomotion(
             "rendering_enabled": False,
             "ground_contact_sensors_enabled": bool(
                 config.world["add_ground_contact_sensors"]
+            ),
+            "orientation_invalid_samples": orientation_invalid_count,
+            "orientation_fallback_samples": orientation_fallback_count,
+            "orientation_qc_policy": (
+                "invalid quaternion samples after initialization are retained as NaN; "
+                "only an invalid t=0 readout may use the declared spawn orientation, "
+                "and that fallback is recorded separately"
             ),
         },
         "raw_observations": {
@@ -496,9 +547,21 @@ def _collect_thorax_state(
     positions: np.ndarray,
     quaternions: np.ndarray,
     sample_index: int,
-) -> None:
+) -> bool:
     positions[sample_index] = sim.get_body_positions(fly_name)[thorax_index]
-    quaternions[sample_index] = sim.get_body_rotations(fly_name)[thorax_index]
+    observed_quaternion = np.asarray(
+        sim.get_body_rotations(fly_name)[thorax_index], dtype=float
+    )
+    invalid = (
+        observed_quaternion.shape != (4,)
+        or not np.isfinite(observed_quaternion).all()
+        or float(np.linalg.norm(observed_quaternion)) <= 1e-12
+    )
+    if invalid:
+        quaternions[sample_index] = np.nan
+        return True
+    quaternions[sample_index] = observed_quaternion
+    return False
 
 
 def _deep_merge(defaults: dict[str, Any], overrides: dict[str, Any]) -> dict[str, Any]:

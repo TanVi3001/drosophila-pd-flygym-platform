@@ -13,10 +13,13 @@ from .base import (
     perturbation_from_mapping,
     perturbation_metadata_complete,
 )
+from .brain_driven import AsymmetricActionScalePerturbation, BrainDrivenPerturbation
 from .validation import summarize_action_transformation, summarize_controller_transformation
 
 __all__ = [
     "ActionPerturbationContext",
+    "AsymmetricActionScalePerturbation",
+    "BrainDrivenPerturbation",
     "CPGCouplingScalePerturbation",
     "CompositePerturbation",
     "ControllerPerturbationContext",

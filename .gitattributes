@@ -1,2 +1,7 @@
 *.pdf binary
 *.docx binary
+
+# Git LFS tracked large data files (from plan/phase-A dataset migration)
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.parquet filter=lfs diff=lfs merge=lfs -text
