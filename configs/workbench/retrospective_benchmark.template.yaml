@@ -1,0 +1,22 @@
+# Template only: do not run this file until the public-data case list has been
+# selected, checked, and frozen by the scientific reviewer.
+protocol_id: public-retrospective-v1
+source:
+  citation: "Fill with the selected public supplementary dataset"
+  locator: "https://doi.org/replace-before-use"
+  status: pending_selection
+selection_rule: "Fill in inclusion/exclusion, unit-of-evidence rules and positive/negative label mapping before freeze"
+frozen_at: ""
+min_case_count: 20
+precision_at_k: 3
+freeze_status: DRAFT
+label_policy: ""
+freeze_commit: null
+split:
+  development_case_ids: []
+  held_out_case_ids: []
+notes:
+  - "Include both positive and negative reference cases."
+  - "Do not tune parameters or thresholds on the held-out evaluation set."
+  - "Group repeated conditions from one biological study so related observations cannot cross the split."
+cases: []

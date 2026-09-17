@@ -1,0 +1,43 @@
+name: motor-flat-ground-benchmark
+hypothesis: A declared locomotor perturbation changes trajectory and gait readouts relative to the matched no-perturbation condition.
+falsifiable_prediction: The primary path-speed readout changes in the declared direction while orientation QC, bilateral symmetry checks, and the matched control remain valid.
+assay: motor_flat_ground
+primary_metric: mean_planar_path_speed_mm_s
+backend: flygym_healthy
+candidates:
+  - candidate_id: no_perturbation
+    label: No perturbation control
+    intervention:
+      type: none
+    expected_direction: unchanged
+  - candidate_id: declared_motor_perturbation
+    label: Declared motor perturbation
+    target: motor_output
+    intervention:
+      type: controller_parameter_override
+      parameters:
+        controller.intrinsic_frequency_hz: 14.0
+    expected_direction: any
+controls:
+  - id: no_perturbation
+    role: negative_control
+  - id: left_right_symmetry
+    role: QC_control
+sources:
+  - citation: FlyGym / NeuroMechFly platform
+    locator: https://www.nature.com/articles/s41592-024-02497-y
+    status: platform_reference
+run_plan:
+  seed_repetitions: 10
+  confirmation_seed_repetitions: 30
+  sensitivity:
+    - parameter: controller.intrinsic_frequency_hz
+      values: [10.0, 12.0, 14.0]
+    - parameter: controller.coupling_strength
+      values: [8.0, 10.0, 12.0]
+  checks:
+    - trajectory_path_length_is_finite
+    - orientation_invalid_samples_are_zero
+    - left_right_symmetry_is_reported
+metadata:
+  scientific_scope: computational mechanics benchmark; not disease or neuron-specific validation

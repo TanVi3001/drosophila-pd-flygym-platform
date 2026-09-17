@@ -1,0 +1,131 @@
+name: sensory-mn9-temporal-matched-input-v2
+hypothesis: Under equal declared integrated input, temporal organization of a sugar drive changes the computational MN9 response.
+falsifiable_prediction: A pulsed 150 Hz protocol will produce a different MN9 readout from a sustained 75 Hz protocol when total stimulus duration and simulation duration are fixed.
+assay: sensory_mn9
+primary_metric: metrics.readout_rates_hz.720575940660219265
+backend: lif_2024
+
+sugar_input_ids: &sugar_input_ids
+  - "720575940624963786"
+  - "720575940630233916"
+  - "720575940637568838"
+  - "720575940638202345"
+  - "720575940617000768"
+  - "720575940630797113"
+  - "720575940632889389"
+  - "720575940621754367"
+  - "720575940621502051"
+  - "720575940640649691"
+  - "720575940639332736"
+  - "720575940616885538"
+  - "720575940639198653"
+  - "720575940620900446"
+  - "720575940617937543"
+  - "720575940632425919"
+  - "720575940633143833"
+  - "720575940612670570"
+  - "720575940628853239"
+  - "720575940629176663"
+  - "720575940611875570"
+
+candidates:
+  - candidate_id: no_intervention
+    label: No-input computational control
+    intervention:
+      type: none
+    expected_direction: unchanged
+  - candidate_id: sustained_low_75hz
+    label: Sustained sugar input at 75 Hz for 1 second
+    target: public_sugar_grn_set
+    intervention:
+      type: activation
+      parameters:
+        input_ids: *sugar_input_ids
+        stimulus_schedule:
+          - start_s: 0.0
+            end_s: 1.0
+            rate_hz: 75.0
+            input_ids: *sugar_input_ids
+            label: sustained_low_integrated_input
+    expected_direction: increase
+  - candidate_id: pulsed_150hz
+    label: Two 250 ms sugar pulses at 150 Hz
+    target: public_sugar_grn_set
+    intervention:
+      type: activation
+      parameters:
+        input_ids: *sugar_input_ids
+        stimulus_schedule:
+          - start_s: 0.0
+            end_s: 0.25
+            rate_hz: 150.0
+            input_ids: *sugar_input_ids
+            label: pulse_1
+          - start_s: 0.5
+            end_s: 0.75
+            rate_hz: 150.0
+            input_ids: *sugar_input_ids
+            label: pulse_2
+    expected_direction: increase
+  - candidate_id: sustained_high_150hz
+    label: Sustained sugar input at 150 Hz for 1 second
+    target: public_sugar_grn_set
+    intervention:
+      type: activation
+      parameters:
+        input_ids: *sugar_input_ids
+        stimulus_schedule:
+          - start_s: 0.0
+            end_s: 1.0
+            rate_hz: 150.0
+            input_ids: *sugar_input_ids
+            label: sustained_high_reference
+    expected_direction: increase
+
+controls:
+  - id: no_intervention
+    role: computational_negative_control
+  - id: paired_seed
+    role: computational_pairing
+  - id: equal_declared_integrated_input
+    role: protocol_control
+    note: Sustained 75 Hz for 1 s and pulsed 150 Hz for 0.5 s have equal declared rate-time product; actual spike counts may differ.
+  - id: sustained_high_reference
+    role: dose_reference
+    note: 150 Hz for 1 s is not part of the equal-input contrast.
+
+sources:
+  - citation: Shiu et al. 2024
+    locator: https://www.nature.com/articles/s41586-024-07763-9
+    status: public_reference
+
+run_plan:
+  screening_seed_repetitions: 10
+  confirmation_seed_repetitions: 30
+  bootstrap_samples: 10000
+  paired_seed_policy: same_seed_within_condition_contrast
+  sensitivity:
+    synaptic_strength: [0.7, 1.0, 1.3]
+    inhibitory_strength: [0.5, 1.0, 1.5]
+  backend_requirements:
+    model_root: ../external/Drosophila_brain_model
+    completeness: ../external/Drosophila_brain_model/2023_03_23_completeness_630_final.csv
+    connectivity: ../external/Drosophila_brain_model/2023_03_23_connectivity_630_final.parquet
+    annotation_file: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+    readout_ids:
+      - "720575940660219265"
+    trials: 1
+    duration_s: 1.0
+    id_namespace: flywire_root_id
+    dataset_id: flywire-630-2023-03-23
+
+metadata:
+  experiment_id: E2-v2
+  scientific_scope: Computational temporal-protocol sensitivity under a declared input-matching control; not a validated stimulus-dose or firing-to-behavior mapping.
+  primary_contrast: pulsed_150hz_vs_sustained_low_75hz
+  status: READY_FOR_COMPUTATIONAL_RUN
+  ranking_policy:
+    control_candidate_id: sustained_low_75hz
+    expected_direction: any
+    minimum_effect_threshold: 1.0
+    minimum_direction_stability: 0.8

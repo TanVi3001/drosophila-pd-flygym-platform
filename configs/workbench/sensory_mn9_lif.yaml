@@ -1,0 +1,75 @@
+name: sensory-mn9-lif-public-630
+hypothesis: Activating the public sugar-sensing input set changes the prespecified MN9 neural readout relative to the no-input control.
+falsifiable_prediction: The declared MN9 firing-rate readout differs from the matched no-input control in the prespecified direction; a null result remains conditional on the LIF model scope and the public input annotation.
+assay: sensory_mn9
+primary_metric: metrics.readout_rates_hz.720575940660219265
+backend: lif_2024
+candidates:
+  - candidate_id: no_intervention
+    label: No-input control
+    intervention:
+      type: none
+    expected_direction: unchanged
+  - candidate_id: sugar_activation
+    label: Public labellar sugar-sensing input activation
+    target: public_sugar_grn_set
+    intervention:
+      type: activation
+      parameters:
+        input_ids:
+          - "720575940624963786"
+          - "720575940630233916"
+          - "720575940637568838"
+          - "720575940638202345"
+          - "720575940617000768"
+          - "720575940630797113"
+          - "720575940632889389"
+          - "720575940621754367"
+          - "720575940621502051"
+          - "720575940640649691"
+          - "720575940639332736"
+          - "720575940616885538"
+          - "720575940639198653"
+          - "720575940620900446"
+          - "720575940617937543"
+          - "720575940632425919"
+          - "720575940633143833"
+          - "720575940612670570"
+          - "720575940628853239"
+          - "720575940629176663"
+          - "720575940611875570"
+    expected_direction: increase
+controls:
+  - id: no_intervention
+    role: negative_control
+    note: No external input is activated; the control is not a biological retinal-negative animal and must be interpreted as a computational no-input condition.
+sources:
+  - citation: Shiu et al. 2024
+    locator: https://www.nature.com/articles/s41586-024-07763-9
+    status: public_reference
+  - citation: Upstream Drosophila brain model public notebook
+    locator: https://github.com/philshiu/Drosophila_brain_model/blob/main/example.ipynb
+    status: public_id_source
+    note: The notebook lists the sugar-sensing input IDs and identifies the MN9 readout ID.
+run_plan:
+  screening_seed_repetitions: 10
+  seed_repetitions: 10
+  confirmation_seed_repetitions: 30
+  sensitivity: []
+  backend_requirements:
+    model_root: ../external/Drosophila_brain_model
+    completeness: ../external/Drosophila_brain_model/2023_03_23_completeness_630_final.csv
+    connectivity: ../external/Drosophila_brain_model/2023_03_23_connectivity_630_final.parquet
+    annotation_file: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+    input_ids: []
+    readout_ids:
+      - "720575940660219265"
+    trials: 1
+    duration_s: 1.0
+    stimulus_rate_hz: 150.0
+    id_namespace: flywire_root_id
+    dataset_id: flywire-630-2023-03-23
+metadata:
+  annotation_file: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+  scientific_scope: computational MN9 readout prioritization only; no firing-to-behavior conversion, driver-line validation, or wet-lab conclusion
+  status: public_630_computational_pilot; independent biological review still required

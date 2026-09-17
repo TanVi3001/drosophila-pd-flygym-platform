@@ -1,0 +1,13 @@
+# Replace STUDY_ID and the threshold with values approved for the study.
+# This policy is intentionally explicit: no threshold means exploratory only.
+study_id: STUDY_ID
+control_candidate_id: no_perturbation
+assay: motor_flat_ground
+primary_metric: mean_planar_path_speed_mm_s
+expected_direction: increase
+minimum_pairs: 10
+bootstrap_samples: 1000
+ci_level: 0.95
+minimum_effect_threshold: 0.5
+minimum_direction_stability: 0.8
+bootstrap_seed: 20260916

@@ -1,0 +1,14 @@
+# Replace STUDY_ID and approve the threshold in the study protocol.
+# One-seed smoke runs are computational checks; use >=10 seeds for screening
+# and fresh >=30-seed confirmation before a scientific interpretation.
+study_id: STUDY_ID
+control_candidate_id: no_intervention
+assay: sensory_mn9
+primary_metric: metrics.readout_rates_hz.720575940660219265
+expected_direction: increase
+minimum_pairs: 10
+bootstrap_samples: 1000
+ci_level: 0.95
+minimum_effect_threshold: 5.0
+minimum_direction_stability: 0.8
+bootstrap_seed: 20260916

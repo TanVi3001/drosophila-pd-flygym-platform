@@ -1,0 +1,48 @@
+name: sensory-mn9-upstream-blocking-pending-review
+hypothesis: Blocking a reviewed upstream neuron in the sugar-evoked circuit reduces the prespecified MN9 readout.
+falsifiable_prediction: The MN9 firing-rate readout is reduced relative to the matched sugar-activation control at the same stimulus and seed.
+assay: sensory_mn9
+primary_metric: metrics.readout_rates_hz.720575940660219265
+backend: lif_2024
+
+# This is intentionally not runnable until an independent biological review
+# identifies and documents the upstream target. Do not replace the empty ID
+# list with an arbitrary neuron merely to make the job pass validation.
+candidates:
+  - candidate_id: sugar_activation_control
+    label: Public sugar-sensing input activation control
+    intervention:
+      type: activation
+      parameters:
+        input_ids: []
+    expected_direction: unchanged
+  - candidate_id: reviewed_upstream_outgoing_block
+    label: Reviewed upstream outgoing synapse block
+    target: pending_biological_review
+    intervention:
+      type: outgoing_synapse_block
+      parameters:
+        outgoing_synapse_block_ids: []
+    expected_direction: decrease
+controls:
+  - id: matched_sugar_activation
+    role: assay_control
+    note: Both conditions must use the same reviewed sugar input set, stimulus rate and readout.
+sources:
+  - citation: Shiu et al. 2024
+    locator: https://www.nature.com/articles/s41586-024-07763-9
+    status: public_reference
+metadata:
+  status: BLOCKED_PENDING_BIOLOGICAL_REVIEW
+  scientific_scope: computational MN9 contrast only; no driver line or wet-lab conclusion
+  required_review:
+    - verify upstream target identity and FlyWire namespace
+    - verify that outgoing block is the intended model perturbation
+    - identify candidate driver or split-GAL4 line and specificity evidence
+    - define a matched stimulation/control protocol before submission
+run_plan:
+  screening_seed_repetitions: 10
+  confirmation_seed_repetitions: 30
+  backend_requirements:
+    id_namespace: flywire_root_id
+    dataset_id: flywire-630-2023-03-23

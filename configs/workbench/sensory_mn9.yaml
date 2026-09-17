@@ -1,0 +1,44 @@
+name: sensory-mn9-priority-pilot
+hypothesis: Activating the gustatory-to-MN9 circuit changes the prespecified neural output readout under the selected stimulus condition.
+falsifiable_prediction: The primary MN9 output metric differs from the matched control in the declared direction; a null result remains uninterpretable when the backend lacks the relevant mechanism or readout.
+assay: sensory_mn9
+primary_metric: output_rate
+backend: neural_bridge
+candidates:
+  - candidate_id: mn9_activation
+    label: MN9 circuit activation
+    target: MN9
+    intervention:
+      type: activation
+      source: optogenetic_preset
+    expected_direction: increase
+  - candidate_id: mn9_outgoing_synapse_block
+    label: MN9 outgoing synapse block
+    target: MN9
+    intervention:
+      type: outgoing_synapse_block
+      scale: 0.0
+    expected_direction: decrease
+controls:
+  - id: no_retinal
+    role: negative_control
+    note: Keep the control definition explicit; do not infer a biological null from a missing effect.
+  - id: matched_stimulus
+    role: assay_control
+sources:
+  - citation: Shiu et al. 2024
+    locator: https://www.nature.com/articles/s41586-024-07763-9
+    status: public_reference
+run_plan:
+  seed_repetitions: 10
+  confirmation_seed_repetitions: 30
+  sensitivity:
+    - parameter: bridge.condition_label
+      values: [activation, outgoing_synapse_block]
+  backend_requirements:
+    reference_spikes: /path/to/reference_spikes.parquet
+    condition_spikes: /path/to/condition_spikes.parquet
+    reference_manifest: /path/to/reference_run_manifest.json
+    condition_manifest: /path/to/condition_run_manifest.json
+metadata:
+  scientific_scope: neural output prioritization only; no firing-to-behavior conversion

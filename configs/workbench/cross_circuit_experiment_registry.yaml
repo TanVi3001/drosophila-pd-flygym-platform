@@ -1,0 +1,27 @@
+registry_id: workbench-cross-circuit-experiments-v1
+status: REVIEWED_COMPUTATIONAL_SCOPE
+experiments:
+  - experiment_id: E1
+    protocol: configs/workbench/sensory_mn9_intensity.yaml
+    status: READY_FOR_COMPUTATIONAL_RUN
+    purpose: intensity sensitivity of the existing MN9 assay
+  - experiment_id: E2
+    protocol: configs/workbench/sensory_mn9_temporal.yaml
+    status: READY_FOR_COMPUTATIONAL_RUN
+    purpose: temporal stimulus sensitivity of the existing MN9 assay
+  - experiment_id: E3
+    protocol: null
+    status: BLOCKED_PENDING_SOURCE_MAPPING
+    purpose: Sapkal P9/BPN plus halt-neuron cross-circuit evaluation
+    blocker: source data and FlyWire-630 ID/readout mapping must be reviewed before a runnable config is created
+    source: https://www.nature.com/articles/s41586-024-07854-7
+  - experiment_id: E4
+    protocol: null
+    status: OUT_OF_SCOPE_EXPECTED
+    purpose: Wang 2025 internal-state/mating-experience case used to test abstention
+    blocker: baseline does not represent sex, mating experience, dopamine state, or peripheral Gr5a recordings
+    source: https://doi.org/10.7554/eLife.105094.3
+notes:
+  - E1 and E2 are computational experiments, not biological replicates.
+  - E3 is not promoted to a runnable study until the public artifact mapping is complete.
+  - E4 should remain outside ranking and be reported as an explicit unsupported case.

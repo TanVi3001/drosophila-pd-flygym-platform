@@ -1,0 +1,60 @@
+review_id: mn9-sensory-case-review-v1
+status: PENDING_SCIENTIFIC_REVIEW
+reviewer: null
+reviewed_at: null
+scope: public-data-protocol-only
+question: >-
+  Does the declared LIF sensory-circuit contrast produce a reproducible MN9
+  readout that is suitable for prioritizing a bounded follow-up experiment?
+computational_contract:
+  study_spec: configs/workbench/sensory_mn9_lif.yaml
+  input_registry: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+  dataset: FlyWire-630
+  readout:
+    id: "720575940660219265"
+    name: MN9_r
+    meaning: declared neural readout only; not a behavior probability
+  activation_condition:
+    intervention: input_activation
+    source: public_sensory_mn9_registry
+  blocking_condition:
+    status: NOT_YET_APPROVED
+    intervention: outgoing_synapse_block
+    required_review: confirm target synapse set and biological interpretation
+  excluded_interpretations:
+    - neuron_death
+    - disease_state
+    - firing_rate_to_behavior_probability
+biology_checks:
+  target_identity: PENDING
+  input_cell_type_and_driver_line: PENDING
+  driver_line_expression_specificity: PENDING
+  stock_availability_and_genotype: PENDING
+  stimulus_and_state_dependence: PENDING
+  experimental_unit_and_repeated_measure_plan: PENDING
+  randomization_and_blinding: PENDING
+  primary_readout_and_minimum_effect: PENDING
+wet_lab_protocol:
+  status: PROTOCOL_DRAFT_ONLY
+  positive_control: optogenetic activation with the declared stimulus protocol
+  negative_control: matched no-retinal/no-light or other pre-registered control as appropriate
+  complementary_control: prespecified synapse-blocking or cell-silencing manipulation
+  measurement: MN9-compatible neural/behavioral readout selected by reviewer
+  preregistration_required: true
+  power_analysis_required: true
+  prospective_data_available: false
+evidence:
+  - citation: "Shiu et al. (2024), Nature"
+    locator: "https://www.nature.com/articles/s41586-024-07763-9"
+    supports: model scope, MN9 activation/silencing context, and public supplement locator
+  - citation: "Janelia NeuronBridge"
+    locator: "https://www.janelia.org/node/69264"
+    supports: morphology-to-driver-line search as a starting point only
+  - citation: "NC3Rs Experimental Design Assistant"
+    locator: "https://eda.nc3rs.org.uk/experimental-design"
+    supports: prespecification of controls, experimental unit, randomization, and blinding
+decision_rule: >-
+  No biological prioritization claim may be released until the reviewer marks
+  target identity, driver-line specificity, assay/readout, controls, and
+  prospective protocol as APPROVED. A computational null remains bounded to
+  the declared model scope.

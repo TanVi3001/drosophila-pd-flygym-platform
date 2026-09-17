@@ -1,0 +1,185 @@
+# Public retrospective benchmark registry for the Workbench prioritization
+# method. Labels are author-reported model-vs-experiment agreement labels from
+# the source supplement; they are not biological effect labels.
+protocol_id: shiu-public-retrospective-v1
+source:
+  citation: "Shiu et al. (2024), Nature, Supplementary Table 11B"
+  doi: "10.1038/s41586-024-07763-9"
+  locator: &public_locator "https://www.nature.com/articles/s41586-024-07763-9"
+  artifact_locator: "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-024-07763-9/MediaObjects/41586_2024_7763_MOESM2_ESM.xlsx"
+  artifact_sha256: "6922E16825AA0C92A28E2A634B073DCAD7641E9C9283C4B9D8EE1E34E6D9B8D9"
+  worksheet: "Supp Table 11B Decrease w_syn"
+  table_column: "Correct (i.e., aligns with experimental results?)"
+  status: public_artifact_verified_locally
+  review_status: PENDING_SCIENTIFIC_REVIEW
+evaluation_contract:
+  status: PENDING_SCIENTIFIC_REVIEW
+  target: source_model_experiment_agreement
+  description: >-
+    The source label records whether the original model prediction aligned with
+    the corresponding experimental comparison. Workbench outputs must not be
+    interpreted as biological effect labels without a reviewer-approved,
+    section-specific mapping.
+  required_case_fields:
+    - source_section
+    - assay
+    - stimulus
+    - intervention
+    - readout
+    - source_header_row
+  unsupported_cases_must_be_reported_as: unassessable
+selection_rule: >-
+  Extract the first source row for each exact FlyWire ID in Supplementary Table
+  11B Decrease w_syn. Retain 21 unique-ID conditions with a public row-level
+  locator and an author-reported 0/1 comparison label. Repeated rows for an ID
+  are excluded from this v1 snapshot to prevent target leakage. The
+  development split contains source rows 3-15; the held-out split contains
+  source rows 16-17, 165, 167, 174-176 and 180. This is a deterministic,
+  source-row split, not a random sample.
+frozen_at: "2026-09-16T00:00:00+07:00"
+min_case_count: 20
+precision_at_k: 3
+freeze_status: FROZEN
+label_policy: >-
+  Map source column "Correct (i.e., aligns with experimental results?)" value 1
+  to reference_label=positive and value 0 to reference_label=negative. The
+  resulting label means reported agreement between the original model
+  prediction and the authors' experimental comparison; it does not mean that
+  the biological effect itself is positive or negative. No label is inferred
+  from the Workbench output.
+freeze_commit: null
+split:
+  development_case_ids:
+    - shiu11b_row003
+    - shiu11b_row004
+    - shiu11b_row005
+    - shiu11b_row006
+    - shiu11b_row007
+    - shiu11b_row008
+    - shiu11b_row009
+    - shiu11b_row010
+    - shiu11b_row011
+    - shiu11b_row012
+    - shiu11b_row013
+    - shiu11b_row014
+    - shiu11b_row015
+  held_out_case_ids:
+    - shiu11b_row016
+    - shiu11b_row017
+    - shiu11b_row165
+    - shiu11b_row167
+    - shiu11b_row174
+    - shiu11b_row175
+    - shiu11b_row176
+    - shiu11b_row180
+notes:
+  - "The split is held out for evaluation and must not be used for threshold or parameter tuning."
+  - "The benchmark is retrospective and inherits the source study's model and experimental scope."
+  - "A second reviewer must verify the source rows and label semantics before manuscript submission."
+  - "The 21 cases are unique by exact FlyWire ID; repeated source rows are deliberately excluded."
+cases:
+  - case_id: shiu11b_row003
+    condition: "sugar_response:Zorro_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940629888530", neuron_name: "Zorro_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 3, source_label_numeric: 1, case_group: "flywire:720575940629888530", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row004
+    condition: "sugar_response:G2N_1_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940620874757", neuron_name: "G2N_1_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 4, source_label_numeric: 1, case_group: "flywire:720575940620874757", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row005
+    condition: "sugar_response:rattle_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940638103349", neuron_name: "rattle_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 5, source_label_numeric: 1, case_group: "flywire:720575940638103349", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row006
+    condition: "sugar_response:usnea_l"
+    reference_label: negative
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940632648612", neuron_name: "usnea_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 6, source_label_numeric: 0, case_group: "flywire:720575940632648612", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row007
+    condition: "sugar_response:clavicle_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940655014049", neuron_name: "clavicle_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 7, source_label_numeric: 1, case_group: "flywire:720575940655014049", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row008
+    condition: "sugar_response:FMIn_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940614763666", neuron_name: "FMIn_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 8, source_label_numeric: 1, case_group: "flywire:720575940614763666", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row009
+    condition: "sugar_response:phantom_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940616103218", neuron_name: "phantom_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 9, source_label_numeric: 1, case_group: "flywire:720575940616103218", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row010
+    condition: "sugar_response:Fdg_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940631997032", neuron_name: "Fdg_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 10, source_label_numeric: 1, case_group: "flywire:720575940631997032", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row011
+    condition: "sugar_response:MN9_r"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940660219265", neuron_name: "MN9_r", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 11, source_label_numeric: 1, case_group: "flywire:720575940660219265", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row012
+    condition: "sugar_response:MN9_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940645521262", neuron_name: "MN9_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 12, source_label_numeric: 1, case_group: "flywire:720575940645521262", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row013
+    condition: "sugar_response:roundup_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940623211725", neuron_name: "roundup_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 13, source_label_numeric: 1, case_group: "flywire:720575940623211725", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row014
+    condition: "sugar_response:Bract_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940610001220", neuron_name: "Bract_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 14, source_label_numeric: 1, case_group: "flywire:720575940610001220", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row015
+    condition: "sugar_response:TH_VUM"
+    reference_label: negative
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940616857174", neuron_name: "TH_VUM", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 15, source_label_numeric: 0, case_group: "flywire:720575940616857174", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row016
+    condition: "sugar_response:MN6_r"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940628826128", neuron_name: "MN6_r", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 16, source_label_numeric: 1, case_group: "flywire:720575940628826128", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row017
+    condition: "sugar_response:Fudog_l"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940612648106", neuron_name: "Fudog_l", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 17, source_label_numeric: 1, case_group: "flywire:720575940612648106", source_section: "sugar_response", assay: "neural_response", stimulus: "sugar_grn_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 2}
+  - case_id: shiu11b_row165
+    condition: "water_silencing:Tulip"
+    reference_label: negative
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940620061793", neuron_name: "Tulip", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 165, source_label_numeric: 0, case_group: "flywire:720575940620061793", source_section: "water_silencing", assay: "sensory_mn9", stimulus: "water_grn_activation", intervention: "outgoing_synapse_block", readout: "MN9_firing_rate_hz", source_header_row: 160}
+  - case_id: shiu11b_row167
+    condition: "water_silencing:Tophat"
+    reference_label: negative
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940622541005", neuron_name: "Tophat", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 167, source_label_numeric: 0, case_group: "flywire:720575940622541005", source_section: "water_silencing", assay: "sensory_mn9", stimulus: "water_grn_activation", intervention: "outgoing_synapse_block", readout: "MN9_firing_rate_hz", source_header_row: 160}
+  - case_id: shiu11b_row174
+    condition: "jon_response:aBN1"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940630907434", neuron_name: "aBN1", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 174, source_label_numeric: 1, case_group: "flywire:720575940630907434", source_section: "jon_response", assay: "neural_response", stimulus: "jon_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 173}
+  - case_id: shiu11b_row175
+    condition: "jon_response:aDN1"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940616185531", neuron_name: "aDN1", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 175, source_label_numeric: 1, case_group: "flywire:720575940616185531", source_section: "jon_response", assay: "neural_response", stimulus: "jon_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 173}
+  - case_id: shiu11b_row176
+    condition: "jon_response:aDN2"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940629806974", neuron_name: "aDN2", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 176, source_label_numeric: 1, case_group: "flywire:720575940629806974", source_section: "jon_response", assay: "neural_response", stimulus: "jon_activation", intervention: "input_activation", readout: "target_neuron_firing_rate_hz", source_header_row: 173}
+  - case_id: shiu11b_row180
+    condition: "jon_silencing:aBN2"
+    reference_label: positive
+    source: {locator: *public_locator, label_basis: "Supplementary Table 11B source column Correct (i.e., aligns with experimental results?)"}
+    metadata: {flywire_id: "720575940611163610", neuron_name: "aBN2", worksheet: "Supp Table 11B Decrease w_syn", source_excel_row: 180, source_label_numeric: 1, case_group: "flywire:720575940611163610", source_section: "jon_silencing", assay: "descending_motor", stimulus: "jon_activation", intervention: "outgoing_synapse_block", readout: "aDN1_firing_rate_hz", source_header_row: 178}

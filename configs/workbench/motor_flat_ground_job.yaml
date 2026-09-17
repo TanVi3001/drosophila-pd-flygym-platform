@@ -1,0 +1,4 @@
+# Job configuration for the Day 10 healthy-baseline smoke/demo flow.
+# It runs the declared no-perturbation control only.
+candidate_id: no_perturbation
+baseline_config: configs/experiments/healthy_baseline.yaml

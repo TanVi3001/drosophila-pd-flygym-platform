@@ -1,0 +1,33 @@
+reproduction_id: workbench-independent-reproduction-v1
+status: PENDING
+operator_role: second_operator
+operator_name: null
+run_at: null
+source_commit: null
+platform_repo: D:/research/New folder/drosophila-pd-flygym
+neural_repo: D:/research/New folder/drosophila-pd-neural
+environment:
+  clean_install: false
+  python_version: "3.12"
+  lockfile_or_export: null
+  platform_interpreter: null
+  neural_interpreter: null
+inputs:
+  benchmark_protocol_hash: null
+  study_config_hash: null
+  public_artifact_hashes: []
+subset:
+  study_ids: []
+  seeds: []
+  includes_success_case: false
+  includes_failure_case: false
+comparison:
+  manifests_match: false
+  provenance_match: false
+  outputs_within_declared_tolerance: false
+  failure_states_checked: false
+  discrepancies: []
+review:
+  approved_by_primary_operator: false
+  approved_by_second_operator: false
+  notes: "Template only. Complete without editing thresholds, labels, or source rows."
