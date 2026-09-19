@@ -16,7 +16,7 @@ To enable the neural bridge, pass both repositories explicitly (and keep the
 interpreters separate):
 
 ```powershell
-python scripts/workbench.py --neural-repo ..\drosophila-pd-neural --neural-python ..\drosophila-pd-neural\.venv\Scripts\python.exe capabilities
+python scripts/workbench.py --neural-repo ..\drosophila-pd-neural-disease --neural-python ..\drosophila-pd-neural-disease\.venv\Scripts\python.exe capabilities
 ```
 
 The CLI and the optional FastAPI server both call `WorkbenchService`; they do not maintain separate execution pipelines.
@@ -102,7 +102,7 @@ The `neural_bridge` backend is intentionally not enabled by default unless the n
 `configs/workbench/sensory_mn9_lif.yaml` now contains a separate, explicit
 FlyWire-630 public-ID case: the 21 sugar-sensing input IDs and the MN9 readout
 ID are copied from the upstream public notebook and recorded in
-`drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv`. The
+`drosophila-pd-neural-disease/annotations/flywire630_sensory_mn9_public.csv`. The
 existing FlyWire-783 annotation file is not reused for this case. The runner
 reports `metrics.readout_rates_hz.<neuron_id>` and keeps a silent readout as a
 numeric zero only when that ID belongs to the declared completeness inventory.
@@ -115,8 +115,8 @@ files, use the separate neural interpreter explicitly:
 ```powershell
 $env:PYTHONPATH = "src"
 python scripts/run_workbench_lif_case.py `
-  --neural-python ..\.venvs\baseline-2024-312\Scripts\python.exe `
-  --annotation-file ..\drosophila-pd-neural\annotations\flywire630_sensory_mn9_public.csv `
+  --neural-python ..\drosophila-pd-neural-disease\.venv\Scripts\python.exe `
+  --annotation-file ..\drosophila-pd-neural-disease\annotations\flywire630_sensory_mn9_public.csv `
   --input-id 720575940624963786 `
   --seeds 0 1 2 `
   --output-root .workbench\lif_case
@@ -259,6 +259,6 @@ provided by the `[workbench]` extra. No AI provider is required for study
 creation, execution, reporting, benchmarking, or handoff export.
 
 Install the separate neural runtime from
-`drosophila-pd-neural/requirements/lif-runtime-py312.lock`, then install that
+`drosophila-pd-neural-disease/requirements/lif-runtime-py312.lock`, then install that
 repository with `pip install -e . --no-deps`. Keep the two editable installs in
 separate environments; the Workbench invokes the neural runner by subprocess.
