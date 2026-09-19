@@ -5,8 +5,8 @@ type: software
 version: "v1.0.0"
 authors:
   - name: "TanVi3001"
-repository-code: "https://github.com/TanVi3001/drosophila-pd-flygym"
-url: "https://github.com/TanVi3001/drosophila-pd-flygym/releases/tag/v1.0.0"
+repository-code: "https://github.com/tuanwannafly/drosophila-pd-flygym"
+url: "https://github.com/tuanwannafly/drosophila-pd-flygym/releases/tag/v1.0.0"
 license: MIT
 abstract: >
   Research software scaffold for an in-silico Drosophila melanogaster
@@ -14,10 +14,10 @@ abstract: >
 references:
   - type: generic
     title: "drosophila-pd-flygym GitHub repository"
-    url: "https://github.com/TanVi3001/drosophila-pd-flygym"
+    url: "https://github.com/tuanwannafly/drosophila-pd-flygym"
   - type: generic
     title: "drosophila-pd-flygym Release v1.0.0"
-    url: "https://github.com/TanVi3001/drosophila-pd-flygym/releases/tag/v1.0.0"
+    url: "https://github.com/tuanwannafly/drosophila-pd-flygym/releases/tag/v1.0.0"
   - type: generic
     title: "Drosophila PD FlyGym Final Report"
-    url: "https://github.com/TanVi3001/drosophila-pd-flygym/blob/main/dist/Drosophila_PD_FlyGym_Final_Report.pdf"
+    url: "https://github.com/tuanwannafly/drosophila-pd-flygym/blob/main/dist/Drosophila_PD_FlyGym_Final_Report.pdf"

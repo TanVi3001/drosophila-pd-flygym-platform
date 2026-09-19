@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/TanVi3001/drosophila-pd-flygym/blob/main/docs/api/viewer_pose.schema.json",
+  "$id": "https://github.com/tuanwannafly/drosophila-pd-flygym/blob/main/docs/api/viewer_pose.schema.json",
   "title": "Fly Studio viewer pose document",
   "description": "Schema only. This file does not contain rollout or synthetic pose data.",
   "type": "object",

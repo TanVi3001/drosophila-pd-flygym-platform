@@ -83,7 +83,7 @@ MESH_SCHEMA: dict[str, Any] = {
 
 VIEWER_POSE_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://github.com/TanVi3001/drosophila-pd-flygym/blob/main/docs/api/viewer_pose.schema.json",
+    "$id": "https://github.com/tuanwannafly/drosophila-pd-flygym/blob/main/docs/api/viewer_pose.schema.json",
     "title": "Fly Studio Viewer Pose",
     "type": "object",
     "required": ["metadata", "fps", "frame_count", "joint_names", "mesh", "frames"],

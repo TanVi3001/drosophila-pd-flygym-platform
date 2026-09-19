@@ -66,9 +66,9 @@ scientific results.
 
 - Citation metadata: `CITATION.cff`
 - Citation guidance: `docs/citation.md`
-- Repository URL: <https://github.com/TanVi3001/drosophila-pd-flygym>
+- Repository URL: <https://github.com/tuanwannafly/drosophila-pd-flygym>
 - Release URL:
-  <https://github.com/TanVi3001/drosophila-pd-flygym/releases/tag/v1.0.0>
+  <https://github.com/tuanwannafly/drosophila-pd-flygym/releases/tag/v1.0.0>
 
 No DOI, journal article, or external publication is declared in the repository
 unless added after an actual archival or publication event.

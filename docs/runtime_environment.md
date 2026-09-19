@@ -131,7 +131,7 @@ Use a fresh Python 3.12 Colab runtime when available. Clone the repository and
 install the project from its root:
 
 ```python
-!git clone https://github.com/TanVi3001/drosophila-pd-flygym.git
+!git clone https://github.com/tuanwannafly/drosophila-pd-flygym.git
 %cd /content/drosophila-pd-flygym
 !python -V
 !python -m pip install --upgrade pip

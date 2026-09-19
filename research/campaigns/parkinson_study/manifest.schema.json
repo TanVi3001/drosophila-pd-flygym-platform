@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/TanVi3001/drosophila-pd-flygym/tree/main/research/campaigns/parkinson_study/manifest.schema.json",
+  "$id": "https://github.com/tuanwannafly/drosophila-pd-flygym/tree/main/research/campaigns/parkinson_study/manifest.schema.json",
   "title": "Computational Parkinson Study Dataset Manifest",
   "type": "object",
   "additionalProperties": false,

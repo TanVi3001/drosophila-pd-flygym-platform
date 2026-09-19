@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/TanVi3001/drosophila-pd-flygym/schema/literature-phenotype-record.json",
+  "$id": "https://github.com/tuanwannafly/drosophila-pd-flygym/schema/literature-phenotype-record.json",
   "title": "Literature phenotype database CSV row",
   "type": "object",
   "additionalProperties": false,

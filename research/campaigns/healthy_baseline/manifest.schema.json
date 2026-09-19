@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/TanVi3001/drosophila-pd-flygym/tree/main/research/campaigns/healthy_baseline/manifest.schema.json",
+  "$id": "https://github.com/tuanwannafly/drosophila-pd-flygym/tree/main/research/campaigns/healthy_baseline/manifest.schema.json",
   "title": "Healthy Baseline Dataset Manifest",
   "type": "object",
   "additionalProperties": false,

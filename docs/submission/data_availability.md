@@ -5,7 +5,7 @@ repository artifacts and final report files.
 
 ## Repository
 
-- GitHub repository: `https://github.com/TanVi3001/drosophila-pd-flygym`
+- GitHub repository: `https://github.com/tuanwannafly/drosophila-pd-flygym`
 - Release: `v1.0.0`
 - Release notes: `docs/release/v1.0.0.md`
 

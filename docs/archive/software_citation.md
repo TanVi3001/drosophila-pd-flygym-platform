@@ -5,7 +5,7 @@ Repository version 1.0.0 provides machine-readable citation metadata in
 
 ## Current Citation Targets
 
-- GitHub repository: `https://github.com/TanVi3001/drosophila-pd-flygym`
+- GitHub repository: `https://github.com/tuanwannafly/drosophila-pd-flygym`
 - Release: `v1.0.0`
 - Final report PDF: `dist/Drosophila_PD_FlyGym_Final_Report.pdf`
 

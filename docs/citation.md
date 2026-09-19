@@ -7,15 +7,15 @@ declared by this repository.
 ## Repository
 
 `drosophila-pd-flygym`
-GitHub: <https://github.com/TanVi3001/drosophila-pd-flygym>
+GitHub: <https://github.com/tuanwannafly/drosophila-pd-flygym>
 
 ## Release
 
-Release v1.0.0: <https://github.com/TanVi3001/drosophila-pd-flygym/releases/tag/v1.0.0>
+Release v1.0.0: <https://github.com/tuanwannafly/drosophila-pd-flygym/releases/tag/v1.0.0>
 
 ## Final Report
 
 Final report PDF:
-<https://github.com/TanVi3001/drosophila-pd-flygym/blob/main/dist/Drosophila_PD_FlyGym_Final_Report.pdf>
+<https://github.com/tuanwannafly/drosophila-pd-flygym/blob/main/dist/Drosophila_PD_FlyGym_Final_Report.pdf>
 
 Machine-readable citation metadata is available in `CITATION.cff`.
