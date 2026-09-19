@@ -54,51 +54,25 @@ file con trỏ ~134 byte thay vì nội dung thật.
 
 Tổng dung lượng nhóm A: **~270 MB**.
 
-### Tải tự động bằng PowerShell (chạy tại thư mục gốc repo)
+### Tải dữ liệu ngoài Git
 
-```powershell
-$BASE_RAW   = "https://raw.githubusercontent.com/tuanwannafly/drosophila-pd-flygym/plan/phase-A"
-$BASE_MEDIA = "https://media.githubusercontent.com/media/tuanwannafly/drosophila-pd-flygym/plan/phase-A"
+Các đường dẫn raw cũ của branch `plan/phase-A` không còn được dùng: chúng
+trỏ vào một snapshot GitHub không còn tồn tại sau khi tách dữ liệu lớn khỏi
+repo. Dùng hướng dẫn chuẩn tại
+[`data/DOWNLOADS.md`](../../data/DOWNLOADS.md) và đối chiếu
+[`data/source_manifest.json`](../../data/source_manifest.json).
 
-$files = @(
-  @{ url = "$BASE_RAW/data/2025_Completeness_783.csv";              out = "data/2025_Completeness_783.csv" },
-  @{ url = "$BASE_MEDIA/data/2025_Connectivity_783.parquet";        out = "data/2025_Connectivity_783.parquet" },
-  @{ url = "$BASE_RAW/data/flywire_annotations.tsv";                out = "data/flywire_annotations.tsv" },
-  @{ url = "$BASE_RAW/data/sez_neurons.pickle";                     out = "data/sez_neurons.pickle" },
-  @{ url = "$BASE_RAW/data/benchmark-results.csv";                  out = "data/benchmark-results.csv" },
-  @{ url = "$BASE_MEDIA/data/plastic_weights.pt";                   out = "data/plastic_weights.pt" },
-  @{ url = "$BASE_MEDIA/data/plastic_weights_fly0.pt";              out = "data/plastic_weights_fly0.pt" },
-  @{ url = "$BASE_MEDIA/data/plastic_weights_fly1.pt";              out = "data/plastic_weights_fly1.pt" },
-  @{ url = "$BASE_RAW/data/eye_L_0.png";                            out = "data/eye_L_0.png" },
-  @{ url = "$BASE_RAW/data/eye_L_20.png";                           out = "data/eye_L_20.png" },
-  @{ url = "$BASE_RAW/data/eye_R_0.png";                            out = "data/eye_R_0.png" },
-  @{ url = "$BASE_RAW/data/eye_R_20.png";                           out = "data/eye_R_20.png" },
-  @{ url = "$BASE_RAW/datasets/experimental_locomotion_db.json";    out = "datasets/experimental_locomotion_db.json" }
-)
-
-foreach ($g in @("pink1","pink1_age25","parkin","dj1","lrrk2","complexI","pink1_parkin_OE_age25")) {
-  $files += @{ url = "$BASE_RAW/results/brain_driven/${g}_locomotion.json";
-               out = "results/brain_driven/${g}_locomotion.json" }
-}
-
-foreach ($f in $files) {
-  New-Item -ItemType Directory -Force -Path (Split-Path $f.out) | Out-Null
-  Write-Host "Downloading $($f.out) ..."
-  Invoke-WebRequest -Uri $f.url -OutFile $f.out
-}
-Write-Host "Done."
-```
+Clone mới và bộ test mặc định không cần tải nhóm dữ liệu này. Chỉ tải những
+file cần cho workflow đang chạy; không dùng `git add -f` cho các file lớn.
 
 ### Kiểm tra sau khi tải
 
-File lớn nhất phải đúng kích thước và đúng định dạng:
+Nếu đã tải dữ liệu ngoài, kiểm tra kích thước/hash theo `data/source_manifest.json`:
 
 ```powershell
-(Get-Item data\2025_Connectivity_783.parquet).Length   # phải = 100804642
-(Get-Item data\plastic_weights.pt).Length              # phải = 60369156
-Get-Content data\2025_Connectivity_783.parquet -Encoding Byte -TotalCount 4
-# phải in: 80 65 82 49  (= "PAR1", magic của Parquet)
-# nếu thấy chữ "version https://git-lfs..." nghĩa là bạn đã dùng nhầm URL raw
+Get-FileHash data\2025_Connectivity_783.parquet -Algorithm SHA256
+Get-FileHash data\flywire_annotations.tsv -Algorithm SHA256
+Get-FileHash data\2025_Completeness_783.csv -Algorithm SHA256
 ```
 
 ### Phương án thay thế: tải cả thư mục dưới dạng ZIP

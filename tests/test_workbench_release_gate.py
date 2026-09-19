@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 
 from drosophila_pd.workbench import BenchmarkProtocol
@@ -185,9 +186,12 @@ def test_seed_gate_checks_confirmation_against_reference_seed_set(tmp_path: Path
 
 def test_computational_public_data_profile_keeps_human_limits_explicit() -> None:
     gate = _gate_module()
+    artifact = ROOT / "data" / "benchmarks" / "41586_2024_7763_MOESM2_ESM.xlsx"
+    if not artifact.is_file():
+        pytest.skip("optional external benchmark workbook is not downloaded")
     result = gate._computational_public_data_profile(
         ROOT / "configs" / "workbench" / "shiu_public_benchmark_v2.json",
-        ROOT / "data" / "benchmarks" / "41586_2024_7763_MOESM2_ESM.xlsx",
+        artifact,
     )
     assert result["status"] == "READY_WITH_LIMITATIONS"
     assert "human_source_and_biological_mapping_review_pending" in result["limitations"]

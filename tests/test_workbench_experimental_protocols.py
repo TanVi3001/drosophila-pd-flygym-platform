@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
+import pytest
 import yaml
 
 from drosophila_pd.workbench import NeuralLifAdapter, StudySpec
@@ -12,6 +14,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _study(path: Path) -> StudySpec:
     return StudySpec.from_dict(yaml.safe_load(path.read_text(encoding="utf-8")))
+
+
+def _lif_fixture_or_skip() -> tuple[Path, Path]:
+    """Return the external LIF roots or skip with the missing paths listed."""
+
+    neural_root = ROOT.parent / "drosophila-pd-neural"
+    model_root = ROOT.parent / "external" / "Drosophila_brain_model"
+    required = (
+        neural_root,
+        model_root,
+        model_root / "2023_03_23_completeness_630_final.csv",
+        model_root / "2023_03_23_connectivity_630_final.parquet",
+        neural_root / "annotations" / "flywire630_sensory_mn9_public.csv",
+    )
+    missing = [str(path) for path in required if not path.exists()]
+    if missing:
+        pytest.skip("external LIF fixtures are not distributed in Git: " + ", ".join(missing))
+    interpreter = Path(sys.executable)
+    if not interpreter.is_file():
+        pytest.skip(f"active Python interpreter is unavailable: {interpreter}")
+    return neural_root, model_root
 
 
 def test_new_mn9_protocols_are_explicit_and_use_the_timed_capability() -> None:
@@ -47,11 +70,10 @@ def test_e2_v2_declares_a_matched_rate_time_contrast_and_controls() -> None:
 
 
 def test_lif_adapter_serializes_schedule_and_declares_capability() -> None:
-    neural_root = ROOT.parent / "drosophila-pd-neural"
-    model_root = ROOT.parent / "external" / "Drosophila_brain_model"
+    neural_root, model_root = _lif_fixture_or_skip()
     adapter = NeuralLifAdapter(
         neural_repo_root=neural_root,
-        neural_interpreter=ROOT.parent / ".venvs" / "baseline-2024-312" / "Scripts" / "python.exe",
+        neural_interpreter=Path(sys.executable),
         model_root=model_root,
     )
     study = _study(ROOT / "configs" / "workbench" / "sensory_mn9_temporal.yaml")
@@ -76,11 +98,10 @@ def test_lif_adapter_serializes_schedule_and_declares_capability() -> None:
 
 
 def test_lif_adapter_rejects_ambiguous_or_out_of_duration_windows() -> None:
-    neural_root = ROOT.parent / "drosophila-pd-neural"
-    model_root = ROOT.parent / "external" / "Drosophila_brain_model"
+    neural_root, model_root = _lif_fixture_or_skip()
     adapter = NeuralLifAdapter(
         neural_repo_root=neural_root,
-        neural_interpreter=ROOT.parent / ".venvs" / "baseline-2024-312" / "Scripts" / "python.exe",
+        neural_interpreter=Path(sys.executable),
         model_root=model_root,
     )
     study = _study(ROOT / "configs" / "workbench" / "sensory_mn9_temporal.yaml")

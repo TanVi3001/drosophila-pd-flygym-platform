@@ -65,6 +65,14 @@ logs/*
 *.tar.gz
 *.tgz
 
+# External research inputs: restore from data/DOWNLOADS.md and verify against
+# data/source_manifest.json instead of committing them to Git.
+data/flywire_annotations.tsv
+data/2025_Completeness_783.csv
+data/2025_Connectivity_783.parquet
+data/benchmarks/*.xlsx
+data/plastic_weights*.pt
+
 # Local generated result artifacts. Keep directory anchors.
 .workbench/
 .pytest-tmp*

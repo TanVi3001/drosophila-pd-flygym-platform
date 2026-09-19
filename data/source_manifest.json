@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "manifest_kind": "external_dataset_sources",
+  "dataset_scope": "FlyWire v783 inputs and the Shiu et al. public benchmark",
+  "ci_policy": "Fresh clones and GitHub CI do not download these files.",
+  "entries": [
+    {
+      "id": "flywire_annotations_783",
+      "role": "Neuron annotations used by FlyWire analyses",
+      "original_path": "data/flywire_annotations.tsv",
+      "source_url": "https://github.com/flyconnectome/flywire_annotations",
+      "source_kind": "github_repository",
+      "license_or_terms": "FlyWire public-release terms; see https://home.flywire.ai/guidelines (CC BY-NC 4.0 for the public release).",
+      "local_size_bytes": 32777821,
+      "local_sha256": "6155dcc6263b463aeeffa22ee857e14e339b93d0e81dd260277e8f928bc192ea",
+      "expected_filename": "flywire_annotations.tsv",
+      "download_notes": "Use the Supplemental_file1_neuron_annotations.tsv dump or the versioned upstream release, then preserve the project-format name and revalidate the checksum.",
+      "verified_at": "2026-09-19"
+    },
+    {
+      "id": "flywire_completeness_783",
+      "role": "Proofread-neuron completeness table for FlyWire v783",
+      "original_path": "data/2025_Completeness_783.csv",
+      "source_url": "https://codex.flywire.ai/api/download?dataset=fafb&data_version=783",
+      "source_kind": "flywire_release_portal",
+      "license_or_terms": "FlyWire public-release terms; see https://home.flywire.ai/guidelines (CC BY-NC 4.0 for the public release).",
+      "local_size_bytes": 3465987,
+      "local_sha256": "52b0ac6094cd32c546f8d4c341e094376f48f4e791f8db9b166de5dff8199ea4",
+      "expected_filename": "2025_Completeness_783.csv",
+      "download_notes": "Select the FAFB/FlyWire v783 release in Codex, export the completeness table, and verify the project-format checksum after download.",
+      "verified_at": "2026-09-19"
+    },
+    {
+      "id": "flywire_connectivity_783",
+      "role": "Analysis-ready connectivity table derived from FlyWire v783",
+      "original_path": "data/2025_Connectivity_783.parquet",
+      "source_url": "https://zenodo.org/records/10676866",
+      "source_kind": "zenodo_record",
+      "license_or_terms": "Use the rights and citation information supplied by the FlyWire Consortium and Zenodo record.",
+      "local_size_bytes": 100804642,
+      "local_sha256": "efeb23fb99098e9c390f6869969b2a121a2ee92c833cfc45ecb2c1d8e1af0347",
+      "expected_filename": "2025_Connectivity_783.parquet",
+      "download_notes": "Download the v783 proofread connectivity product, convert it to the project Parquet schema if needed, and verify the final project-format checksum.",
+      "verified_at": "2026-09-19"
+    },
+    {
+      "id": "shiu_2024_supplementary_workbook",
+      "role": "Public supplementary workbook for the Workbench source-integrity benchmark",
+      "original_path": "data/benchmarks/41586_2024_7763_MOESM2_ESM.xlsx",
+      "source_url": "https://www.nature.com/articles/s41586-024-07763-9",
+      "source_kind": "nature_supplementary_file",
+      "license_or_terms": "Publisher supplementary-material terms; cite Shiu et al. (Nature, 2024) and follow the article's access terms.",
+      "local_size_bytes": 2539037,
+      "local_sha256": "6922e16825aa0c92a28e2a634b073dcad7641e9c9283c4b9d8ee1e34e6d9b8d9",
+      "expected_filename": "41586_2024_7763_MOESM2_ESM.xlsx",
+      "download_notes": "Use the direct supplementary-file URL in data/DOWNLOADS.md; validate with scripts/validate_shiu_benchmark_registry.py.",
+      "verified_at": "2026-09-19"
+    }
+  ]
+}
