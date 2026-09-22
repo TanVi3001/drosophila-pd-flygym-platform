@@ -130,3 +130,9 @@ The output is only a connectivity input for the separate neural LIF runner;
 it does not create the 106-case benchmark score mapping and must not be used
 as evidence of biological plausibility. Reviewer-approved source/input and
 readout mappings are still required before generating benchmark scores.
+
+The first full-dataset execution declaration is pinned in
+`configs/workbench/flywire630_graph_null_v1.yaml`: one replicate, seed
+`20260922`, and `1,000,000` swaps against the checksum-pinned connectivity-630
+artifact. Its generated parquet and sidecar manifest remain outside Git under
+the declared artifact root.

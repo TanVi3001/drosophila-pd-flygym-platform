@@ -1,0 +1,35 @@
+schema_version: workbench-flywire630-graph-null-v1
+status: EXECUTION_DECLARED_STRUCTURAL_NULL_ONLY
+
+dataset:
+  connectivity: external/Drosophila_brain_model/2023_03_23_connectivity_630_final.parquet
+  connectivity_sha256: 94DB8C650533BC36FFA3223F2E62325D5648B8D6BD31C3A4E1C804628C7557B3
+  completeness: external/Drosophila_brain_model/2023_03_23_completeness_630_final.csv
+  completeness_sha256: 479ED718404E7B1D898EE9A353410F481E6ED7694C30F579A7C2699F1C708A5D
+  dataset_id: flywire-630-2023-03-23
+  id_namespace: flywire_root_id
+
+null_model:
+  name: directed_double_edge_swap
+  stratum_column: Excitatory
+  preserve:
+    - in_degree
+    - out_degree
+    - source_local_edge_attributes
+    - excitatory_stratum
+    - target_id_to_index_mapping
+  forbid_self_loops: true
+  duplicate_edge_check: true
+
+replicates:
+  - replicate_id: graph_null_630_seed20260922_r01
+    seed: 20260922
+    swaps: 1000000
+    max_attempts: 100000000
+
+artifact_root: external/Drosophila_brain_model/results/workbench_graph_nulls/flywire630_v1
+artifact_policy: keep_outside_git_with_sidecar_manifest
+scientific_boundary: >-
+  This artifact is a structural graph null input for a separate neural LIF
+  run. It is not an equally plausible biological connectome, a causal ablation,
+  a benchmark score mapping, or biological validation.
