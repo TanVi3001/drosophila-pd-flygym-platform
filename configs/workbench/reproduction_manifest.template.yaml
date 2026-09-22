@@ -4,8 +4,8 @@ operator_role: second_operator
 operator_name: null
 run_at: null
 source_commit: null
-platform_repo: D:/research/New folder/drosophila-pd-flygym
-neural_repo: D:/research/New folder/drosophila-pd-neural
+platform_repo: ../drosophila-pd-flygym
+neural_repo: ../drosophila-pd-neural-disease
 environment:
   clean_install: false
   python_version: "3.12"

@@ -60,7 +60,7 @@ run_plan:
     model_root: ../external/Drosophila_brain_model
     completeness: ../external/Drosophila_brain_model/2023_03_23_completeness_630_final.csv
     connectivity: ../external/Drosophila_brain_model/2023_03_23_connectivity_630_final.parquet
-    annotation_file: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+    annotation_file: ../drosophila-pd-neural-disease/annotations/flywire630_sensory_mn9_public.csv
     input_ids: []
     readout_ids:
       - "720575940660219265"
@@ -70,6 +70,6 @@ run_plan:
     id_namespace: flywire_root_id
     dataset_id: flywire-630-2023-03-23
 metadata:
-  annotation_file: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+  annotation_file: ../drosophila-pd-neural-disease/annotations/flywire630_sensory_mn9_public.csv
   scientific_scope: computational MN9 readout prioritization only; no firing-to-behavior conversion, driver-line validation, or wet-lab conclusion
   status: public_630_computational_pilot; independent biological review still required

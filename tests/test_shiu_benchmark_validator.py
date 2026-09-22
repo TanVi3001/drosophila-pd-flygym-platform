@@ -43,3 +43,9 @@ def test_source_label_column_requires_a_preceding_header() -> None:
             3,
             "Correct (i.e., aligns with experimental results?)",
         )
+
+
+def test_validator_metadata_paths_are_portable(tmp_path: Path) -> None:
+    validator = _validator_module()
+    assert validator._portable_path(ROOT / "configs/workbench/example.json") == "configs/workbench/example.json"
+    assert validator._portable_path(tmp_path / "source.xlsx") == "source.xlsx"

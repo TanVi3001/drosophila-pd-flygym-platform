@@ -1,0 +1,14 @@
+{
+  "artifact_sha256": "6922E16825AA0C92A28E2A634B073DCAD7641E9C9283C4B9D8EE1E34E6D9B8D9",
+  "case_count": 106,
+  "development_case_count": 74,
+  "held_out_case_count": 32,
+  "negative_count": 92,
+  "packet_schema": "workbench-scientific-review-packet-v1",
+  "positive_count": 14,
+  "protocol_hash": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+  "protocol_id": "shiu-public-retrospective-v2-table3",
+  "registry": "configs/workbench/shiu_public_benchmark_v2.json",
+  "review_decisions_are_not_inferred": true,
+  "status": "PENDING_HUMAN_REVIEW"
+}

@@ -530,7 +530,7 @@ def run_gate(args: argparse.Namespace) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--platform-repo", type=Path, default=REPO_ROOT)
-    parser.add_argument("--neural-repo", type=Path, default=REPO_ROOT.parent / "drosophila-pd-neural")
+    parser.add_argument("--neural-repo", type=Path, default=REPO_ROOT.parent / "drosophila-pd-neural-disease")
     parser.add_argument("--benchmark", type=Path, default=REPO_ROOT / "configs/workbench/shiu_public_benchmark_v1.yaml")
     parser.add_argument(
         "--profile",

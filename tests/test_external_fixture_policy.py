@@ -10,7 +10,7 @@ import test_workbench_experimental_protocols as protocols
 
 def _fixture_tree(root: Path) -> Path:
     repo_root = root / "drosophila-pd-flygym"
-    neural_root = root / "drosophila-pd-neural"
+    neural_root = root / "drosophila-pd-neural-disease"
     model_root = root / "external" / "Drosophila_brain_model"
     (model_root).mkdir(parents=True)
     (neural_root / "annotations").mkdir(parents=True)
@@ -39,6 +39,6 @@ def test_complete_external_lif_fixture_uses_active_interpreter(
 
     neural_root, model_root = protocols._lif_fixture_or_skip()
 
-    assert neural_root == tmp_path / "drosophila-pd-neural"
+    assert neural_root == tmp_path / "drosophila-pd-neural-disease"
     assert model_root == tmp_path / "external" / "Drosophila_brain_model"
     assert Path(sys.executable).is_file()

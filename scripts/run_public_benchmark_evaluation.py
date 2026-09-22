@@ -27,6 +27,13 @@ from drosophila_pd.workbench import (  # noqa: E402
 )
 
 
+def _portable_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.name
+
+
 def _load(path: Path) -> Mapping[str, Any]:
     if path.suffix.lower() == ".json":
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -89,6 +96,7 @@ def evaluate(
     *,
     rewired_scores_path: Path | None = None,
     random_seed: int = 17092026,
+    allow_partial: bool = False,
 ) -> dict[str, Any]:
     protocol = BenchmarkProtocol.from_dict(_load(registry_path))
     scores = _published_scores(protocol)
@@ -110,33 +118,38 @@ def evaluate(
         "heuristic",
         "degree_preserving_rewire",
     )
-    if "degree_preserving_rewire" not in scores:
+    missing_systems = [name for name in required if name != "random" and name not in scores]
+    if missing_systems and not allow_partial:
         return {
             "status": "BLOCKED",
-            "reason": "degree_preserving_rewire_score_mapping_missing",
+            "reason": "required_score_mapping_missing",
             "protocol_hash": protocol.protocol_hash,
             "score_systems_available": sorted(scores),
             "required_systems": list(required),
+            "missing_systems": missing_systems,
             "score_coverage": {name: len(values) for name, values in scores.items()},
             "scientific_scope": (
                 "Published-field score preparation only; no comparative held-out "
-                "claim is emitted without a real graph-null score mapping."
+                "claim is emitted until all declared score systems are available."
             ),
         }
+    prepared_systems = tuple(name for name in required if name == "random" or name in scores)
     result = prepare_benchmark_comparison(
         protocol,
         scores,
         random_seed=random_seed,
-        required_systems=required,
+        required_systems=prepared_systems,
     )
     return {
-        "status": "READY_FOR_REVIEW",
+        "status": "READY_FOR_REVIEW" if not missing_systems else "PARTIAL_BASELINES_ONLY",
         "protocol_hash": protocol.protocol_hash,
-        "source_registry": str(registry_path),
+        "source_registry": _portable_path(registry_path),
+        "missing_systems": missing_systems,
         "comparison": result,
         "scientific_scope": (
-            "Retrospective published-response benchmark; labels are response-presence "
-            "labels and do not establish biological validity."
+            "Retrospective published-field score preparation; labels are response-presence "
+            "labels and do not establish biological validity. A partial report is not "
+            "a complete comparative held-out result."
         ),
     }
 
@@ -150,14 +163,24 @@ def main() -> int:
     )
     parser.add_argument("--rewired-scores", type=Path)
     parser.add_argument("--random-seed", type=int, default=17092026)
+    parser.add_argument(
+        "--allow-partial",
+        action="store_true",
+        help="write an explicitly partial report when a declared score system is unavailable",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    result = evaluate(args.registry.resolve(), rewired_scores_path=args.rewired_scores, random_seed=args.random_seed)
+    result = evaluate(
+        args.registry.resolve(),
+        rewired_scores_path=args.rewired_scores,
+        random_seed=args.random_seed,
+        allow_partial=args.allow_partial,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({
         "status": result["status"],
-        "output": str(args.output.resolve()),
+        "output": _portable_path(args.output),
         "protocol_hash": result["protocol_hash"],
     }, indent=2, sort_keys=True))
     return 0 if result["status"] == "READY_FOR_REVIEW" else 2

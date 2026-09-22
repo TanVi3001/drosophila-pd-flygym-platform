@@ -39,7 +39,7 @@ def _parse_neuron_id(value: str) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--neural-repo", type=Path, default=ROOT.parent / "drosophila-pd-neural")
+    parser.add_argument("--neural-repo", type=Path, default=ROOT.parent / "drosophila-pd-neural-disease")
     parser.add_argument(
         "--neural-python",
         type=Path,

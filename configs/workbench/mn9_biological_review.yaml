@@ -8,7 +8,7 @@ question: >-
   readout that is suitable for prioritizing a bounded follow-up experiment?
 computational_contract:
   study_spec: configs/workbench/sensory_mn9_lif.yaml
-  input_registry: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+  input_registry: ../drosophila-pd-neural-disease/annotations/flywire630_sensory_mn9_public.csv
   dataset: FlyWire-630
   readout:
     id: "720575940660219265"

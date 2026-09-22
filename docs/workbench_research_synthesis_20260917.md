@@ -1,7 +1,7 @@
 # Fly Research Workbench — tổng hợp nghiên cứu, gap và hướng tiếp theo
 
 **Ngày cập nhật:** 17/09/2026  
-**Phạm vi:** `drosophila-pd-flygym` + `drosophila-pd-neural`  
+**Phạm vi:** `drosophila-pd-flygym` + `drosophila-pd-neural-disease`
 **Định vị hiện tại:** computational methods/workbench và retrospective public-data benchmark; chưa phải biological validation và chưa được tuyên bố Q1-ready.
 
 ## 1. Tóm tắt điều hành

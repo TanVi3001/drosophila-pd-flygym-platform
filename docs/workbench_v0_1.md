@@ -115,7 +115,7 @@ files, use the separate neural interpreter explicitly:
 ```powershell
 $env:PYTHONPATH = "src"
 python scripts/run_workbench_lif_case.py `
-  --neural-python ..\drosophila-pd-neural-disease\.venv\Scripts\python.exe `
+  --neural-python ..\.venvs\baseline-2024-312\Scripts\python.exe `
   --annotation-file ..\drosophila-pd-neural-disease\annotations\flywire630_sensory_mn9_public.csv `
   --input-id 720575940624963786 `
   --seeds 0 1 2 `

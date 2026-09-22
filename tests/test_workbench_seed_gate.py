@@ -28,6 +28,27 @@ def _study() -> StudySpec:
     )
 
 
+def _lif_fixture(root: Path) -> tuple[Path, Path]:
+    """Build the smallest filesystem contract needed by ``NeuralLifAdapter``."""
+
+    neural_root = root / "drosophila-pd-neural-disease"
+    model_root = root / "external" / "Drosophila_brain_model"
+    (neural_root / "scripts").mkdir(parents=True)
+    (neural_root / "annotations").mkdir(parents=True)
+    model_root.mkdir(parents=True)
+    (neural_root / "scripts" / "run_lif_condition.py").write_text(
+        "raise SystemExit('contract fixture only')\n", encoding="utf-8"
+    )
+    (neural_root / "annotations" / "flywire630_sensory_mn9_public.csv").write_text(
+        "root_id\n1\n", encoding="utf-8"
+    )
+    (model_root / "2023_03_23_completeness_630_final.csv").write_text(
+        "id,complete\n1,True\n", encoding="utf-8"
+    )
+    (model_root / "2023_03_23_connectivity_630_final.parquet").write_bytes(b"fixture")
+    return neural_root, model_root
+
+
 def test_healthy_baseline_config_seed_override_is_revalidated() -> None:
     config = HealthyBaselineConfig.from_mapping({"random_seed": 2})
     updated = config.with_random_seed(17)
@@ -145,9 +166,8 @@ def test_neural_bridge_is_not_claimed_seed_capable_by_default() -> None:
     assert bridge.describe().supports_explicit_seed is False
 
 
-def test_lif_adapter_has_explicit_external_runtime_contract() -> None:
-    neural_root = REPO_ROOT.parent / "drosophila-pd-neural"
-    external_root = REPO_ROOT.parent / "external" / "Drosophila_brain_model"
+def test_lif_adapter_has_explicit_external_runtime_contract(tmp_path: Path) -> None:
+    neural_root, external_root = _lif_fixture(tmp_path)
     adapter = NeuralLifAdapter(
         neural_repo_root=neural_root,
         neural_interpreter=sys.executable,
@@ -185,7 +205,7 @@ def test_lif_adapter_has_explicit_external_runtime_contract() -> None:
 
     assert adapter.describe().supports_explicit_seed is True
     assert adapter.validate(study, config) == ()
-    command = adapter.command(study, config, REPO_ROOT / ".pytest-tmp-lif-adapter")
+    command = adapter.command(study, config, tmp_path / "lif-adapter")
     assert "--input-id" in command
     assert "--readout-id" in command
     assert "--annotation-file" in command
@@ -208,13 +228,12 @@ def test_lif_adapter_has_explicit_external_runtime_contract() -> None:
         "input_ids": [],
     }
     assert adapter.validate(control_study, control_config) == ()
-    control_command = adapter.command(control_study, control_config, REPO_ROOT / ".pytest-tmp-lif-control")
+    control_command = adapter.command(control_study, control_config, tmp_path / "lif-control")
     assert "--input-id" not in control_command
 
 
-def test_lif_adapter_keeps_activation_and_outgoing_block_ids_separate() -> None:
-    neural_root = REPO_ROOT.parent / "drosophila-pd-neural"
-    external_root = REPO_ROOT.parent / "external" / "Drosophila_brain_model"
+def test_lif_adapter_keeps_activation_and_outgoing_block_ids_separate(tmp_path: Path) -> None:
+    neural_root, external_root = _lif_fixture(tmp_path)
     adapter = NeuralLifAdapter(
         neural_repo_root=neural_root,
         neural_interpreter=sys.executable,
@@ -249,7 +268,7 @@ def test_lif_adapter_keeps_activation_and_outgoing_block_ids_separate() -> None:
         "readout_ids": ["720575940660219265"],
     }
     assert adapter.validate(study, config) == ()
-    command = adapter.command(study, config, REPO_ROOT / ".pytest-tmp-lif-block")
+    command = adapter.command(study, config, tmp_path / "lif-block")
     assert "--silence-id" in command
     assert "--input-id" not in command
 

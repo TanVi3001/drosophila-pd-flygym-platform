@@ -77,7 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--phase", choices=("screening", "confirmation"), required=True)
     parser.add_argument("--study-config", type=Path, default=ROOT / "configs/workbench/sensory_mn9_lif.yaml")
     parser.add_argument("--output-root", type=Path, required=True)
-    parser.add_argument("--neural-repo", type=Path, default=ROOT.parent / "drosophila-pd-neural")
+    parser.add_argument("--neural-repo", type=Path, default=ROOT.parent / "drosophila-pd-neural-disease")
     parser.add_argument(
         "--neural-python",
         type=Path,

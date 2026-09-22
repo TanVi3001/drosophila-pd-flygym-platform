@@ -1,4 +1,28 @@
-# Public benchmark protocol: Shiu retrospective snapshot v1
+# Public benchmark protocol: Shiu retrospective snapshots
+
+The active manuscript track uses the v2 Table 3 registry below. The v1
+21-case registry remains a historical computational snapshot and must not be
+silently mixed with v2 metrics.
+
+## Active v2 registry
+
+The machine-readable active registry is
+`configs/workbench/shiu_public_benchmark_v2.json`. It contains 106 Table 3
+source rows, a 74-case development split and a 32-case held-out split. Its
+labels are published response-presence labels, not biological significance or
+causal-effect labels. Validate it with:
+
+```powershell
+python scripts/validate_shiu_benchmark_registry.py `
+  --registry configs/workbench/shiu_public_benchmark_v2.json `
+  --workbook path/to/41586_2024_7763_MOESM2_ESM.xlsx
+```
+
+Scientific mapping and assay-comparability decisions remain pending until two
+domain reviewers complete the review packet at
+`reports/workbench/shiu_v2_scientific_review_packet.csv`.
+
+## Historical v1 snapshot
 
 The machine-readable registry is
 `configs/workbench/shiu_public_benchmark_v1.yaml`. It contains 21 source rows
@@ -89,3 +113,8 @@ The generated report also contains `matched_evaluation`. A Q1 release requires
 case. If a backend cannot represent a section, the report must remain partial
 with explicit `unassessable_case_ids_by_system`; those results are useful for
 scope auditing but are not a matched publication comparison.
+
+The evaluator may be run with `--allow-partial` to preserve available systems
+and explicitly record missing score mappings. Missing development scores are
+excluded from threshold calibration and remain unassessable; they are never
+converted into negative labels. A partial report is not release-ready.

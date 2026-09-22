@@ -153,7 +153,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campaign-root", type=Path, required=True)
     parser.add_argument("--study-config", type=Path, required=True)
-    parser.add_argument("--neural-repo", type=Path, default=ROOT.parent / "drosophila-pd-neural")
+    parser.add_argument("--neural-repo", type=Path, default=ROOT.parent / "drosophila-pd-neural-disease")
     parser.add_argument(
         "--neural-python",
         type=Path,

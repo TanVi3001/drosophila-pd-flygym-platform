@@ -19,7 +19,7 @@ def _study(path: Path) -> StudySpec:
 def _lif_fixture_or_skip() -> tuple[Path, Path]:
     """Return the external LIF roots or skip with the missing paths listed."""
 
-    neural_root = ROOT.parent / "drosophila-pd-neural"
+    neural_root = ROOT.parent / "drosophila-pd-neural-disease"
     model_root = ROOT.parent / "external" / "Drosophila_brain_model"
     required = (
         neural_root,

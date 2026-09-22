@@ -94,7 +94,7 @@ run_plan:
     model_root: ../external/Drosophila_brain_model
     completeness: ../external/Drosophila_brain_model/2023_03_23_completeness_630_final.csv
     connectivity: ../external/Drosophila_brain_model/2023_03_23_connectivity_630_final.parquet
-    annotation_file: ../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv
+    annotation_file: ../drosophila-pd-neural-disease/annotations/flywire630_sensory_mn9_public.csv
     readout_ids:
       - "720575940660219265"
     trials: 1

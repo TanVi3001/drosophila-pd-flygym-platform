@@ -1,0 +1,58 @@
+schema_version: workbench-active-manuscript-scope-v1
+status: COMPUTATIONAL_SCOPE_LOCKED_HUMAN_REVIEW_PENDING
+
+purpose: >-
+  Define the active manuscript track for the Fly Research Workbench and keep
+  historical neural-disease experiments from being interpreted as current
+  biological validation evidence.
+
+active_track:
+  title: Evidence-aware computational prioritization Workbench
+  primary_contribution: methods_and_reproducible_workflow
+  secondary_contribution: retrospective_public_data_benchmark
+  bounded_case: sensory_mn9_lif_public_630
+  benchmark_protocol: configs/workbench/shiu_public_benchmark_v2.json
+  benchmark_artifact: data/benchmarks/41586_2024_7763_MOESM2_ESM.xlsx
+  claim_scope: >-
+    A reproducible, scope-bounded computational prioritization procedure
+    evaluated against a checksum-pinned retrospective public-data benchmark.
+
+included_evidence:
+  - capability_and_scope_validation
+  - study_spec_and_provenance_contracts
+  - computational_qc_and_uncertainty
+  - held_out_benchmark_protocol
+  - random_effect_only_and_heuristic_baselines
+  - bounded_mn9_lif_computational_case
+  - explicit_failure_and_unassessable_case_reporting
+
+excluded_from_primary_claim:
+  - gene_specific_biological_validation
+  - Parkinson_disease_model_validation
+  - universal_Drosophila_validity
+  - firing_to_behavior_conversion
+  - driver_line_specificity_without_reviewed_mapping
+  - wet_lab_cost_savings
+  - clinical_or_drug_validation
+
+historical_tracks:
+  neural_disease_pipeline:
+    repository: ../drosophila-pd-neural-disease
+    status: HISTORICAL_OR_SEPARATE_VALIDATION_TRACK
+    allowed_use: contextual_or_negative_result_only
+    forbidden_use: >-
+      Do not combine Chen/Pozo/Parkin historical outputs with the active
+      Workbench benchmark as if they were one biological validation dataset.
+  gene_mapping:
+    status: NOT_ACTIVE_FOR_PRIMARY_MANUSCRIPT
+    current_boundary: class_level_or_organism_level_proxy_only
+
+release_gates:
+  registry_integrity: PASS
+  protocol_freeze: PASS
+  scientific_case_review: PENDING
+  held_out_baseline_comparison: PARTIAL
+  degree_preserving_rewire: BLOCKED_MISSING_BACKEND_SCORE_MAPPING
+  independent_second_operator: PENDING
+  clean_worktrees_and_tags: BLOCKED
+  wet_lab_validation: OUT_OF_SCOPE_FOR_COMPUTATIONAL_RELEASE

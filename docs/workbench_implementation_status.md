@@ -48,7 +48,7 @@ does not certify biological validity or publication readiness.
 - 10-seed screening campaign: `.workbench/sensory_mn9_screening_10seed_20260916/`.
 - 30-seed confirmation campaign: `.workbench/sensory_mn9_confirmation_30seed_20260916/`.
 - MN9 public ID registry:
-  `../drosophila-pd-neural/annotations/flywire630_sensory_mn9_public.csv`.
+  `../drosophila-pd-neural-disease/annotations/flywire630_sensory_mn9_public.csv`.
 - Public sensory study specification:
   `configs/workbench/sensory_mn9_lif.yaml`.
 

@@ -280,8 +280,8 @@
   "held_out_case_count": 8,
   "negative_count": 4,
   "positive_count": 17,
-  "registry": "D:\\research\\New folder\\drosophila-pd-flygym\\configs\\workbench\\shiu_public_benchmark_v1.yaml",
+  "registry": "configs/workbench/shiu_public_benchmark_v1.yaml",
   "status": "READY",
-  "workbook": "D:\\research\\New folder\\drosophila-pd-flygym\\data\\benchmarks\\41586_2024_7763_MOESM2_ESM.xlsx",
+  "workbook": "data/benchmarks/41586_2024_7763_MOESM2_ESM.xlsx",
   "worksheet": "Supp Table 11B Decrease w_syn"
 }

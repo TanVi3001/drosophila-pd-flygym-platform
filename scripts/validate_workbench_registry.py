@@ -14,6 +14,8 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def _load(path: Path) -> Mapping[str, Any]:
     if path.suffix.lower() in {".yaml", ".yml"}:
@@ -33,6 +35,13 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest().upper()
+
+
+def _portable_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.name
 
 
 def validate(registry_path: Path, artifact_path: Path) -> dict[str, Any]:
@@ -87,8 +96,8 @@ def validate(registry_path: Path, artifact_path: Path) -> dict[str, Any]:
                 errors.append(f"{case.get('case_id')}:source_{required}_missing")
     return {
         "status": "READY" if not errors else "BLOCKED",
-        "registry": str(registry_path),
-        "artifact": str(artifact_path),
+        "registry": _portable_path(registry_path),
+        "artifact": _portable_path(artifact_path),
         "artifact_sha256": actual_hash,
         "protocol_id": registry.get("protocol_id"),
         "freeze_status": registry.get("freeze_status"),

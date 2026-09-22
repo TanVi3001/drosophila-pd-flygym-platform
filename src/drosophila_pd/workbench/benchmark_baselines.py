@@ -82,18 +82,24 @@ def calibrate_threshold(
             missing.append(case_id)
         else:
             scores[case_id] = score
-    if missing:
-        raise ValueError("development calibration requires finite scores for every case: " + ", ".join(missing))
-    if len({protocol_case.reference_label for protocol_case in protocol.cases if protocol_case.case_id in development_ids}) != 2:
-        raise ValueError("development calibration requires both reference classes")
+    if not scores:
+        raise ValueError("development calibration requires at least one finite score")
+    assessable_labels = {
+        protocol_case.reference_label
+        for protocol_case in protocol.cases
+        if protocol_case.case_id in scores
+    }
+    if assessable_labels != {"positive", "negative"}:
+        raise ValueError("development calibration requires both reference classes among assessable cases")
 
+    calibration_ids = [case_id for case_id in development_ids if case_id in scores]
     unique_scores = sorted(set(scores.values()))
     candidates = [unique_scores[0] - 1.0]
     candidates.extend((left + right) / 2.0 for left, right in zip(unique_scores, unique_scores[1:]))
     candidates.append(unique_scores[-1] + 1.0)
     ranked: list[tuple[float, float, float, dict[str, int]]] = []
     for threshold in candidates:
-        confusion = _confusion(protocol, development_ids, scores, threshold, direction)
+        confusion = _confusion(protocol, calibration_ids, scores, threshold, direction)
         balanced = _balanced_accuracy(confusion)
         precision_denominator = confusion["true_positive"] + confusion["false_positive"]
         precision = (
@@ -108,10 +114,13 @@ def calibrate_threshold(
     threshold = candidates[best_index]
     return {
         "calibration_version": 1,
-        "status": "CALIBRATED",
+        "status": "CALIBRATED" if not missing else "CALIBRATED_PARTIAL",
         "protocol_hash": protocol.protocol_hash,
         "split": "development",
-        "case_ids": development_ids,
+        "case_ids": [case_id for case_id in development_ids if case_id in scores],
+        "unassessable_case_ids": missing,
+        "development_case_count": len(development_ids),
+        "assessable_development_case_count": len(scores),
         "direction": direction,
         "threshold": threshold,
         "objective": "balanced_accuracy",

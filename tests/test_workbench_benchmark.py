@@ -263,6 +263,21 @@ def test_calibration_uses_development_only_and_preserves_held_out_coverage() -> 
     assert {row["label"] for row in predictions.values()} == {"positive", "negative"}
 
 
+def test_calibration_keeps_missing_development_scores_unassessable() -> None:
+    protocol = _calibration_protocol()
+    scores = {
+        case.case_id: (0.9 if case.reference_label == "positive" else 0.1)
+        for case in protocol.cases
+    }
+    missing_case = protocol.development_case_ids[0]
+    scores.pop(missing_case)
+    calibration = calibrate_threshold(protocol, scores)
+
+    assert calibration["status"] == "CALIBRATED_PARTIAL"
+    assert calibration["unassessable_case_ids"] == [missing_case]
+    assert calibration["assessable_development_case_count"] == 9
+
+
 def test_evaluation_uses_declared_ranking_score_for_lower_is_better_systems() -> None:
     protocol = _protocol()
     predictions = {
