@@ -118,3 +118,15 @@ The evaluator may be run with `--allow-partial` to preserve available systems
 and explicitly record missing score mappings. Missing development scores are
 excluded from threshold calibration and remain unassessable; they are never
 converted into negative labels. A partial report is not release-ready.
+
+## FlyWire-630 structural-null preparation
+
+The scalable runner `scripts/materialize_connectome_rewire.py` materializes a
+new connectivity parquet for one declared directed double-edge-swap null. It
+preserves source-local edge attributes, in-degree, out-degree, excitatory
+stratum, and the ID-to-index mapping. It writes a sidecar manifest containing
+input/output checksums, seed, swap count, attempt count, and invariant results.
+The output is only a connectivity input for the separate neural LIF runner;
+it does not create the 106-case benchmark score mapping and must not be used
+as evidence of biological plausibility. Reviewer-approved source/input and
+readout mappings are still required before generating benchmark scores.

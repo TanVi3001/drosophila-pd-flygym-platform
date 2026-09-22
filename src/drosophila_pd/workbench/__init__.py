@@ -38,6 +38,7 @@ from .graph_nulls import (
     degree_signature,
     outgoing_weight_signature,
 )
+from .connectome_nulls import rewire_connectome_targets
 from .confirmation import CONFIRMATION_PLAN_VERSION, build_confirmation_plan
 from .handoff import (
     EvidenceBundle,
@@ -118,6 +119,7 @@ __all__ = [
     "degree_preserving_rewire",
     "degree_signature",
     "outgoing_weight_signature",
+    "rewire_connectome_targets",
     "write_evidence_bundle",
     "evaluate_retrospective_benchmark",
     "summarize_sensitivity",
