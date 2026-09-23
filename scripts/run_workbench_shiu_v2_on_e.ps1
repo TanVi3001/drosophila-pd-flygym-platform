@@ -12,6 +12,9 @@ $ErrorActionPreference = "Stop"
 
 $FlyGymRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $WorkspaceRoot = (Resolve-Path (Join-Path $FlyGymRoot "..")).Path
+if ((Split-Path -Path $WorkspaceRoot -Qualifier) -ne "E:") {
+    throw "This wrapper is intentionally pinned to E:. Current workspace: $WorkspaceRoot"
+}
 $NeuralRepo = Join-Path $WorkspaceRoot "drosophila-pd-neural-disease"
 $ModelRoot = Join-Path $WorkspaceRoot "external\Drosophila_brain_model"
 $ResultsRoot = Join-Path $ModelRoot "results"
