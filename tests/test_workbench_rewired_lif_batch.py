@@ -214,3 +214,36 @@ def test_approved_mapping_requires_both_mn9_readouts(tmp_path: Path) -> None:
             "reason": "shiu_v2_requires_mn9_left_and_right_readout_ids",
         }
     ]
+
+
+def test_resume_reuses_only_a_valid_pass_artifact(tmp_path: Path) -> None:
+    output = tmp_path / "control"
+    output.mkdir()
+    (output / "status.json").write_text('{"status":"PASS"}\n', encoding="utf-8")
+    (output / "metrics.json").write_text(
+        json.dumps(
+            {
+                "metrics": {
+                    "readout_rates_hz": {
+                        "left": 10.0,
+                        "right": 20.0,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = MODULE._reusable_lif_result(output, ["left", "right"])
+
+    assert result is not None
+    assert result["resumed"] is True
+    assert result["readout_rate_hz"] == 15.0
+
+
+def test_resume_does_not_reuse_failed_or_incomplete_artifact(tmp_path: Path) -> None:
+    output = tmp_path / "condition"
+    output.mkdir()
+    (output / "status.json").write_text('{"status":"FAILED"}\n', encoding="utf-8")
+
+    assert MODULE._reusable_lif_result(output, ["left"]) is None

@@ -251,6 +251,28 @@ def _metric_rate(metrics_path: Path, readout_ids: Sequence[str]) -> dict[str, An
     }
 
 
+def _reusable_lif_result(output: Path, readout_ids: Sequence[str]) -> dict[str, Any] | None:
+    """Return a prior PASS result when resuming an interrupted batch."""
+
+    status_path = output / "status.json"
+    metrics_path = output / "metrics.json"
+    if not status_path.is_file() or not metrics_path.is_file():
+        return None
+    try:
+        status = _load_json(status_path)
+    except (OSError, ValueError):
+        return None
+    if status.get("status") != "PASS":
+        return None
+    return {
+        "status": "PASS",
+        "output": str(output),
+        "metrics": str(metrics_path),
+        "resumed": True,
+        **_metric_rate(metrics_path, readout_ids),
+    }
+
+
 def _run_lif(
     *,
     args: argparse.Namespace,
@@ -261,6 +283,11 @@ def _run_lif(
     readout_ids: Sequence[str],
     output: Path,
 ) -> dict[str, Any]:
+    if args.resume:
+        reusable = _reusable_lif_result(output, readout_ids)
+        if reusable is not None:
+            return reusable
+
     command = [
         str(args.neural_python.resolve()),
         str(args.lif_script.resolve()),
@@ -277,6 +304,8 @@ def _run_lif(
         "--dataset-id", "flywire-630-2023-03-23",
         "--output", str(output.resolve()),
     ]
+    if args.resume:
+        command.append("--overwrite")
     if args.annotation_file is not None:
         command.extend(("--annotation-file", str(args.annotation_file.resolve())))
     for value in input_ids:
@@ -334,6 +363,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             "Rewired LIF score preparation only. Scores are computational readouts, "
             "not biological validation or causal evidence."
         ),
+        "resume": bool(args.resume),
     }
     if validation["status"] != "READY" and not args.allow_partial:
         result["status"] = "BLOCKED_MAPPING_REQUIRED"
@@ -404,6 +434,11 @@ def main() -> int:
     parser.add_argument("--stimulus-rate-hz", type=float, default=SHIU_V2_SCORE_RATE_HZ)
     parser.add_argument("--allow-partial", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Reuse existing PASS case artifacts and rerun only missing or failed outputs.",
+    )
     args = parser.parse_args()
     if not args.protocol.is_file() or not args.mapping.is_file():
         parser.error("protocol and mapping files must exist")

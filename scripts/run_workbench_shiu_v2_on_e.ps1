@@ -2,6 +2,7 @@
 param(
     [string]$RunName = "",
     [switch]$DryRun,
+    [switch]$Resume,
     [int]$Seed = 20260922,
     [int]$Trials = 1,
     [double]$DurationS = 1.0,
@@ -69,11 +70,15 @@ $Arguments = @(
 if ($DryRun) {
     $Arguments += "--dry-run"
 }
+if ($Resume) {
+    $Arguments += "--resume"
+}
 
 Write-Host "Python:       $Python"
 Write-Host "Output root:  $OutputRoot"
 Write-Host "Temp root:    $TempRoot"
 Write-Host "Dry run:      $DryRun"
+Write-Host "Resume:       $Resume"
 
 & $Python @Arguments
 if ($LASTEXITCODE -ne 0) {
