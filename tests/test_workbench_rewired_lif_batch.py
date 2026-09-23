@@ -46,6 +46,8 @@ def test_mapping_gate_requires_two_reviewers_and_both_mn9_readouts(tmp_path: Pat
             "input_ids_json": json.dumps(["720575940624963786"], separators=(",", ":")),
             "reviewer_1": "reviewer-a",
             "reviewer_2": "",
+            "reviewer_1_decision": "APPROVED",
+            "reviewer_2_decision": "APPROVED",
             "review_decision": "APPROVED",
         }
     )
@@ -67,6 +69,42 @@ def test_mapping_gate_requires_two_reviewers_and_both_mn9_readouts(tmp_path: Pat
     ]
 
 
+def test_mapping_gate_requires_explicit_two_reviewer_decisions(tmp_path: Path) -> None:
+    source = ROOT / "configs" / "workbench" / "shiu_v2_flywire630_mapping.csv"
+    target = tmp_path / "mapping.csv"
+    with source.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+        fields = handle.seek(0) or next(csv.reader(handle))
+    rows[0].update(
+        {
+            "mapping_status": "APPROVED",
+            "assay_comparable": "YES",
+            "input_ids_json": json.dumps(["720575940624963786"], separators=(",", ":")),
+            "reviewer_1": "reviewer-a",
+            "reviewer_2": "reviewer-b",
+            "reviewer_1_decision": "PENDING",
+            "reviewer_2_decision": "PENDING",
+            "review_decision": "APPROVED",
+        }
+    )
+    with target.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    result = MODULE.validate_mapping(
+        ROOT / "configs" / "workbench" / "shiu_public_benchmark_v2.json",
+        target,
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["invalid_rows"] == [
+        {
+            "case_id": "shiu_table3_row_002",
+            "reason": "approved_row_requires_two_reviewer_decisions",
+        }
+    ]
+
+
 def test_approved_mapping_requires_both_mn9_readouts(tmp_path: Path) -> None:
     source = ROOT / "configs" / "workbench" / "shiu_v2_flywire630_mapping.csv"
     target = tmp_path / "mapping.csv"
@@ -81,6 +119,8 @@ def test_approved_mapping_requires_both_mn9_readouts(tmp_path: Path) -> None:
             "readout_ids_json": json.dumps(["720575940660219265"], separators=(",", ":")),
             "reviewer_1": "reviewer-a",
             "reviewer_2": "reviewer-b",
+            "reviewer_1_decision": "APPROVED",
+            "reviewer_2_decision": "APPROVED",
             "review_decision": "APPROVED",
         }
     )

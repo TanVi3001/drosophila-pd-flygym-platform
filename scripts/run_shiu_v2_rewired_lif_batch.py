@@ -49,9 +49,12 @@ REQUIRED_MAPPING_FIELDS = (
     "readout_ids_json",
     "reviewer_1",
     "reviewer_2",
+    "reviewer_1_decision",
+    "reviewer_2_decision",
     "review_decision",
     "notes",
 )
+REVIEW_DECISIONS = {"PENDING", "APPROVED", "REJECTED", "NEEDS_REVISION"}
 
 
 def _sha256(path: Path) -> str:
@@ -71,6 +74,10 @@ def _load_json(path: Path) -> Mapping[str, Any]:
 
 def _safe_component(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", str(value).strip()).strip("._") or "case"
+
+
+def _normalized_label(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", str(value).strip().lower())
 
 
 def _id_list(raw: str, *, field: str, case_id: str) -> list[str]:
@@ -135,7 +142,7 @@ def validate_mapping(protocol_path: Path, mapping_path: Path) -> dict[str, Any]:
             continue
         metadata = case.get("metadata", {})
         expected_type = str(metadata.get("cell_type", "")) if isinstance(metadata, Mapping) else ""
-        if row.get("cell_type") != expected_type:
+        if _normalized_label(row.get("cell_type", "")) != _normalized_label(expected_type):
             invalid.append({"case_id": case_id, "reason": "cell_type_mismatch"})
         for field in ("input_ids_json", "silence_ids_json", "readout_ids_json"):
             try:
@@ -144,16 +151,27 @@ def validate_mapping(protocol_path: Path, mapping_path: Path) -> dict[str, Any]:
                 invalid.append({"case_id": case_id, "reason": str(exc)})
         status = row.get("mapping_status", "").upper()
         comparable = row.get("assay_comparable", "").upper()
+        reviewer_1_decision = row.get("reviewer_1_decision", "").upper()
+        reviewer_2_decision = row.get("reviewer_2_decision", "").upper()
         decision = row.get("review_decision", "").upper()
         if status not in {"PENDING", "APPROVED", "UNASSESSABLE", "REJECTED"}:
             invalid.append({"case_id": case_id, "reason": "invalid_mapping_status"})
         if comparable not in {"PENDING", "YES", "NO"}:
             invalid.append({"case_id": case_id, "reason": "invalid_assay_comparable"})
+        for field, value in (
+            ("reviewer_1_decision", reviewer_1_decision),
+            ("reviewer_2_decision", reviewer_2_decision),
+            ("review_decision", decision),
+        ):
+            if value not in REVIEW_DECISIONS:
+                invalid.append({"case_id": case_id, "reason": f"invalid_{field}"})
         if status == "APPROVED":
             if comparable != "YES" or decision != "APPROVED":
                 invalid.append({"case_id": case_id, "reason": "approved_row_lacks_review_signoff"})
             if not row.get("reviewer_1") or not row.get("reviewer_2"):
                 invalid.append({"case_id": case_id, "reason": "approved_row_requires_two_reviewers"})
+            if reviewer_1_decision != "APPROVED" or reviewer_2_decision != "APPROVED":
+                invalid.append({"case_id": case_id, "reason": "approved_row_requires_two_reviewer_decisions"})
             input_ids = row.get("input_ids_json_parsed", [])
             silence_ids = row.get("silence_ids_json_parsed", [])
             readout_ids = row.get("readout_ids_json_parsed", [])

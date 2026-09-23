@@ -142,7 +142,9 @@ the declared artifact root.
 `scripts/build_shiu_v2_mapping_template.py` creates the 106-row mapping sheet
 at `configs/workbench/shiu_v2_flywire630_mapping.csv`. Reviewers must fill
 exact FlyWire-630 input and readout IDs, assay comparability, and two-person
-sign-off. The optional source-grounded prefill uses the upstream
+sign-off. The mapping records `reviewer_1_decision` and
+`reviewer_2_decision` separately; `review_decision=APPROVED` is valid only
+when both are explicitly `APPROVED`. The optional source-grounded prefill uses the upstream
 `Drosophila_brain_model/sez_neurons.pickle` mapping and verifies IDs against
 the FlyWire-630 completeness inventory; this is computational evidence, not
 biological approval. Cell-type names are never converted to IDs by inference.

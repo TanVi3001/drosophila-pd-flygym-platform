@@ -32,6 +32,8 @@ FIELDS = (
     "readout_ids_json",
     "reviewer_1",
     "reviewer_2",
+    "reviewer_1_decision",
+    "reviewer_2_decision",
     "review_decision",
     "notes",
 )
@@ -56,12 +58,13 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _load_upstream(path: Path) -> dict[str, list[str]]:
+def _load_upstream(path: Path) -> tuple[dict[str, list[str]], dict[str, str]]:
     with path.open("rb") as handle:
         value = pickle.load(handle)
     if not isinstance(value, dict):
         raise ValueError("upstream neuron mapping must be a dictionary")
     result: dict[str, list[str]] = {}
+    canonical_labels: dict[str, str] = {}
     for label, raw_ids in value.items():
         if not isinstance(raw_ids, (list, tuple)) or not raw_ids:
             raise ValueError(f"upstream mapping for {label!r} must be a non-empty list")
@@ -75,7 +78,8 @@ def _load_upstream(path: Path) -> dict[str, list[str]]:
         if not key or key in result:
             raise ValueError(f"duplicate or empty normalized upstream label: {label!r}")
         result[key] = ids
-    return result
+        canonical_labels[key] = str(label)
+    return result, canonical_labels
 
 
 def _verify_completeness(ids: list[str], path: Path) -> None:
@@ -108,7 +112,10 @@ def build(
     reviewer_2: str = "",
 ) -> int:
     registry = _load(registry_path)
-    upstream = _load_upstream(upstream_pickle) if upstream_pickle is not None else None
+    upstream: dict[str, list[str]] | None = None
+    canonical_labels: dict[str, str] = {}
+    if upstream_pickle is not None:
+        upstream, canonical_labels = _load_upstream(upstream_pickle)
     declared_readouts = readout_ids or []
     if upstream_pickle is not None and completeness_path is None:
         raise ValueError("completeness_path is required when upstream_pickle is supplied")
@@ -127,10 +134,12 @@ def build(
         metadata = case.get("metadata", {})
         if not isinstance(metadata, Mapping):
             raise ValueError(f"case metadata is not an object: {case.get('case_id')}")
-        cell_type = str(metadata.get("cell_type", ""))
-        input_ids = [] if upstream is None else upstream.get(_normalize(cell_type), [])
+        source_cell_type = str(metadata.get("cell_type", ""))
+        normalized_cell_type = _normalize(source_cell_type)
+        input_ids = [] if upstream is None else upstream.get(normalized_cell_type, [])
         if upstream is not None and not input_ids:
-            raise ValueError(f"no upstream neuron mapping for benchmark cell type: {cell_type!r}")
+            raise ValueError(f"no upstream neuron mapping for benchmark cell type: {source_cell_type!r}")
+        cell_type = canonical_labels.get(normalized_cell_type, source_cell_type)
         rows.append(
             {
                 "case_id": str(case.get("case_id", "")),
@@ -146,6 +155,8 @@ def build(
                 "readout_ids_json": json.dumps(declared_readouts, separators=(",", ":")),
                 "reviewer_1": reviewer_1,
                 "reviewer_2": reviewer_2,
+                "reviewer_1_decision": "PENDING",
+                "reviewer_2_decision": "PENDING",
                 "review_decision": "PENDING",
                 "notes": evidence_note or "Fill only from source-grounded FlyWire-630 evidence; do not infer from cell_type name.",
             }
