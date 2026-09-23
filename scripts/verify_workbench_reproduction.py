@@ -32,6 +32,12 @@ def main() -> int:
     parser.add_argument("--reference-manifest", type=Path, required=True)
     parser.add_argument("--replica-manifest", type=Path, required=True)
     parser.add_argument("--operator-name", required=True)
+    parser.add_argument(
+        "--operator-role",
+        choices=("same_operator", "second_operator", "automated"),
+        default="same_operator",
+        help="declares who ran the replica; only a real second human enables an independent claim",
+    )
     parser.add_argument("--clean-install", action="store_true")
     parser.add_argument("--python-version", default="3.12")
     parser.add_argument("--lockfile-or-export")
@@ -53,6 +59,7 @@ def main() -> int:
             args.reference_manifest,
             args.replica_manifest,
             operator_name=args.operator_name,
+            operator_role=args.operator_role,
             clean_install=args.clean_install,
             python_version=args.python_version,
             lockfile_or_export=args.lockfile_or_export,
