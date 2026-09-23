@@ -3,9 +3,10 @@
 
 The mapping CSV is intentionally a gate.  A row is runnable only when two
 reviewers have approved exact FlyWire-630 IDs, assay comparability is YES, and
-the row contains one readout plus a declared intervention input set.  Pending,
-ambiguous, or unassessable rows remain visible and never become negative
-scores.
+the row contains both MN9 readouts plus a declared intervention input set.
+Scores are the arithmetic mean of the left/right MN9 rates at the benchmark's
+50 Hz stimulus. Pending, ambiguous, or unassessable rows remain visible and
+never become negative scores.
 """
 
 from __future__ import annotations
@@ -30,7 +31,9 @@ DEFAULT_NEURAL_PYTHON = ROOT.parent / ".venvs" / "baseline-2024-312" / "Scripts"
 DEFAULT_LIF_SCRIPT = DEFAULT_NEURAL_REPO / "scripts/run_lif_condition.py"
 DEFAULT_MODEL_ROOT = ROOT.parent / "external/Drosophila_brain_model"
 DEFAULT_CONNECTIVITY = DEFAULT_MODEL_ROOT / "results/workbench_graph_nulls/flywire630_v1/graph_null_630_seed20260922_r01.parquet"
-DEFAULT_ANNOTATION = DEFAULT_NEURAL_REPO / "annotations/flywire630_sensory_mn9_public.csv"
+DEFAULT_ANNOTATION = DEFAULT_NEURAL_REPO / "annotations/flywire630_shiu_table3_upstream.csv"
+SHIU_V2_READOUT_IDS = ("720575940645521262", "720575940660219265")
+SHIU_V2_SCORE_RATE_HZ = 50.0
 SCHEMA_VERSION = "shiu-v2-rewired-lif-batch-v1"
 REQUIRED_MAPPING_FIELDS = (
     "case_id",
@@ -154,8 +157,13 @@ def validate_mapping(protocol_path: Path, mapping_path: Path) -> dict[str, Any]:
             input_ids = row.get("input_ids_json_parsed", [])
             silence_ids = row.get("silence_ids_json_parsed", [])
             readout_ids = row.get("readout_ids_json_parsed", [])
-            if len(readout_ids) != 1:
-                invalid.append({"case_id": case_id, "reason": "approved_row_requires_one_readout_id"})
+            if tuple(sorted(readout_ids)) != tuple(sorted(SHIU_V2_READOUT_IDS)):
+                invalid.append(
+                    {
+                        "case_id": case_id,
+                        "reason": "shiu_v2_requires_mn9_left_and_right_readout_ids",
+                    }
+                )
             intervention = row.get("intervention", "").lower()
             if intervention == "activation" and (not input_ids or silence_ids):
                 invalid.append({"case_id": case_id, "reason": "activation_requires_input_ids_only"})
@@ -187,18 +195,28 @@ def validate_mapping(protocol_path: Path, mapping_path: Path) -> dict[str, Any]:
     }
 
 
-def _metric_rate(metrics_path: Path, readout_id: str) -> float:
+def _metric_rate(metrics_path: Path, readout_ids: Sequence[str]) -> dict[str, Any]:
     document = _load_json(metrics_path)
     metrics = document.get("metrics")
     if not isinstance(metrics, Mapping):
         raise ValueError(f"metrics document has no metrics object: {metrics_path}")
     rates = metrics.get("readout_rates_hz")
-    if not isinstance(rates, Mapping) or readout_id not in rates:
-        raise ValueError(f"readout {readout_id} is missing from metrics: {metrics_path}")
-    value = float(rates[readout_id])
-    if value != value or abs(value) == float("inf"):
-        raise ValueError(f"readout {readout_id} is not finite: {metrics_path}")
-    return value
+    if not isinstance(rates, Mapping):
+        raise ValueError(f"metrics has no readout_rates_hz object: {metrics_path}")
+    values: dict[str, float] = {}
+    for readout_id in readout_ids:
+        if readout_id not in rates:
+            raise ValueError(f"readout {readout_id} is missing from metrics: {metrics_path}")
+        value = float(rates[readout_id])
+        if value != value or abs(value) == float("inf"):
+            raise ValueError(f"readout {readout_id} is not finite: {metrics_path}")
+        values[readout_id] = value
+    if not values:
+        raise ValueError(f"at least one readout is required: {metrics_path}")
+    return {
+        "readout_rates_hz": values,
+        "readout_rate_hz": sum(values.values()) / len(values),
+    }
 
 
 def _run_lif(
@@ -208,7 +226,7 @@ def _run_lif(
     label: str,
     input_ids: Sequence[str],
     silence_ids: Sequence[str],
-    readout_id: str,
+    readout_ids: Sequence[str],
     output: Path,
 ) -> dict[str, Any]:
     command = [
@@ -219,7 +237,6 @@ def _run_lif(
         "--connectivity", str(args.connectivity.resolve()),
         "--condition-label", f"{case_id}_{label}",
         "--exp-name", f"{case_id}_{label}",
-        "--readout-id", readout_id,
         "--seed", str(args.seed),
         "--trials", str(args.trials),
         "--duration-s", str(args.duration_s),
@@ -234,6 +251,8 @@ def _run_lif(
         command.extend(("--input-id", value))
     for value in silence_ids:
         command.extend(("--silence-id", value))
+    for readout_id in readout_ids:
+        command.extend(("--readout-id", readout_id))
     completed = subprocess.run(
         command,
         cwd=args.neural_repo.resolve(),
@@ -257,7 +276,7 @@ def _run_lif(
         "status": "PASS",
         "output": str(output),
         "metrics": str(metrics_path),
-        "readout_rate_hz": _metric_rate(metrics_path, readout_id),
+        **_metric_rate(metrics_path, readout_ids),
     }
 
 
@@ -274,6 +293,11 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
         "validation": {key: value for key, value in validation.items() if key != "rows"},
         "scores": {},
         "case_results": {},
+        "score_contract": {
+            "readout_ids": list(SHIU_V2_READOUT_IDS),
+            "aggregation": "arithmetic_mean_hz",
+            "stimulus_rate_hz": SHIU_V2_SCORE_RATE_HZ,
+        },
         "scientific_scope": (
             "Rewired LIF score preparation only. Scores are computational readouts, "
             "not biological validation or causal evidence."
@@ -289,7 +313,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
     args.output_root.mkdir(parents=True, exist_ok=True)
     for case_id in validation["approved_case_ids"]:
         row = validation["rows"][case_id]
-        readout_id = row["readout_ids_json_parsed"][0]
+        readout_ids = row["readout_ids_json_parsed"]
         case_root = args.output_root / _safe_component(case_id)
         control = _run_lif(
             args=args,
@@ -297,7 +321,7 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             label="control",
             input_ids=[],
             silence_ids=[],
-            readout_id=readout_id,
+            readout_ids=readout_ids,
             output=case_root / "control",
         )
         condition = _run_lif(
@@ -306,12 +330,12 @@ def run_batch(args: argparse.Namespace) -> dict[str, Any]:
             label="condition",
             input_ids=row["input_ids_json_parsed"],
             silence_ids=row["silence_ids_json_parsed"],
-            readout_id=readout_id,
+            readout_ids=readout_ids,
             output=case_root / "condition",
         )
         case_result: dict[str, Any] = {
             "cell_type": row["cell_type"],
-            "readout_id": readout_id,
+            "readout_ids": readout_ids,
             "control": control,
             "condition": condition,
         }
@@ -345,7 +369,7 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=20260922)
     parser.add_argument("--trials", type=int, default=1)
     parser.add_argument("--duration-s", type=float, default=1.0)
-    parser.add_argument("--stimulus-rate-hz", type=float, default=150.0)
+    parser.add_argument("--stimulus-rate-hz", type=float, default=SHIU_V2_SCORE_RATE_HZ)
     parser.add_argument("--allow-partial", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()

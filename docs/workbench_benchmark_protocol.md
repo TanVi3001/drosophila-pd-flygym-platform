@@ -142,12 +142,17 @@ the declared artifact root.
 `scripts/build_shiu_v2_mapping_template.py` creates the 106-row mapping sheet
 at `configs/workbench/shiu_v2_flywire630_mapping.csv`. Reviewers must fill
 exact FlyWire-630 input and readout IDs, assay comparability, and two-person
-sign-off. Cell-type names are not converted to IDs by inference.
+sign-off. The optional source-grounded prefill uses the upstream
+`Drosophila_brain_model/sez_neurons.pickle` mapping and verifies IDs against
+the FlyWire-630 completeness inventory; this is computational evidence, not
+biological approval. Cell-type names are never converted to IDs by inference.
 
 `scripts/run_shiu_v2_rewired_lif_batch.py` validates that sheet and runs only
-rows with `mapping_status=APPROVED`, `assay_comparable=YES`, one readout ID,
-and two reviewer names. It runs a no-input control and the declared condition
-with the same seed, then writes the scalar readout score plus the control delta.
+rows with `mapping_status=APPROVED`, `assay_comparable=YES`, both MN9 left/right
+readout IDs, and two reviewer names. It runs a no-input control and the
+declared condition with the same seed at the v2 benchmark stimulus of 50 Hz.
+The scalar score is the arithmetic mean of the two MN9 rates, and the output
+also records each per-readout rate plus the control delta.
 Pending, ambiguous, unassessable, or failed rows remain visible and never
 become negative scores. Without complete approved mapping, the command emits
 `BLOCKED_MAPPING_REQUIRED` or an explicitly `PARTIAL_MAPPING` result.
