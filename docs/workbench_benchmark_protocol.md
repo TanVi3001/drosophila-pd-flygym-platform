@@ -146,6 +146,8 @@ sign-off. The optional source-grounded prefill uses the upstream
 `Drosophila_brain_model/sez_neurons.pickle` mapping and verifies IDs against
 the FlyWire-630 completeness inventory; this is computational evidence, not
 biological approval. Cell-type names are never converted to IDs by inference.
+Reviewer names may be supplied explicitly with `--reviewer-1` and
+`--reviewer-2`; naming reviewers does not change the approval gate.
 
 `scripts/run_shiu_v2_rewired_lif_batch.py` validates that sheet and runs only
 rows with `mapping_status=APPROVED`, `assay_comparable=YES`, both MN9 left/right

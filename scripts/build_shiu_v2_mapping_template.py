@@ -104,6 +104,8 @@ def build(
     upstream_pickle: Path | None = None,
     readout_ids: list[str] | None = None,
     completeness_path: Path | None = None,
+    reviewer_1: str = "",
+    reviewer_2: str = "",
 ) -> int:
     registry = _load(registry_path)
     upstream = _load_upstream(upstream_pickle) if upstream_pickle is not None else None
@@ -142,8 +144,8 @@ def build(
                 "input_ids_json": json.dumps(input_ids, separators=(",", ":")),
                 "silence_ids_json": "[]",
                 "readout_ids_json": json.dumps(declared_readouts, separators=(",", ":")),
-                "reviewer_1": "",
-                "reviewer_2": "",
+                "reviewer_1": reviewer_1,
+                "reviewer_2": reviewer_2,
                 "review_decision": "PENDING",
                 "notes": evidence_note or "Fill only from source-grounded FlyWire-630 evidence; do not infer from cell_type name.",
             }
@@ -165,6 +167,8 @@ def main() -> int:
     parser.add_argument("--upstream-pickle", type=Path, default=None)
     parser.add_argument("--completeness", type=Path, default=None)
     parser.add_argument("--readout-id", action="append", default=[])
+    parser.add_argument("--reviewer-1", default="")
+    parser.add_argument("--reviewer-2", default="")
     args = parser.parse_args()
     count = build(
         args.registry.resolve(),
@@ -172,6 +176,8 @@ def main() -> int:
         upstream_pickle=None if args.upstream_pickle is None else args.upstream_pickle.resolve(),
         completeness_path=None if args.completeness is None else args.completeness.resolve(),
         readout_ids=[str(value).strip() for value in args.readout_id],
+        reviewer_1=str(args.reviewer_1).strip(),
+        reviewer_2=str(args.reviewer_2).strip(),
     )
     print(json.dumps({"status": "TEMPLATE_CREATED", "case_count": count, "output": str(args.output.resolve())}, indent=2))
     return 0
