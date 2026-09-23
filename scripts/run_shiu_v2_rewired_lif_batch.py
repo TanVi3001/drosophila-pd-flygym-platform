@@ -193,8 +193,21 @@ def validate_mapping(protocol_path: Path, mapping_path: Path) -> dict[str, Any]:
     extra_ids = sorted(set(by_id) - set(expected))
     pending_ids = sorted(case_id for case_id, row in by_id.items() if row.get("mapping_status", "").upper() == "PENDING")
     unassessable_ids = sorted(case_id for case_id, row in by_id.items() if row.get("mapping_status", "").upper() == "UNASSESSABLE")
+    rejected_ids = sorted(case_id for case_id, row in by_id.items() if row.get("mapping_status", "").upper() == "REJECTED")
     approved_ids = sorted(case_id for case_id, row in by_id.items() if row.get("mapping_status", "").upper() == "APPROVED")
-    complete = not (missing_ids or extra_ids or duplicate_ids or invalid or pending_ids or unassessable_ids)
+    complete = (
+        len(rows) == len(expected)
+        and len(approved_ids) == len(expected)
+        and not (
+            missing_ids
+            or extra_ids
+            or duplicate_ids
+            or invalid
+            or pending_ids
+            or unassessable_ids
+            or rejected_ids
+        )
+    )
     return {
         "status": "READY" if complete else "BLOCKED",
         "protocol_case_count": len(expected),
@@ -202,6 +215,7 @@ def validate_mapping(protocol_path: Path, mapping_path: Path) -> dict[str, Any]:
         "approved_case_ids": approved_ids,
         "pending_case_ids": pending_ids,
         "unassessable_case_ids": unassessable_ids,
+        "rejected_case_ids": rejected_ids,
         "missing_case_ids": missing_ids,
         "unknown_case_ids": extra_ids,
         "duplicate_case_ids": sorted(set(duplicate_ids)),

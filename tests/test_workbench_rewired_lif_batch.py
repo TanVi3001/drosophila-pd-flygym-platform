@@ -16,21 +16,23 @@ MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 
-def test_frozen_mapping_template_is_complete_but_not_approved() -> None:
+def test_frozen_mapping_review_is_complete_and_approved() -> None:
     result = MODULE.validate_mapping(
         ROOT / "configs" / "workbench" / "shiu_public_benchmark_v2.json",
         ROOT / "configs" / "workbench" / "shiu_v2_flywire630_mapping.csv",
     )
 
-    assert result["status"] == "BLOCKED"
+    assert result["status"] == "READY"
     assert result["protocol_case_count"] == 106
     assert result["mapping_row_count"] == 106
     assert result["missing_case_ids"] == []
     assert result["unknown_case_ids"] == []
     assert result["duplicate_case_ids"] == []
-    assert result["approved_case_ids"] == []
-    assert len(result["pending_case_ids"]) == 106
+    assert len(result["approved_case_ids"]) == 106
+    assert result["pending_case_ids"] == []
     assert result["unassessable_case_ids"] == []
+    assert result["rejected_case_ids"] == []
+    assert result["invalid_rows"] == []
 
 
 def test_mapping_gate_requires_two_reviewers_and_both_mn9_readouts(tmp_path: Path) -> None:
@@ -103,6 +105,78 @@ def test_mapping_gate_requires_explicit_two_reviewer_decisions(tmp_path: Path) -
             "reason": "approved_row_requires_two_reviewer_decisions",
         }
     ]
+
+
+def test_rejected_mapping_blocks_ready_to_run(tmp_path: Path) -> None:
+    source = ROOT / "configs" / "workbench" / "shiu_v2_flywire630_mapping.csv"
+    target = tmp_path / "mapping.csv"
+    with source.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+        fields = handle.seek(0) or next(csv.reader(handle))
+    for row in rows:
+        row.update(
+            {
+                "mapping_status": "APPROVED",
+                "assay_comparable": "YES",
+                "reviewer_1": "reviewer-a",
+                "reviewer_2": "reviewer-b",
+                "reviewer_1_decision": "APPROVED",
+                "reviewer_2_decision": "APPROVED",
+                "review_decision": "APPROVED",
+            }
+        )
+    rows[-1]["mapping_status"] = "REJECTED"
+    rows[-1]["assay_comparable"] = "NO"
+    rows[-1]["reviewer_1_decision"] = "REJECTED"
+    rows[-1]["reviewer_2_decision"] = "REJECTED"
+    rows[-1]["review_decision"] = "REJECTED"
+    with target.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    result = MODULE.validate_mapping(
+        ROOT / "configs" / "workbench" / "shiu_public_benchmark_v2.json",
+        target,
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert len(result["approved_case_ids"]) == 105
+    assert len(result["rejected_case_ids"]) == 1
+    assert result["rejected_case_ids"] == ["shiu_table3_row_107"]
+
+
+def test_all_rejected_cases_cannot_be_ready(tmp_path: Path) -> None:
+    source = ROOT / "configs" / "workbench" / "shiu_v2_flywire630_mapping.csv"
+    target = tmp_path / "mapping.csv"
+    with source.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+        fields = handle.seek(0) or next(csv.reader(handle))
+    for row in rows:
+        row.update(
+            {
+                "mapping_status": "REJECTED",
+                "assay_comparable": "NO",
+                "reviewer_1": "reviewer-a",
+                "reviewer_2": "reviewer-b",
+                "reviewer_1_decision": "REJECTED",
+                "reviewer_2_decision": "REJECTED",
+                "review_decision": "REJECTED",
+            }
+        )
+    with target.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    result = MODULE.validate_mapping(
+        ROOT / "configs" / "workbench" / "shiu_public_benchmark_v2.json",
+        target,
+    )
+
+    assert result["status"] == "BLOCKED"
+    assert result["approved_case_ids"] == []
+    assert len(result["rejected_case_ids"]) == 106
 
 
 def test_approved_mapping_requires_both_mn9_readouts(tmp_path: Path) -> None:
