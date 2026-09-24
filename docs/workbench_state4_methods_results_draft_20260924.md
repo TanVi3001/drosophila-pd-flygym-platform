@@ -130,3 +130,12 @@ $Python = "E:\research-\.venvs\baseline-2024-312\Scripts\python.exe"
 
 The output is intentionally stored outside Git. The score specification,
 runner, tests, and this draft are the reviewable source artifacts.
+
+## Manuscript support artifacts
+
+The reproducible figure/table generator is
+`scripts/make_workbench_manuscript_figures.py`. It produces a pipeline diagram,
+the development ablation comparison, the frozen score/zero-score distribution,
+and manuscript-ready CSV/Markdown tables outside Git. The held-out readiness
+check is separate in `scripts/audit_shiu_heldout_preflight.py`; it reports
+readiness only and deliberately emits no held-out metrics.
