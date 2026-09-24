@@ -32,6 +32,7 @@ from .benchmark_baselines import (
     seeded_random_scores,
     validate_score_mapping,
 )
+from .score_lock import build_locked_scores
 from .graph_nulls import (
     GraphEdge,
     degree_preserving_rewire,
@@ -125,6 +126,7 @@ __all__ = [
     "summarize_sensitivity",
     "seeded_random_scores",
     "validate_score_mapping",
+    "build_locked_scores",
     "bootstrap_mean_ci",
     "rank_candidates",
     "verify_reproduction",

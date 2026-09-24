@@ -1,0 +1,50 @@
+{
+  "score_lock_id": "shiu_workbench_score_v1",
+  "score_lock_version": 1,
+  "status": "LOCKED_FOR_DEVELOPMENT_ABLATION",
+  "protocol_id": "shiu_public_benchmark_v2",
+  "protocol_hash": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+  "evaluation_split": "development",
+  "primary_endpoint": "precision_at_k",
+  "precision_at_k": 5,
+  "score_direction": "higher_is_better",
+  "formula": {
+    "simulation_effect": "frozen degree_preserving_rewire score_hz per case",
+    "uncertainty": "mean published model_mn9_sd_hz at 50 Hz across left/right MN9 readouts",
+    "uncertainty_stimulus_hz": "50",
+    "uncertainty_floor_hz": 1e-12,
+    "uncertainty_adjusted_score": "simulation_effect_hz / max(published_uncertainty_mean_hz, uncertainty_floor_hz)",
+    "evidence_gate": "1 only when mapping and both reviewer decisions are APPROVED",
+    "capability_gate": "1 only when assay_comparable=YES, input IDs exist, and the two declared MN9 readout IDs match",
+    "full_workbench_score": "uncertainty_adjusted_score * evidence_gate * capability_gate"
+  },
+  "capability_gate": {
+    "expected_readout_ids": [
+      "720575940645521262",
+      "720575940660219265"
+    ]
+  },
+  "required_mapping_fields": [
+    "mapping_status",
+    "assay_comparable",
+    "input_ids_json",
+    "readout_ids_json",
+    "reviewer_1",
+    "reviewer_2",
+    "reviewer_1_decision",
+    "reviewer_2_decision",
+    "review_decision"
+  ],
+  "forbidden_score_inputs": [
+    "reference_label",
+    "observed_response_fraction",
+    "shortest_path"
+  ],
+  "ablation_systems": [
+    "rewire_effect_only",
+    "rewire_plus_uncertainty",
+    "full_workbench_locked",
+    "random_reference"
+  ],
+  "holdout_policy": "The 32 held-out cases are not used to select, calibrate, or modify this score lock."
+}
