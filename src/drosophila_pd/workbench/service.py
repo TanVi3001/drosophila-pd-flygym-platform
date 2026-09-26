@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import math
@@ -28,6 +29,7 @@ from .benchmark import (
     summarize_sensitivity,
 )
 from .confirmation import build_confirmation_plan as make_confirmation_plan
+from .intake import IntakeProvider, create_intake_draft
 from .handoff import (
     REVIEW_DECISIONS,
     build_evidence_bundle,
@@ -35,6 +37,7 @@ from .handoff import (
     write_evidence_bundle,
 )
 from .models import (
+    CapabilityDescriptor,
     DecisionReport,
     JobRecord,
     JobStatus,
@@ -45,6 +48,8 @@ from .models import (
     utc_timestamp,
 )
 from .ranking import RankingPolicy, rank_candidates
+from .selection import SelectionPolicy, select_candidates as make_selection_report
+from .support import MappingRecord, assess_study_support
 from .store import WorkbenchStore
 
 
@@ -61,6 +66,7 @@ class WorkbenchService:
         artifact_root: str | Path,
         adapters: Mapping[str, BackendAdapter] | None = None,
         assays: Mapping[str, AssayAdapter] | None = None,
+        intake_provider: IntakeProvider | None = None,
     ) -> None:
         self.store = store
         self.artifact_root = Path(artifact_root).resolve()
@@ -74,6 +80,7 @@ class WorkbenchService:
                 "sensory_mn9": NeuralReadoutAssayAdapter(),
             }
         )
+        self.intake_provider = intake_provider
         self._run_lock = threading.Lock()
         self._active_processes: dict[str, subprocess.Popen[str]] = {}
         self._cancel_events: dict[str, threading.Event] = {}
@@ -81,6 +88,215 @@ class WorkbenchService:
 
     def capabilities(self) -> list[dict[str, Any]]:
         return [self.adapters[name].describe().as_dict() for name in sorted(self.adapters)]
+
+    def register_mapping_record(self, mapping: MappingRecord) -> dict[str, Any]:
+        return self.store.register_mapping(mapping.as_dict())
+
+    def list_mapping_records(self) -> dict[str, dict[str, Any]]:
+        return self.store.list_mappings()
+
+    def assess_support(
+        self,
+        study_id: str,
+        *,
+        required_context: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        study = self.get_study(study_id)
+        try:
+            capability = self._adapter(study.backend).describe()
+        except ValueError:
+            capability = CapabilityDescriptor(
+                name=study.backend,
+                display_name=study.backend,
+                ready=False,
+                limitations=("backend_not_registered_in_this_workbench",),
+            )
+        assessment = assess_study_support(
+            study,
+            capability,
+            {
+                mapping_id: MappingRecord.from_dict(raw)
+                for mapping_id, raw in self.store.list_mappings().items()
+            },
+            required_context=required_context,
+        )
+        preflight: dict[str, Any] = {"status": "NOT_RUN", "candidates": {}}
+        if assessment["run_allowed"]:
+            adapter = self._adapter(study.backend)
+            for candidate in study.candidates:
+                candidate_report: dict[str, Any]
+                try:
+                    config = self._materialize_candidate_config(
+                        study,
+                        {"candidate_id": candidate.candidate_id},
+                    )
+                    config["_artifact_dir"] = self.artifact_root / _safe_component(study_id) / "preflight"
+                    errors = list(adapter.validate(study, config))
+                    if adapter.name == "lif_2024":
+                        errors.extend(_neural_inventory_errors(config))
+                except (KeyError, ValueError, TypeError, OSError, RuntimeError) as error:
+                    errors = [f"{type(error).__name__}: {error}"]
+                candidate_report = {"status": "FAILED" if errors else "READY", "errors": errors}
+                preflight["candidates"][candidate.candidate_id] = candidate_report
+                if errors:
+                    candidate_assessment = assessment["candidate_assessments"][candidate.candidate_id]
+                    candidate_assessment["status"] = "OUT_OF_SCOPE"
+                    candidate_assessment["run_allowed"] = False
+                    candidate_assessment["priority_eligible"] = False
+                    candidate_assessment["reasons"] = sorted(
+                        {*candidate_assessment["reasons"], *(f"backend_preflight_failed:{item}" for item in errors)}
+                    )
+            preflight["status"] = (
+                "FAILED"
+                if any(item["status"] == "FAILED" for item in preflight["candidates"].values())
+                else "READY"
+            )
+            if preflight["status"] == "FAILED":
+                assessment["status"] = "OUT_OF_SCOPE"
+                assessment["run_allowed"] = False
+        assessment["backend_preflight"] = preflight
+        assessment.pop("assessment_hash", None)
+        assessment["assessment_hash"] = stable_hash(assessment)
+        self.store.set_support_assessment(study_id, assessment)
+        target = self.artifact_root / _safe_component(study_id) / "support_assessment.json"
+        _write_json(target, assessment)
+        return assessment
+
+    def get_support_assessment(self, study_id: str) -> dict[str, Any] | None:
+        self.get_study(study_id)
+        return self.store.get_support_assessment(study_id)
+
+    def approve_support_assessment(self, study_id: str, *, reviewer: str | None) -> dict[str, Any]:
+        study = self.get_study(study_id)
+        assessment = self.store.get_support_assessment(study_id)
+        if assessment is None:
+            raise ValueError("support_assessment_missing")
+        if assessment.get("study_configuration_hash") != study.configuration_hash:
+            raise ValueError("support_assessment_stale")
+        if not assessment.get("run_allowed") or assessment.get("status") != "READY_FOR_COMPUTATIONAL_REVIEW":
+            raise ValueError("support_assessment_not_run_allowed")
+        if not isinstance(reviewer, str) or not reviewer.strip():
+            raise ValueError("reviewer is required to freeze a support-gated study")
+        approval = {
+            "schema_version": "support-approval-1",
+            "study_id": study_id,
+            "study_configuration_hash": study.configuration_hash,
+            "assessment_hash": assessment["assessment_hash"],
+            "status": "FROZEN_FOR_COMPUTATIONAL_RUN",
+            "reviewer": str(reviewer).strip(),
+            "approved_at": utc_timestamp(),
+        }
+        self.store.set_support_approval(study_id, approval)
+        target = self.artifact_root / _safe_component(study_id) / "support_approval.json"
+        _write_json(target, approval)
+        return approval
+
+    def preview_intake(self, protocol_text: str, *, source_uri: str | None = None) -> dict[str, Any]:
+        if self.intake_provider is None:
+            raise RuntimeError("protocol intake provider is not configured")
+        draft = create_intake_draft(protocol_text, self.intake_provider, source_uri=source_uri)
+        draft["draft_id"] = f"intake-{uuid.uuid4().hex}"
+        target = self.artifact_root / "intake_drafts" / f"{draft['draft_id']}.json"
+        draft["artifact_path"] = target.as_posix()
+        _write_json(target, draft)
+        return draft
+
+    def create_research_study(self, study: StudySpec) -> StudySpec:
+        """Create a v2 study whose simulation path requires reviewed support."""
+
+        metadata = dict(study.metadata)
+        metadata["workflow_contract"] = "support-gated-1"
+        gated = StudySpec(
+            name=study.name,
+            hypothesis=study.hypothesis,
+            falsifiable_prediction=study.falsifiable_prediction,
+            assay=study.assay,
+            primary_metric=study.primary_metric,
+            candidates=study.candidates,
+            controls=study.controls,
+            sources=study.sources,
+            run_plan=study.run_plan,
+            backend=study.backend,
+            study_id=study.study_id,
+            created_at=study.created_at,
+            metadata=metadata,
+        )
+        created = self.create_study(gated)
+        self.assess_support(created.study_id)
+        return created
+
+    def _require_support_freeze(self, study: StudySpec) -> None:
+        if study.metadata.get("workflow_contract") != "support-gated-1":
+            return
+        assessment = self.store.get_support_assessment(study.study_id)
+        approval = self.store.get_support_approval(study.study_id)
+        if assessment is None or approval is None:
+            raise ValueError("support_assessment_requires_researcher_approval")
+        if assessment.get("study_configuration_hash") != study.configuration_hash:
+            raise ValueError("support_assessment_stale")
+        if not assessment.get("run_allowed"):
+            raise ValueError("support_assessment_not_run_allowed")
+        if (
+            approval.get("status") != "FROZEN_FOR_COMPUTATIONAL_RUN"
+            or approval.get("assessment_hash") != assessment.get("assessment_hash")
+            or approval.get("study_configuration_hash") != study.configuration_hash
+        ):
+            raise ValueError("support_assessment_requires_researcher_approval")
+
+    def select_study(self, study_id: str, policy: SelectionPolicy) -> dict[str, Any]:
+        study = self.get_study(study_id)
+        if study.metadata.get("workflow_contract") != "support-gated-1":
+            raise ValueError("selection_requires_support_gated_study")
+        self._require_support_freeze(study)
+        if policy.assay != study.assay or policy.primary_metric != study.primary_metric:
+            raise ValueError("selection policy assay/metric does not match the frozen StudySpec")
+        if policy.study_id not in {None, study_id}:
+            raise ValueError("selection policy study_id does not match the frozen StudySpec")
+        if not policy.control_candidate_id:
+            raise ValueError("selection requires an explicit control_candidate_id")
+        scoped_policy = SelectionPolicy(
+            assay=policy.assay,
+            primary_metric=policy.primary_metric,
+            budget_k=policy.budget_k,
+            study_id=study_id,
+            control_candidate_id=policy.control_candidate_id,
+            minimum_pairs=policy.minimum_pairs,
+            bootstrap_samples=policy.bootstrap_samples,
+            ci_level=policy.ci_level,
+            minimum_direction_stability=policy.minimum_direction_stability,
+            bootstrap_seed=policy.bootstrap_seed,
+        )
+        support_assessment = self.store.get_support_assessment(study_id)
+        assert support_assessment is not None
+        ranking_policy = RankingPolicy(
+            assay=study.assay,
+            primary_metric=study.primary_metric,
+            study_id=study_id,
+            control_candidate_id=policy.control_candidate_id,
+            minimum_pairs=policy.minimum_pairs,
+            bootstrap_samples=policy.bootstrap_samples,
+            ci_level=policy.ci_level,
+            minimum_effect_threshold=0.0,
+            minimum_direction_stability=policy.minimum_direction_stability,
+            bootstrap_seed=policy.bootstrap_seed,
+        )
+        collection = self.collect_ranking_observations(study_id, ranking_policy)
+        if collection["status"] == "READY":
+            selection = make_selection_report(collection["observations"], support_assessment, scoped_policy)
+        else:
+            selection = make_selection_report([], support_assessment, scoped_policy)
+            selection["status"] = "INCOMPLETE_COLLECTION"
+            selection["notes"].append("No candidate is recommended until every declared candidate has complete paired observations.")
+        selection["collection"] = collection
+        selection["provenance"] = {
+            "collection_hash": stable_hash(collection),
+            "support_assessment_hash": support_assessment["assessment_hash"],
+            "source_manifests": [item for item in collection["source_jobs"] if item.get("manifest_path")],
+        }
+        target = self.artifact_root / _safe_component(study_id) / "selection_report.json"
+        selection["report_path"] = target.as_posix()
+        _write_json(target, selection)
+        return selection
 
     def evaluate_benchmark(
         self,
@@ -363,6 +579,7 @@ class WorkbenchService:
         """
 
         study = self.get_study(study_id)
+        self._require_support_freeze(study)
         selected_plan = dict(plan or self._load_confirmation_plan(study_id))
         if selected_plan.get("study_id") != study_id:
             raise ValueError("confirmation plan study_id does not match selected study")
@@ -619,7 +836,13 @@ class WorkbenchService:
         job_id: str | None = None,
     ) -> JobRecord:
         study = self.get_study(study_id)
+        self._require_support_freeze(study)
         selected_backend = backend or study.backend
+        if (
+            study.metadata.get("workflow_contract") == "support-gated-1"
+            and selected_backend != study.backend
+        ):
+            raise ValueError("support-gated research cannot override the frozen study backend")
         adapter = self._adapter(selected_backend)
         job_config = self._materialize_candidate_config(study, config or {})
         validation_config = dict(job_config)
@@ -636,8 +859,8 @@ class WorkbenchService:
         self.store.create_job(job)
         return job
 
-    @staticmethod
     def _materialize_candidate_config(
+        self,
         study: StudySpec,
         config: Mapping[str, Any],
     ) -> dict[str, Any]:
@@ -649,11 +872,16 @@ class WorkbenchService:
         """
 
         job_config = dict(config)
+        support_gated = study.metadata.get("workflow_contract") == "support-gated-1"
         candidate_id = str(job_config.get("candidate_id", "")).strip()
         if not candidate_id:
+            if support_gated:
+                raise ValueError("support-gated jobs require a declared candidate_id")
             return job_config
         candidate = next((item for item in study.candidates if item.candidate_id == candidate_id), None)
         if candidate is None:
+            if support_gated:
+                raise ValueError(f"candidate_id is not declared in the frozen StudySpec: {candidate_id}")
             return job_config
 
         intervention = dict(candidate.intervention)
@@ -662,18 +890,66 @@ class WorkbenchService:
         job_config["intervention"] = intervention
         job_config.setdefault("candidate_configuration_hash", stable_hash(candidate.as_dict()))
 
+        parameters = intervention.get("parameters")
         backend_requirements = study.run_plan.get("backend_requirements", {})
+        if support_gated and not isinstance(backend_requirements, Mapping):
+            raise ValueError("backend_requirements must be an object in a support-gated StudySpec")
         if isinstance(backend_requirements, Mapping):
-            for key, value in backend_requirements.items():
-                if key not in job_config and value is not None:
-                    job_config[str(key)] = value
+            fixed_fields = {
+                "model_root",
+                "completeness",
+                "connectivity",
+                "annotation_file",
+                "readout_ids",
+                "dataset_id",
+                "id_namespace",
+                "stimulus_rate_hz",
+                "stimulus_schedule",
+                "duration_s",
+                "trials",
+                "parameter_overrides",
+            }
+            if support_gated:
+                for key in fixed_fields:
+                    if key in config and key not in backend_requirements and not (
+                        isinstance(parameters, Mapping) and key in parameters
+                    ):
+                        raise ValueError(f"{key} must be declared in the frozen StudySpec")
+                for key, value in backend_requirements.items():
+                    if value is None:
+                        continue
+                    declared_value = (
+                        parameters[key]
+                        if isinstance(parameters, Mapping) and key in parameters
+                        else value
+                    )
+                    if (
+                        key == "readout_ids"
+                        and isinstance(parameters, Mapping)
+                        and key in parameters
+                        and stable_hash(jsonable(parameters[key])) != stable_hash(jsonable(value))
+                    ):
+                        raise ValueError("readout_ids must be fixed at study level")
+                    supplied_value = config.get(key)
+                    allowed_values = [value]
+                    if isinstance(parameters, Mapping) and key in parameters:
+                        allowed_values.append(parameters[key])
+                    if key != "input_ids" and supplied_value is not None and not any(
+                        stable_hash(jsonable(supplied_value)) == stable_hash(jsonable(item))
+                        for item in allowed_values
+                    ):
+                        raise ValueError(f"job {key} differs from the frozen StudySpec")
+                    job_config[str(key)] = jsonable(declared_value)
+            else:
+                for key, value in backend_requirements.items():
+                    if key not in job_config and value is not None:
+                        job_config[str(key)] = value
         if (
             intervention_type in {"activation", "outgoing_synapse_block"}
             and job_config.get("condition_label") is None
         ):
             job_config["condition_label"] = intervention_type
 
-        parameters = intervention.get("parameters")
         if (
             intervention_type == "controller_parameter_override"
             and job_config.get("parameter_overrides") is None
@@ -681,9 +957,76 @@ class WorkbenchService:
         ):
             job_config["parameter_overrides"] = dict(parameters)
         if isinstance(parameters, Mapping):
+            if (
+                support_gated
+                and "readout_ids" in parameters
+                and (
+                    not isinstance(backend_requirements, Mapping)
+                    or "readout_ids" not in backend_requirements
+                    or stable_hash(jsonable(parameters["readout_ids"]))
+                    != stable_hash(jsonable(backend_requirements["readout_ids"]))
+                )
+            ):
+                raise ValueError("readout_ids must be fixed in StudySpec backend_requirements")
             for key in ("stimulus_rate_hz", "stimulus_schedule", "input_ids", "readout_ids"):
-                if key in parameters and key not in job_config:
-                    job_config[key] = jsonable(parameters[key])
+                if key not in parameters:
+                    continue
+                if support_gated and key in job_config and key in config and key != "input_ids":
+                    allowed_value = backend_requirements.get(key) if isinstance(backend_requirements, Mapping) else None
+                    if stable_hash(jsonable(config[key])) not in {
+                        stable_hash(jsonable(parameters[key])),
+                        stable_hash(jsonable(allowed_value)),
+                    }:
+                        raise ValueError(f"job {key} differs from the frozen StudySpec candidate")
+                job_config[key] = jsonable(parameters[key])
+
+        if support_gated and intervention_type != "none":
+            mapping_id = str(candidate.metadata.get("mapping_id", "")).strip()
+            raw_mapping = self.store.get_mapping(mapping_id) if mapping_id else None
+            if raw_mapping is None:
+                raise ValueError(f"candidate {candidate_id} has no registered mapping record")
+            mapping = MappingRecord.from_dict(raw_mapping)
+            if mapping.backend != study.backend:
+                raise ValueError("candidate mapping backend differs from frozen study backend")
+            if mapping.intervention_type != intervention_type:
+                raise ValueError("candidate mapping intervention differs from frozen StudySpec")
+            if mapping.review_status not in {"COMPUTATIONALLY_REVIEWED", "BIOLOGY_REVIEWED"}:
+                raise ValueError("candidate mapping must be reviewed before a support-gated run")
+
+            if intervention_type == "activation":
+                target_field = "input_ids"
+                aliases = ("input_ids", "stimulus_ids")
+            elif intervention_type in {"silence", "outgoing_synapse_block"}:
+                target_field = "silence_ids"
+                aliases = ("silence_ids", "outgoing_synapse_block_ids", "target_ids")
+            else:
+                raise ValueError(
+                    f"support-gated mapping materialization is not defined for {intervention_type}"
+                )
+
+            expected_ids = tuple(mapping.target_ids)
+            supplied_ids = config.get(target_field, job_config.get(target_field))
+            if supplied_ids not in (None, [], ()) and _identifier_tuple(supplied_ids) != expected_ids:
+                raise ValueError("job target IDs differ from reviewed mapping")
+            for container in (intervention, parameters if isinstance(parameters, Mapping) else {}):
+                for alias in aliases:
+                    if alias in container and _identifier_tuple(container[alias]) != expected_ids:
+                        raise ValueError("StudySpec target IDs differ from reviewed mapping")
+            job_config[target_field] = list(expected_ids)
+            for field_name, expected_value in (
+                ("dataset_id", mapping.dataset_id),
+                ("id_namespace", mapping.id_namespace),
+            ):
+                declared_value = job_config.get(field_name)
+                if declared_value is not None and str(declared_value) != expected_value:
+                    raise ValueError(f"job {field_name} differs from reviewed mapping")
+            requested_mapping_id = job_config.get("mapping_id")
+            if requested_mapping_id is not None and str(requested_mapping_id) != mapping.mapping_id:
+                raise ValueError("job mapping_id differs from the frozen StudySpec candidate")
+            job_config["mapping_id"] = mapping.mapping_id
+            job_config["mapping_record_hash"] = mapping.record_hash
+            job_config["id_namespace"] = mapping.id_namespace
+            job_config["dataset_id"] = mapping.dataset_id
         return job_config
 
     def get_job(self, job_id: str) -> JobRecord:
@@ -703,6 +1046,7 @@ class WorkbenchService:
         """Submit one explicit screening job per candidate and seed."""
 
         study = self.get_study(study_id)
+        self._require_support_freeze(study)
         if not seeds:
             raise ValueError("screening requires at least one seed")
         normalized_seeds: list[int | str] = []
@@ -856,6 +1200,7 @@ class WorkbenchService:
 
     def resume_job(self, job_id: str) -> JobRecord:
         job = self.get_job(job_id)
+        self._require_support_freeze(self.get_study(job.study_id))
         if job.status not in {JobStatus.FAILED, JobStatus.CANCELLED}:
             raise ValueError(f"only failed or cancelled jobs can resume: {job.status.value}")
         job.status = JobStatus.PENDING
@@ -911,6 +1256,7 @@ class WorkbenchService:
 
         with self._run_lock, self._worker_file_lock():
             job = self.get_job(job_id)
+            self._require_support_freeze(self.get_study(job.study_id))
             if job.status != JobStatus.PENDING:
                 raise ValueError(f"job is not pending: {job.status.value}")
             study = self.get_study(job.study_id)
@@ -1789,6 +2135,47 @@ def _hash_config_inputs(config: Mapping[str, Any]) -> dict[str, str]:
 
     visit(config, "job")
     return dict(sorted(records.items()))
+
+
+def _identifier_tuple(value: Any) -> tuple[str, ...]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        raise ValueError("mapped target IDs must be supplied as a sequence")
+    identifiers = tuple(str(item).strip() for item in value)
+    if not identifiers or any(not item for item in identifiers):
+        raise ValueError("mapped target IDs must be a non-empty sequence")
+    if len(set(identifiers)) != len(identifiers):
+        raise ValueError("mapped target IDs must be unique")
+    return identifiers
+
+
+def _neural_inventory_errors(config: Mapping[str, Any]) -> list[str]:
+    """Check declared LIF IDs against its version-pinned completeness table."""
+
+    inventory_path_value = config.get("completeness")
+    if not inventory_path_value:
+        return []
+    inventory_path = Path(str(inventory_path_value)).expanduser()
+    if not inventory_path.is_file():
+        return []  # The adapter's own preflight reports the missing file.
+    requested: set[str] = set()
+    for field_name in ("input_ids", "silence_ids", "readout_ids"):
+        values = config.get(field_name)
+        if isinstance(values, Sequence) and not isinstance(values, (str, bytes, bytearray)):
+            requested.update(str(value).strip() for value in values if str(value).strip())
+    if not requested:
+        return []
+    try:
+        with inventory_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.reader(handle)
+            next(reader, None)
+            for row in reader:
+                if row and row[0].strip() in requested:
+                    requested.discard(row[0].strip())
+                    if not requested:
+                        break
+    except (OSError, csv.Error) as error:
+        return [f"completeness_inventory_unreadable:{type(error).__name__}"]
+    return [f"neuron_id_not_in_declared_dataset:{identifier}" for identifier in sorted(requested)]
 
 
 def _environment_snapshot() -> dict[str, Any]:

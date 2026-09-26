@@ -7,6 +7,8 @@ from typing import Any
 from .benchmark import BenchmarkProtocol, freeze_benchmark_protocol
 from .models import StudySpec
 from .ranking import RankingPolicy
+from .selection import SelectionPolicy
+from .support import MappingRecord
 from .service import WorkbenchService
 
 
@@ -32,6 +34,78 @@ def create_app(service: WorkbenchService) -> Any:
     @app.get("/v1/capabilities")
     def capabilities() -> dict[str, Any]:
         return {"capabilities": service.capabilities()}
+
+    @app.get("/v1/mapping-records")
+    def mapping_records() -> dict[str, Any]:
+        return {"mapping_records": service.list_mapping_records()}
+
+    @app.post("/v1/mapping-records")
+    def register_mapping_record(payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            record = payload.get("mapping_record", payload)
+            return service.register_mapping_record(MappingRecord.from_dict(record))
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/protocol-intake/draft")
+    def protocol_intake_draft(payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return service.preview_intake(
+                str(payload["protocol_text"]),
+                source_uri=None if payload.get("source_uri") is None else str(payload["source_uri"]),
+            )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/studies/research")
+    def create_research_study(payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            study = service.create_research_study(StudySpec.from_dict(payload))
+            return {
+                "study": study.as_dict(),
+                "support_assessment": service.get_support_assessment(study.study_id),
+            }
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/studies/{study_id}/support-assessment")
+    def assess_study_support(study_id: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        try:
+            data = payload or {}
+            context = data.get("required_context")
+            if context is not None and not isinstance(context, dict):
+                raise ValueError("required_context must be an object")
+            return service.assess_support(study_id, required_context=context)
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.get("/v1/studies/{study_id}/support-assessment")
+    def get_study_support(study_id: str) -> dict[str, Any]:
+        try:
+            assessment = service.get_support_assessment(study_id)
+            if assessment is None:
+                raise ValueError("support assessment has not been created")
+            return assessment
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/studies/{study_id}/support-approval")
+    def approve_study_support(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            reviewer = payload.get("reviewer")
+            return service.approve_support_assessment(
+                study_id,
+                reviewer=reviewer if isinstance(reviewer, str) else None,
+            )
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/studies/{study_id}/selection")
+    def select_study_candidates(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return service.select_study(study_id, SelectionPolicy.from_dict(payload["policy"]))
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
 
     @app.post("/v1/worker/recover-stale")
     def recover_stale(payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -313,9 +387,26 @@ pre{white-space:pre-wrap;background:#17212b;padding:1rem;border-radius:4px;overf
 </style></head><body>
 <h1>Fly Research Workbench <small>v0.1</small></h1>
 <p class="muted">Local study/job coordination. Computational completion is not biological validation.</p>
-<section class="card"><h2>Create study</h2>
+<section class="card"><h2>Legacy study demo</h2><p class="muted">This endpoint preserves older ungated demo workflows. Use the evidence-gated research form below for new research studies.</p>
 <textarea id="study">{"name":"motor pilot","hypothesis":"a declared perturbation changes path speed","falsifiable_prediction":"path speed differs from matched control","assay":"motor_flat_ground","primary_metric":"mean_planar_path_speed_mm_s","backend":"flygym_healthy","candidates":[{"candidate_id":"control","label":"No perturbation"}],"controls":[{"id":"control","role":"negative_control"}],"sources":[],"run_plan":{"seed_repetitions":10}}</textarea>
 <br><button onclick="createStudy()">Create study</button><button onclick="loadAll()">Refresh</button></section>
+<section class="card"><h2>Protocol intake draft</h2>
+<p class="muted">Optional AI reads protocol text and returns a source-linked draft for researcher review. It cannot create studies, mappings, interventions, simulation settings, approvals, or jobs. A provider must be explicitly configured at server start.</p>
+<textarea id="protocolText" placeholder="Paste protocol text here"></textarea>
+<input id="protocolSource" placeholder="Source URI (optional)" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<br><button onclick="draftProtocol()">Create intake draft</button><pre id="intakeResult">No intake draft yet.</pre></section>
+<section class="card"><h2>Evidence-gated research study</h2>
+<p class="muted">Create a support-gated study only after a researcher has checked the protocol draft. Candidate mappings are entered and reviewed separately.</p>
+<textarea id="researchStudy">{"name":"MN9 pilot","hypothesis":"declared activation changes the MN9 response","falsifiable_prediction":"MN9 rate differs from matched control","assay":"sensory_mn9","primary_metric":"mn9_rate","backend":"lif_2024","candidates":[{"candidate_id":"control","label":"No stimulation","intervention":{"type":"none"}},{"candidate_id":"candidate-1","label":"Reviewed target","target":"target-name","intervention":{"type":"activation"},"metadata":{"mapping_id":"mapping-v1"}}],"controls":[{"id":"control","role":"negative_control"}],"sources":[],"run_plan":{"seed_repetitions":10},"metadata":{"dataset_id":"flywire-630","id_namespace":"flywire_root_id","context":{}}}</textarea>
+<br><button onclick="createResearchStudy()">Create support-gated study</button>
+<textarea id="mappingRecord">{"mapping_id":"mapping-v1","version":"1","biological_target":"target-name","backend":"lif_2024","id_namespace":"flywire_root_id","dataset_id":"flywire-630","intervention_type":"activation","target_ids":["123"],"sources":[{"citation":"paper DOI or title","locator":"figure/table/section"}],"review_status":"PENDING_SCIENTIFIC_REVIEW","context":{},"reviewer":null,"reviewed_at":null,"limitations":["Needs scientific review"]}</textarea>
+<p class="muted">Review target IDs, namespace, dataset, context, and source evidence before changing review_status. Mapping IDs are immutable; a reviewed revision needs a new mapping ID and version.</p>
+<br><button onclick="registerMapping()">Register human-authored mapping record</button>
+<input id="supportReviewer" placeholder="Researcher/reviewer name" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<textarea id="screenSeeds">[0,1,2,3,4,5,6,7,8,9]</textarea>
+<textarea id="selectionPolicy">{"assay":"sensory_mn9","primary_metric":"mn9_rate","budget_k":3,"control_candidate_id":"control","minimum_pairs":3,"bootstrap_samples":1000,"minimum_direction_stability":0.8}</textarea>
+<br><button onclick="assessSupport()">Assess support</button><button onclick="approveSupport()">Approve support assessment</button><button onclick="submitResearchScreening()">Submit screening jobs</button><button onclick="runResearchScreening()">Run screening jobs</button><button onclick="selectBudget()">Select within candidate budget</button>
+<pre id="supportResult">Support assessment and candidate selection are recorded here.</pre></section>
 <section class="card"><h2>Capabilities</h2><pre id="capabilities">Loading...</pre></section>
 <section class="card"><h2>Studies and reports</h2><pre id="studies">Loading...</pre></section>
 <section class="card"><h2>Ranking and confirmation</h2>
@@ -333,6 +424,14 @@ const show=(id,x)=>document.getElementById(id).textContent=JSON.stringify(x,null
 const studyId=()=>document.getElementById('rankingStudy').value.trim();
 async function loadAll(){try{show('capabilities',await get('/v1/capabilities'));const studies=await get('/v1/studies');for(const s of studies.studies){s.jobs=await get('/v1/studies/'+s.study_id+'/jobs');s.report=await get('/v1/studies/'+s.study_id+'/report')}if(!studyId()&&studies.studies.length){document.getElementById('rankingStudy').value=studies.studies[0].study_id;const p=JSON.parse(document.getElementById('rankingPolicy').value);p.study_id=studies.studies[0].study_id;document.getElementById('rankingPolicy').value=JSON.stringify(p,null,2)}show('studies',studies)}catch(e){show('studies',{error:String(e)})}}
 async function createStudy(){try{const value=JSON.parse(document.getElementById('study').value);await get('/v1/studies',{method:'POST',body:JSON.stringify(value)});await loadAll()}catch(e){show('studies',{error:String(e)})}}
+async function draftProtocol(){try{show('intakeResult',await get('/v1/protocol-intake/draft',{method:'POST',body:JSON.stringify({protocol_text:document.getElementById('protocolText').value,source_uri:document.getElementById('protocolSource').value||null})}))}catch(e){show('intakeResult',{error:String(e)})}}
+async function createResearchStudy(){try{const value=JSON.parse(document.getElementById('researchStudy').value);const result=await get('/v1/studies/research',{method:'POST',body:JSON.stringify(value)});document.getElementById('rankingStudy').value=result.study.study_id;show('supportResult',result);await loadAll()}catch(e){show('supportResult',{error:String(e)})}}
+async function registerMapping(){try{show('supportResult',await get('/v1/mapping-records',{method:'POST',body:JSON.stringify(JSON.parse(document.getElementById('mappingRecord').value))}))}catch(e){show('supportResult',{error:String(e)})}}
+async function assessSupport(){try{show('supportResult',await get('/v1/studies/'+studyId()+'/support-assessment',{method:'POST',body:'{}'}))}catch(e){show('supportResult',{error:String(e)})}}
+async function approveSupport(){try{show('supportResult',await get('/v1/studies/'+studyId()+'/support-approval',{method:'POST',body:JSON.stringify({reviewer:document.getElementById('supportReviewer').value})}))}catch(e){show('supportResult',{error:String(e)})}}
+async function submitResearchScreening(){try{show('supportResult',await get('/v1/studies/'+studyId()+'/screening/submit',{method:'POST',body:JSON.stringify({seeds:JSON.parse(document.getElementById('screenSeeds').value)})}))}catch(e){show('supportResult',{error:String(e)})}}
+async function runResearchScreening(){try{show('supportResult',await get('/v1/studies/'+studyId()+'/screening/run',{method:'POST',body:'{}'}))}catch(e){show('supportResult',{error:String(e)})}}
+async function selectBudget(){try{const policy=JSON.parse(document.getElementById('selectionPolicy').value);policy.study_id=studyId();show('supportResult',await get('/v1/studies/'+studyId()+'/selection',{method:'POST',body:JSON.stringify({policy})}))}catch(e){show('supportResult',{error:String(e)})}}
 async function rankStudy(){try{const id=studyId();const policy=JSON.parse(document.getElementById('rankingPolicy').value);policy.study_id=id;show('ranking',await get('/v1/studies/'+id+'/rank',{method:'POST',body:JSON.stringify({policy})}))}catch(e){show('ranking',{error:String(e)})}}
 async function makeConfirmationPlan(){try{const id=studyId();show('ranking',await get('/v1/studies/'+id+'/confirmation-plan',{method:'POST',body:JSON.stringify({top_k:Number(document.getElementById('topK').value)})}))}catch(e){show('ranking',{error:String(e)})}}
 async function submitConfirmation(){try{const id=studyId();show('ranking',await get('/v1/studies/'+id+'/confirmation-plan/submit',{method:'POST',body:JSON.stringify({include_sensitivity:document.getElementById('includeSensitivity').checked})}))}catch(e){show('ranking',{error:String(e)})}}

@@ -319,8 +319,10 @@ def _wilcoxon_test(
             "n_seeds": len(b_vals),
         }
 
-        if scipy_available and len(b_vals) >= 2 and len(p_vals) >= 2 and len(b_vals) == len(p_vals):
+        if len(b_vals) >= 2 and len(p_vals) >= 2 and len(b_vals) == len(p_vals):
             # Paired test: each seed i treated as a pair (baseline_i, perturbed_i)
+            # An all-zero paired difference has an exact result even when
+            # scipy is not installed, so handle it before the optional import.
             try:
                 differences = np.asarray(p_vals, dtype=float) - np.asarray(b_vals, dtype=float)
                 if np.all(differences == 0.0):
@@ -329,13 +331,22 @@ def _wilcoxon_test(
                     # paired change, statistic 0, and two-sided p=1.
                     stat, pval = 0.0, 1.0
                     entry["test_method"] = "wilcoxon_signed_rank_constant_zero"
-                else:
+                    entry["statistic"] = float(stat)
+                    entry["p_value"] = float(pval)
+                    entry["significant_0.05"] = False
+                    entry["significant_0.10"] = False
+                elif scipy_available:
                     stat, pval = _wilcoxon(b_vals, p_vals, alternative="two-sided")
                     entry["test_method"] = "wilcoxon_signed_rank"
-                entry["statistic"] = float(stat)
-                entry["p_value"] = float(pval)
-                entry["significant_0.05"] = bool(pval < 0.05)
-                entry["significant_0.10"] = bool(pval < 0.10)
+                    entry["statistic"] = float(stat)
+                    entry["p_value"] = float(pval)
+                    entry["significant_0.05"] = bool(pval < 0.05)
+                    entry["significant_0.10"] = bool(pval < 0.10)
+                else:
+                    entry["statistic"] = None
+                    entry["p_value"] = None
+                    entry["significant_0.05"] = None
+                    entry["test_method"] = "descriptive_only"
             except Exception as e:
                 entry["statistic"] = None
                 entry["p_value"] = None

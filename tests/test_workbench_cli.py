@@ -90,3 +90,96 @@ def test_cli_rank_writes_guardrailed_report(tmp_path, capsys) -> None:
     report = json.loads(output_path.read_text(encoding="utf-8"))
     assert report["ranking_eligible"] is True
     assert report["ranked_candidates"][0]["candidate_id"] == "candidate-a"
+
+
+def test_cli_imports_only_traceable_review_pending_mapping_records(tmp_path, capsys) -> None:
+    registry = tmp_path / "registry.json"
+    registry.write_text(
+        json.dumps(
+            {
+                "schema_version": "registry-v1",
+                "mapping_records": [
+                    {
+                        "mapping_id": "exact-v1",
+                        "version": "1",
+                        "biological_target": "target-a",
+                        "source_mapping_key": "target-a",
+                        "mapping_status": "EXACT",
+                        "backend": "lif_2024",
+                        "id_namespace": "flywire_root_id",
+                        "dataset_id": "flywire-630",
+                        "intervention_type": "activation",
+                        "target_ids": ["123"],
+                        "sources": [{"citation": "paper", "locator": "Table 3"}],
+                        "review_status": "PENDING_SCIENTIFIC_REVIEW",
+                        "context": {"assay": "proboscis_extension"},
+                    },
+                    {
+                        "mapping_id": "invalid-v1",
+                        "mapping_status": "INVALID_SOURCE_ID_SET",
+                        "target_ids": [],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    code = main(
+        [
+            "--db",
+            str(tmp_path / "state.sqlite3"),
+            "--artifacts",
+            str(tmp_path / "artifacts"),
+            "mapping-import",
+            "--file",
+            str(registry),
+        ]
+    )
+    assert code == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["imported_count"] == 1
+    assert output["imported"][0]["review_status"] == "PENDING_SCIENTIFIC_REVIEW"
+    assert output["imported"][0]["context"]["source_name_match"] == "EXACT"
+    assert output["skipped"] == [{"mapping_id": "invalid-v1", "reason": "INVALID_SOURCE_ID_SET"}]
+
+
+def test_cli_research_study_uses_support_gated_contract(tmp_path, capsys) -> None:
+    study_file = tmp_path / "study.json"
+    study_file.write_text(
+        json.dumps(
+            {
+                "name": "research study",
+                "hypothesis": "target activation changes MN9 rate",
+                "falsifiable_prediction": "the rate differs from control",
+                "assay": "sensory_mn9",
+                "primary_metric": "mn9_rate",
+                "backend": "lif_2024",
+                "candidates": [
+                    {"candidate_id": "control", "label": "control", "intervention": {"type": "none"}},
+                    {"candidate_id": "target", "label": "target", "target": "cell-type", "intervention": {"type": "activation"}, "metadata": {"mapping_id": "mapping-v1"}},
+                ],
+                "controls": [{"id": "control", "role": "negative_control"}],
+                "sources": [],
+                "run_plan": {"seed_repetitions": 3},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    code = main(
+        [
+            "--db",
+            str(tmp_path / "state.sqlite3"),
+            "--artifacts",
+            str(tmp_path / "artifacts"),
+            "create-research-study",
+            "--file",
+            str(study_file),
+        ]
+    )
+    assert code == 0
+    result = json.loads(capsys.readouterr().out)
+    study = result["study"]
+    assert study["metadata"]["workflow_contract"] == "support-gated-1"
+    assert result["support_assessment"]["status"] == "OUT_OF_SCOPE"

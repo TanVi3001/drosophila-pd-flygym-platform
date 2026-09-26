@@ -2,6 +2,10 @@
 
 This repository now contains the first shared coordination slice for the two-week plan.
 
+The support-gated research workflow, public mapping registry, optional
+protocol-intake boundary, and candidate-budget selection are documented in
+[`docs/workbench/evidence_gated_prioritization.md`](workbench/evidence_gated_prioritization.md).
+
 ## Run the CLI
 
 From `drosophila-pd-flygym`:
@@ -11,6 +15,11 @@ $env:PYTHONPATH = "src"
 python scripts/workbench.py --db .workbench/workbench.sqlite3 --artifacts .workbench/artifacts capabilities
 python scripts/workbench.py create-study --file configs/workbench/motor_flat_ground.yaml
 ```
+
+`create-study` and `POST /v1/studies` remain for older demo workflows. Use
+`create-research-study` and `POST /v1/studies/research` for new research so
+support is assessed before simulation approval. See the
+[evidence-gated workflow](workbench/evidence_gated_prioritization.md).
 
 To enable the neural bridge, pass both repositories explicitly (and keep the
 interpreters separate):

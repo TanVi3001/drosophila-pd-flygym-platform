@@ -39,6 +39,7 @@ from .graph_nulls import (
     outgoing_weight_signature,
 )
 from .confirmation import CONFIRMATION_PLAN_VERSION, build_confirmation_plan
+from .intake import OpenAICompatibleIntakeProvider
 from .handoff import (
     EvidenceBundle,
     LabHandoff,
@@ -64,9 +65,11 @@ from .ranking import (
     bootstrap_mean_ci,
     rank_candidates,
 )
+from .selection import SelectionPolicy, select_candidates
 from .reproduction import verify_reproduction
 from .service import WorkbenchService
 from .store import WorkbenchStore
+from .support import MappingRecord, assess_study_support
 
 __all__ = [
     "BackendAdapter",
@@ -99,6 +102,8 @@ __all__ = [
     "NeuralLifAdapter",
     "LocomotionAssayAdapter",
     "NeuralReadoutAssayAdapter",
+    "MappingRecord",
+    "OpenAICompatibleIntakeProvider",
     "LabHandoff",
     "REVIEW_DECISIONS",
     "RunManifest",
@@ -107,11 +112,13 @@ __all__ = [
     "RankingPolicy",
     "RetrospectiveCase",
     "StudySpec",
+    "SelectionPolicy",
     "WORKBENCH_SCOPE",
     "WorkbenchService",
     "WorkbenchStore",
     "build_evidence_bundle",
     "build_confirmation_plan",
+    "assess_study_support",
     "default_review",
     "default_adapters",
     "GraphEdge",
@@ -125,5 +132,6 @@ __all__ = [
     "validate_score_mapping",
     "bootstrap_mean_ci",
     "rank_candidates",
+    "select_candidates",
     "verify_reproduction",
 ]
