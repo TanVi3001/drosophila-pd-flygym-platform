@@ -8,7 +8,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-from .models import JobRecord, StudySpec, jsonable, utc_timestamp
+from .models import JobRecord, StudySpec, jsonable, stable_hash, utc_timestamp
 
 
 class WorkbenchStore:
@@ -67,8 +67,109 @@ class WorkbenchStore:
                     payload_json TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS mapping_records (
+                    mapping_id TEXT PRIMARY KEY,
+                    record_hash TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS support_assessments (
+                    study_id TEXT PRIMARY KEY REFERENCES studies(study_id),
+                    payload_json TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS support_approvals (
+                    study_id TEXT PRIMARY KEY REFERENCES studies(study_id),
+                    payload_json TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
                 """
             )
+
+    def register_mapping(self, mapping: dict[str, Any]) -> dict[str, Any]:
+        mapping_id = str(mapping.get("mapping_id", "")).strip()
+        record_hash = str(mapping.get("record_hash") or stable_hash({key: value for key, value in mapping.items() if key != "record_hash"}))
+        if not mapping_id:
+            raise ValueError("mapping_id is required")
+        payload = json.dumps(jsonable(mapping), sort_keys=True)
+        with self._lock, self._connect() as connection:
+            existing = connection.execute(
+                "SELECT record_hash, payload_json FROM mapping_records WHERE mapping_id = ?",
+                (mapping_id,),
+            ).fetchone()
+            if existing is not None:
+                if existing["record_hash"] != record_hash:
+                    raise ValueError("mapping_id is immutable; create a new mapping_id for a revised record")
+                return dict(json.loads(existing["payload_json"]))
+            connection.execute(
+                "INSERT INTO mapping_records(mapping_id, record_hash, payload_json, created_at) VALUES (?, ?, ?, ?)",
+                (mapping_id, record_hash, payload, utc_timestamp()),
+            )
+            self._record_event(connection, "mapping", mapping_id, "registered", mapping)
+        return dict(mapping)
+
+    def get_mapping(self, mapping_id: str) -> dict[str, Any] | None:
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT payload_json FROM mapping_records WHERE mapping_id = ?", (mapping_id,)
+            ).fetchone()
+        return None if row is None else dict(json.loads(row["payload_json"]))
+
+    def list_mappings(self) -> dict[str, dict[str, Any]]:
+        with self._lock, self._connect() as connection:
+            rows = connection.execute(
+                "SELECT mapping_id, payload_json FROM mapping_records ORDER BY mapping_id"
+            ).fetchall()
+        return {str(row["mapping_id"]): dict(json.loads(row["payload_json"])) for row in rows}
+
+    def set_support_assessment(self, study_id: str, assessment: dict[str, Any]) -> dict[str, Any]:
+        payload = json.dumps(jsonable(assessment), sort_keys=True)
+        now = utc_timestamp()
+        with self._lock, self._connect() as connection:
+            if connection.execute("SELECT 1 FROM studies WHERE study_id = ?", (study_id,)).fetchone() is None:
+                raise KeyError(f"unknown study_id: {study_id}")
+            connection.execute(
+                "INSERT INTO support_assessments(study_id, payload_json, updated_at) VALUES (?, ?, ?) "
+                "ON CONFLICT(study_id) DO UPDATE SET payload_json = excluded.payload_json, updated_at = excluded.updated_at",
+                (study_id, payload, now),
+            )
+            connection.execute("DELETE FROM support_approvals WHERE study_id = ?", (study_id,))
+            self._record_event(connection, "study", study_id, "support_assessed", assessment)
+        return dict(assessment)
+
+    def get_support_assessment(self, study_id: str) -> dict[str, Any] | None:
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT payload_json FROM support_assessments WHERE study_id = ?", (study_id,)
+            ).fetchone()
+        return None if row is None else dict(json.loads(row["payload_json"]))
+
+    def set_support_approval(self, study_id: str, approval: dict[str, Any]) -> dict[str, Any]:
+        payload = json.dumps(jsonable(approval), sort_keys=True)
+        now = utc_timestamp()
+        with self._lock, self._connect() as connection:
+            assessment_row = connection.execute(
+                "SELECT payload_json FROM support_assessments WHERE study_id = ?", (study_id,)
+            ).fetchone()
+            if assessment_row is None:
+                raise ValueError("support_assessment_missing")
+            assessment = json.loads(assessment_row["payload_json"])
+            if approval.get("assessment_hash") != assessment.get("assessment_hash"):
+                raise ValueError("support_assessment_hash_mismatch")
+            connection.execute(
+                "INSERT INTO support_approvals(study_id, payload_json, updated_at) VALUES (?, ?, ?) "
+                "ON CONFLICT(study_id) DO UPDATE SET payload_json = excluded.payload_json, updated_at = excluded.updated_at",
+                (study_id, payload, now),
+            )
+            self._record_event(connection, "study", study_id, "support_approved", approval)
+        return dict(approval)
+
+    def get_support_approval(self, study_id: str) -> dict[str, Any] | None:
+        with self._lock, self._connect() as connection:
+            row = connection.execute(
+                "SELECT payload_json FROM support_approvals WHERE study_id = ?", (study_id,)
+            ).fetchone()
+        return None if row is None else dict(json.loads(row["payload_json"]))
 
     def create_study(self, study: StudySpec) -> StudySpec:
         payload = json.dumps(jsonable(study.as_dict()), sort_keys=True)

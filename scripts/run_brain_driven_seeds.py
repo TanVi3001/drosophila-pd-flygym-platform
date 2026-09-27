@@ -320,35 +320,34 @@ def _wilcoxon_test(
         }
 
         if len(b_vals) >= 2 and len(p_vals) >= 2 and len(b_vals) == len(p_vals):
-            # Paired test: each seed i treated as a pair (baseline_i, perturbed_i).
-            # Handle an all-zero paired sample before checking SciPy so the
-            # deterministic conclusion remains available in the lightweight
-            # test/runtime dependency profile as well.
-            differences = np.asarray(p_vals, dtype=float) - np.asarray(b_vals, dtype=float)
-            if np.all(differences == 0.0):
-                # scipy warns for an all-zero signed-rank sample. The exact
-                # descriptive conclusion is unambiguous: no paired change,
-                # statistic 0, and two-sided p=1.
-                entry["statistic"] = 0.0
-                entry["p_value"] = 1.0
-                entry["significant_0.05"] = False
-                entry["significant_0.10"] = False
-                entry["test_method"] = "wilcoxon_signed_rank_constant_zero"
-            elif scipy_available:
-                try:
+            # Paired test: each seed i treated as a pair (baseline_i, perturbed_i)
+            # An all-zero paired difference has an exact result even when
+            # scipy is not installed, so handle it before the optional import.
+            try:
+                differences = np.asarray(p_vals, dtype=float) - np.asarray(b_vals, dtype=float)
+                if np.all(differences == 0.0):
+                    # scipy warns for an all-zero signed-rank sample. The
+                    # exact descriptive conclusion is unambiguous: no
+                    # paired change, statistic 0, and two-sided p=1.
+                    stat, pval = 0.0, 1.0
+                    entry["test_method"] = "wilcoxon_signed_rank_constant_zero"
+                    entry["statistic"] = float(stat)
+                    entry["p_value"] = float(pval)
+                    entry["significant_0.05"] = False
+                    entry["significant_0.10"] = False
+                elif scipy_available:
                     stat, pval = _wilcoxon(b_vals, p_vals, alternative="two-sided")
                     entry["test_method"] = "wilcoxon_signed_rank"
                     entry["statistic"] = float(stat)
                     entry["p_value"] = float(pval)
                     entry["significant_0.05"] = bool(pval < 0.05)
                     entry["significant_0.10"] = bool(pval < 0.10)
-                except Exception as e:
+                else:
                     entry["statistic"] = None
                     entry["p_value"] = None
                     entry["significant_0.05"] = None
-                    entry["test_error"] = str(e)
-                    entry["test_method"] = "wilcoxon_failed"
-            else:
+                    entry["test_method"] = "descriptive_only"
+            except Exception as e:
                 entry["statistic"] = None
                 entry["p_value"] = None
                 entry["significant_0.05"] = None

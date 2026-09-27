@@ -10,10 +10,13 @@ from typing import Any, Sequence
 from .adapters import default_adapters
 from .benchmark import BenchmarkProtocol, freeze_benchmark_protocol
 from .benchmark_baselines import prepare_benchmark_comparison
+from .intake import configured_intake_provider
 from .models import StudySpec
 from .ranking import RankingPolicy
 from .reproduction import verify_reproduction
+from .selection import SelectionPolicy
 from .service import WorkbenchService
+from .support import MappingRecord
 from .store import WorkbenchStore
 
 
@@ -23,6 +26,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--artifacts", type=Path, default=Path(".workbench") / "artifacts")
     parser.add_argument("--neural-repo", type=Path, help="Optional separate neural repository root")
     parser.add_argument("--neural-python", type=Path, help="Optional interpreter for the separate neural repository")
+    parser.add_argument("--intake-base-url", help="Optional OpenAI-compatible API base URL for explicit protocol intake")
+    parser.add_argument("--intake-model", help="Model name for explicit protocol intake")
+    parser.add_argument("--intake-api-key-env", help="Environment variable containing the optional API key")
     commands = parser.add_subparsers(dest="command", required=True)
 
     commands.add_parser("capabilities")
@@ -30,8 +36,41 @@ def build_parser() -> argparse.ArgumentParser:
     recover = commands.add_parser("recover-stale")
     recover.add_argument("--stale-after", type=float, default=3600.0)
 
-    create = commands.add_parser("create-study")
+    create = commands.add_parser(
+        "create-study",
+        help="Legacy ungated compatibility command; use create-research-study for new research",
+    )
     create.add_argument("--file", type=Path, required=True)
+
+    create_research = commands.add_parser(
+        "create-research-study",
+        help="Create a research study that must pass support assessment and researcher approval before running",
+    )
+    create_research.add_argument("--file", type=Path, required=True)
+
+    mapping_import = commands.add_parser("mapping-import", help="Import a review-pending public mapping registry")
+    mapping_import.add_argument("--file", type=Path, required=True)
+
+    mapping_register = commands.add_parser("mapping-register", help="Register one human-curated mapping record")
+    mapping_register.add_argument("--file", type=Path, required=True)
+
+    commands.add_parser("mapping-list", help="List registered, hash-frozen mapping records")
+
+    intake = commands.add_parser("protocol-intake", help="Create an AI-assisted protocol draft; never creates a study or mapping")
+    intake.add_argument("--file", type=Path, required=True, help="Plain-text protocol source")
+    intake.add_argument("--source-uri")
+
+    assess_support = commands.add_parser("assess-support")
+    assess_support.add_argument("study_id")
+    assess_support.add_argument("--context", type=Path, help="Optional JSON/YAML context required by the study")
+
+    approve_support = commands.add_parser("approve-support")
+    approve_support.add_argument("study_id")
+    approve_support.add_argument("--reviewer", required=True)
+
+    select = commands.add_parser("select-study", help="Select at most budget_k supported candidates after paired jobs complete")
+    select.add_argument("study_id")
+    select.add_argument("--policy", type=Path, required=True)
 
     get_study = commands.add_parser("get-study")
     get_study.add_argument("study_id")
@@ -194,6 +233,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             neural_repo_root=args.neural_repo,
             neural_interpreter=args.neural_python,
         ),
+        intake_provider=configured_intake_provider(
+            args.intake_base_url,
+            args.intake_model,
+            api_key_env=args.intake_api_key_env,
+        ),
     )
     try:
         payload = _dispatch(service, args)
@@ -219,6 +263,55 @@ def _dispatch(service: WorkbenchService, args: argparse.Namespace) -> Any:
     if args.command == "create-study":
         data = _load_document(args.file)
         return service.create_study(StudySpec.from_dict(data)).as_dict()
+    if args.command == "create-research-study":
+        data = _load_document(args.file)
+        study = service.create_research_study(StudySpec.from_dict(data))
+        return {
+            "study": study.as_dict(),
+            "support_assessment": service.get_support_assessment(study.study_id),
+        }
+    if args.command == "mapping-import":
+        registry = _load_document(args.file)
+        records = registry.get("mapping_records")
+        if not isinstance(records, list):
+            raise ValueError("mapping registry must contain mapping_records list")
+        imported = []
+        skipped = []
+        for raw in records:
+            if not isinstance(raw, dict):
+                skipped.append({"reason": "record_is_not_an_object"})
+                continue
+            mapping_status = raw.get("mapping_status")
+            if mapping_status not in {"EXACT", "CASEFOLD_ALIAS_REQUIRES_REVIEW"} or not raw.get("target_ids"):
+                skipped.append({"mapping_id": raw.get("mapping_id"), "reason": mapping_status or "empty_target_ids"})
+                continue
+            context = dict(raw.get("context") or {})
+            context["source_name_match"] = mapping_status
+            record = MappingRecord.from_dict({**raw, "context": context})
+            imported.append(service.register_mapping_record(record))
+        return {
+            "registry_schema_version": registry.get("schema_version"),
+            "review_status": "PENDING_SCIENTIFIC_REVIEW",
+            "imported_count": len(imported),
+            "imported": imported,
+            "skipped": skipped,
+        }
+    if args.command == "mapping-register":
+        return service.register_mapping_record(MappingRecord.from_dict(_load_document(args.file)))
+    if args.command == "mapping-list":
+        return {"mapping_records": service.list_mapping_records()}
+    if args.command == "protocol-intake":
+        protocol_text = args.file.read_text(encoding="utf-8")
+        return service.preview_intake(protocol_text, source_uri=args.source_uri)
+    if args.command == "assess-support":
+        context = _load_value(args.context) if args.context else None
+        if context is not None and not isinstance(context, dict):
+            raise ValueError("context document must contain an object")
+        return service.assess_support(args.study_id, required_context=context)
+    if args.command == "approve-support":
+        return service.approve_support_assessment(args.study_id, reviewer=args.reviewer)
+    if args.command == "select-study":
+        return service.select_study(args.study_id, SelectionPolicy.from_dict(_load_document(args.policy)))
     if args.command == "get-study":
         return service.get_study(args.study_id).as_dict()
     if args.command == "submit":
