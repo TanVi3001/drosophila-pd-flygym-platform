@@ -1,5 +1,5 @@
 schema_version: workbench-active-manuscript-scope-v1
-status: COMPUTATIONAL_SCOPE_LOCKED_HUMAN_REVIEW_PENDING
+status: COMPUTATIONAL_SCOPE_LOCKED_SECOND_OPERATOR_PENDING
 
 purpose: >-
   Define the active manuscript track for the Fly Research Workbench and keep
@@ -50,9 +50,9 @@ historical_tracks:
 release_gates:
   registry_integrity: PASS
   protocol_freeze: PASS
-  scientific_case_review: PENDING
-  held_out_baseline_comparison: PARTIAL
-  degree_preserving_rewire: BLOCKED_MISSING_BACKEND_SCORE_MAPPING
-  independent_second_operator: PENDING
-  clean_worktrees_and_tags: BLOCKED
+  scientific_case_review: PENDING_EXTERNAL_REVIEW
+  held_out_baseline_comparison: READY_NOT_RUN_PENDING_REPRODUCTION_GATE
+  degree_preserving_rewire: COMPLETE_FROZEN_106_CASES
+  independent_second_operator: PENDING_HUMAN_RUN
+  clean_worktrees_and_tags: BLOCKED_LOCAL_DATASET_EDIT_AND_RELEASE_CLEANUP
   wet_lab_validation: OUT_OF_SCOPE_FOR_COMPUTATIONAL_RELEASE

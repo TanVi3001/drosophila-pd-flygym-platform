@@ -117,6 +117,25 @@ labels, a readout-specific LIF abstraction rather than behavior, and pending
 independent second-operator reproduction. The 32 held-out cases remain locked
 for the final evaluation after the score and analysis plan are frozen.
 
+### Update after evidence-gated workflow integration — 2026-09-27
+
+The integrated FlyGym v0.1 workflow now includes protocol-intake drafts,
+versioned mapping records, explicit capability/context assessment, approval
+bound to the frozen study and assessment hashes, and budgeted selection using
+paired computational observations with a bootstrap lower confidence bound.
+These are software capabilities; this retrospective ablation did not evaluate
+the candidate-selection policy introduced by that workflow.
+
+The locked 106-case score remains a separate evaluation object. In particular,
+the current development ablation does not show an incremental ranking benefit
+from the evidence or capability gates: both gates pass for every case, and the
+full Workbench score matches the uncertainty-adjusted rewire score. The new
+workflow's support gate applies to the explicit `create-research-study` /
+`/v1/studies/research` path; legacy demo study creation remains available and
+must not be described as globally support-gated. The included literature
+survey is a targeted narrative survey, not a systematic review and not a
+standalone demonstration of research novelty.
+
 ## Reproducibility command
 
 From the FlyGym repository root, using the project Python environment:

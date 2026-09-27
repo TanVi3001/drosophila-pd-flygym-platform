@@ -266,3 +266,46 @@ the stability threshold is `0.8`, the candidate is marked exploratory rather
 than ranked. This is a model-sensitivity result only; it is not a biological
 effect, dose equivalence, or firing-to-behavior claim. No E2 30-seed
 confirmation or parameter-sensitivity panel has been completed yet.
+
+## Integration and benchmark status update: 2026-09-27
+
+Tuấn's merged FlyGym change has been integrated into
+`feature/workbench-state4-review`. It adds an optional protocol-intake draft
+boundary, a source-linked Shiu mapping registry, support/capability/context
+assessment, hash-bound researcher approval, and budgeted candidate selection
+from paired simulation observations. The new registry contains 106 traceable
+source rows (105 exact name matches and one case-fold alias); all rows remain
+`PENDING_SCIENTIFIC_REVIEW`. It is not a biological validation registry.
+
+The current State 4 benchmark artifacts are newer than the dated 2026-09-16
+snapshot above:
+
+- The FlyWire-630 degree-preserving-rewire batch is frozen for all 106 cases;
+  the freeze manifest and per-case scores live outside Git. The 98 zero scores
+  mean silent readouts under this declared computational protocol, not
+  biological negatives.
+- The locked development ablation covers 74 cases. Average precision /
+  precision@5 are 0.659 / 0.800 for rewire effect-only, 0.626 / 0.800 for
+  uncertainty-adjusted and full Workbench, and 0.248 / 0.400 for the seeded
+  random reference. Evidence and capability gates do not vary in this dataset,
+  so their incremental value is not identifiable here; the full score does
+  not outperform effect-only on average precision.
+- The 32-case held-out readiness audit is `READY_FOR_FINAL_HELDOUT_EVALUATION`
+  and emitted no evaluation metrics. The final evaluation remains intentionally
+  unrun until the frozen-score review/reproduction gate is accepted.
+- No second-operator reproduction artifact was found in the inspected repo or
+  external result directories. That gate remains `PENDING_HUMAN_RUN`.
+
+The integrated workflow regression subset passed **137 tests** under the
+available Python 3.13 runtime. This is targeted regression evidence, not the
+documented clean Python 3.12 install/reproduction. The local
+`datasets/experimental_locomotion_db.json` edit was preserved and excluded
+from the merge commit; therefore a clean release worktree is not yet available.
+
+The added survey of eight related papers supports the need for model-scope,
+context, mapping provenance and reproducibility controls. It does not establish
+that the proposed Workbench is novel or improves experimental selection. The
+survey is targeted/narrative rather than systematic; novelty still requires a
+prior-art matrix, and scientific utility requires the locked held-out result,
+independent reproduction and, for biological claims, expert or wet-lab
+validation.
