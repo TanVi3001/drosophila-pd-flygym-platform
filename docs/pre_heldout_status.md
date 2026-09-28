@@ -12,7 +12,7 @@
 | Owner-assisted reproduction | **PASS reported by owner** | Exact development-output reproduction was reported. Preserve the reference/replica artifacts and a separate owner validation record for release review. |
 | Success reproduction case | **PASS reported by owner** | Reference and replica both completed; numerical output/provenance match was reported. |
 | Failure/QC reproduction case | **PASS reported by owner** | Both sides preserved an explicit failure state; this is a technical QC check. |
-| Independent second-operator reproduction | **PENDING** | Tuấn must return a clean-install package with exact commits, hashes, logs, success/failure manifests and verifier output. `same_operator` is not independent. |
+| Independent second-operator reproduction | **PENDING — preflight NOT_PASSED** | Tuấn completed source/environment checks, but the frozen owner handoff was unavailable; development reproduction, success/failure subset and final verifier are not run. `same_operator` is not independent. |
 | Held-out evaluation | **LOCKED_NOT_RUN** | Final 32-case evaluation has not been run in this update. Do not open outcomes before the gate decision. |
 | Biological validation | **NOT DONE / OUT OF CURRENT SCOPE** | Scientific mapping review is pending. No wet-lab or Parkinson claim follows from the computational results. |
 
@@ -20,6 +20,14 @@ The owner's reported success/failure verifier output had `status=PASS`,
 `operator_role=same_operator`, `independent_operator_claim_eligible=False`,
 and zero discrepancies. Those are **reported prior-run facts**, not a fresh
 verification of the external owner artifacts performed by this update.
+
+Tuấn's [2026-09-28 preflight record](../validation/second_operator_preflight_20260928/preflight_blockers.json)
+reports clean checkouts, Python 3.12.10, passing dependency checks, matching
+protocol/mapping identity and 9 software-contract tests. It explicitly records
+`status=NOT_PASSED`, `independent_operator_claim_eligible=false`, and missing
+frozen owner inputs. The owner-side package and rewired connectivity were
+located on drive E after this preflight; they have not yet been handed off or
+reproduced by Tuấn. The final held-out gate remains closed.
 
 The active machine-readable gate file is
 [`active_manuscript_scope.yaml`](../configs/workbench/active_manuscript_scope.yaml).
