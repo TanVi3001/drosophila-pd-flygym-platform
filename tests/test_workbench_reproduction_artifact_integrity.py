@@ -143,3 +143,110 @@ def test_tampered_metrics_are_rejected(tmp_path: Path) -> None:
         "artifact hashes do not match files on disk" in item
         for item in result["comparison"]["discrepancies"]
     )
+
+
+def _relocate_campaign(campaign: Path, *, input_hash: str) -> None:
+    payload = json.loads(campaign.read_text(encoding="utf-8"))
+    job = payload["jobs"][0]
+    job["config"].update({
+        "connectivity": str(campaign.parent / "inputs" / "connectivity.parquet"),
+        "model_root": str(campaign.parent / "model"),
+        "duration_s": 0.05,
+    })
+    _write_json(campaign, payload)
+    manifest = Path(job["manifest_path"])
+    run = json.loads(manifest.read_text(encoding="utf-8"))
+    run["configuration_hash"] = "path-specific-" + campaign.parent.name
+    run["provenance"]["input_hashes"] = {"job.connectivity": input_hash}
+    _write_json(manifest, run)
+
+
+def test_different_roots_with_same_frozen_input_hash_pass(tmp_path: Path) -> None:
+    reference, _, _ = _success_campaign(tmp_path / "machine-a", run_marker="first-run")
+    replica, _, _ = _success_campaign(tmp_path / "machine-b", run_marker="second-run")
+    _relocate_campaign(reference, input_hash="sha256-of-same-input")
+    _relocate_campaign(replica, input_hash="sha256-of-same-input")
+
+    result = _verify(reference, replica, tmp_path)
+
+    assert result["status"] == "PASS"
+    assert result["comparison"]["provenance_match"] is True
+
+
+def test_different_frozen_input_hash_blocks_relocation(tmp_path: Path) -> None:
+    reference, _, _ = _success_campaign(tmp_path / "machine-a", run_marker="first-run")
+    replica, _, _ = _success_campaign(tmp_path / "machine-b", run_marker="second-run")
+    _relocate_campaign(reference, input_hash="sha256-of-original")
+    _relocate_campaign(replica, input_hash="sha256-of-different-input")
+
+    result = _verify(reference, replica, tmp_path)
+
+    assert result["status"] == "BLOCKED"
+    assert result["comparison"]["provenance_match"] is False
+
+
+def test_scientific_parameter_change_blocks_relocation(tmp_path: Path) -> None:
+    reference, _, _ = _success_campaign(tmp_path / "machine-a", run_marker="first-run")
+    replica, _, _ = _success_campaign(tmp_path / "machine-b", run_marker="second-run")
+    _relocate_campaign(reference, input_hash="sha256-of-same-input")
+    _relocate_campaign(replica, input_hash="sha256-of-same-input")
+    payload = json.loads(replica.read_text(encoding="utf-8"))
+    payload["jobs"][0]["config"]["duration_s"] = 0.1
+    _write_json(replica, payload)
+
+    result = _verify(reference, replica, tmp_path)
+
+    assert result["status"] == "BLOCKED"
+    assert any("declared configurations differ" in item for item in result["comparison"]["discrepancies"])
+
+
+def _failure_with_relocated_paths(root: Path, *, hash_value: str) -> Path:
+    campaign = _failure_campaign(root)
+    manifest = root / "failed-run" / "run_manifest.json"
+    _write_json(manifest, {
+        "manifest_version": 1,
+        "backend": "lif_2024",
+        "configuration_hash": "path-specific-" + root.name,
+        "artifact_hashes": {},
+        "provenance": {
+            "study_configuration_hash": "same-study-hash",
+            "backend_capabilities": {"name": "lif_2024"},
+            "input_hashes": {"job.connectivity": hash_value},
+            "environment": {"python_version": "3.12.10"},
+        },
+    })
+    payload = json.loads(campaign.read_text(encoding="utf-8"))
+    job = payload["jobs"][0]
+    job["manifest_path"] = str(manifest)
+    job["config"].update({
+        "connectivity": str(root / "inputs" / "connectivity.parquet"),
+        "annotation_file": str(root / "inputs" / "missing-annotation.csv"),
+        "model_root": str(root / "inputs"),
+    })
+    job["error"] = "invalid job configuration: annotation_file does not exist: " + job["config"]["annotation_file"]
+    _write_json(campaign, payload)
+    return campaign
+
+
+def test_controlled_missing_annotation_is_portable_but_hash_strict(tmp_path: Path) -> None:
+    reference, _, _ = _success_campaign(tmp_path / "success-reference", run_marker="first-run")
+    replica, _, _ = _success_campaign(tmp_path / "success-replica", run_marker="second-run")
+    failure_reference = _failure_with_relocated_paths(tmp_path / "machine-a", hash_value="same-input")
+    failure_replica = _failure_with_relocated_paths(tmp_path / "machine-b", hash_value="same-input")
+
+    passed = verify_reproduction(
+        reference, replica, operator_name="owner", clean_install=True,
+        failure_reference_manifest=failure_reference,
+        failure_replica_manifest=failure_replica,
+    )
+    assert passed["status"] == "PASS"
+    assert passed["comparison"]["failure_states_checked"] is True
+
+    different = _failure_with_relocated_paths(tmp_path / "machine-c", hash_value="different-input")
+    blocked = verify_reproduction(
+        reference, replica, operator_name="owner", clean_install=True,
+        failure_reference_manifest=failure_reference,
+        failure_replica_manifest=different,
+    )
+    assert blocked["status"] == "BLOCKED"
+    assert blocked["comparison"]["provenance_match"] is False

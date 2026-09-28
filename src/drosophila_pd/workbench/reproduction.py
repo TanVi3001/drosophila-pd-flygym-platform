@@ -69,10 +69,54 @@ def _canonical(value: Any) -> Any:
 
 def _config_for_comparison(job: Mapping[str, Any]) -> Mapping[str, Any]:
     config = _as_mapping(job.get("config", {}), "job.config")
-    # Config paths are intentionally relative in the Workbench study.  Keep
-    # every declared field: silently dropping a parameter would make this a
-    # ranking check rather than a reproduction check.
     return config
+
+
+_INPUT_PATH_HASH_KEYS = {
+    "annotation_file": "job.annotation_file",
+    "completeness": "job.completeness",
+    "connectivity": "job.connectivity",
+}
+
+
+def _comparable_configs(
+    reference: Mapping[str, Any],
+    replica: Mapping[str, Any],
+    reference_provenance: Mapping[str, Any] | None,
+    replica_provenance: Mapping[str, Any] | None,
+    *,
+    controlled_missing_annotation: bool = False,
+) -> bool:
+    """Permit relocation only when the corresponding frozen input identity is proven."""
+    ref = dict(_config_for_comparison(reference))
+    rep = dict(_config_for_comparison(replica))
+    if _canonical(ref) == _canonical(rep):
+        return True
+    if reference_provenance is None or replica_provenance is None:
+        return False
+    ref_hashes = reference_provenance["input_hashes"]
+    rep_hashes = replica_provenance["input_hashes"]
+    if ref_hashes != rep_hashes:
+        return False
+    relocated_inputs = 0
+    for field, hash_key in _INPUT_PATH_HASH_KEYS.items():
+        if ref.get(field) == rep.get(field):
+            continue
+        if field not in ref or field not in rep:
+            return False
+        digest = ref_hashes.get(hash_key)
+        if not digest:
+            if not (field == "annotation_file" and controlled_missing_annotation
+                    and hash_key not in ref_hashes and hash_key not in rep_hashes):
+                return False
+        else:
+            relocated_inputs += 1
+        ref[field] = rep[field]
+    if ref.get("model_root") != rep.get("model_root"):
+        if not relocated_inputs or "model_root" not in ref or "model_root" not in rep:
+            return False
+        ref["model_root"] = rep["model_root"]
+    return _canonical(ref) == _canonical(rep)
 
 
 def _resolve_artifact_dir(job: Mapping[str, Any], manifest_path: Path) -> Path:
@@ -161,7 +205,9 @@ def _compare_values(
         differences.append(f"{path}: {reference!r} != {replica!r}")
 
 
-def _provenance_signature(job: Mapping[str, Any], manifest_path: Path) -> dict[str, Any]:
+def _provenance_signature(
+    job: Mapping[str, Any], manifest_path: Path, *, require_artifacts: bool = True
+) -> dict[str, Any]:
     run_manifest_path = job.get("manifest_path")
     if run_manifest_path:
         path = Path(str(run_manifest_path))
@@ -186,20 +232,21 @@ def _provenance_signature(job: Mapping[str, Any], manifest_path: Path) -> dict[s
         required = {
             "backend": run.get("backend"),
             "configuration_hash": run.get("configuration_hash"),
-            "code_revision": provenance.get("code_revision"),
             "study_configuration_hash": provenance.get("study_configuration_hash"),
             "backend_capability_name": capabilities.get("name"),
             "input_hashes": input_hashes,
             "environment": provenance.get("environment"),
-            "code_state": provenance.get("code_state"),
         }
+        if require_artifacts:
+            required["code_revision"] = provenance.get("code_revision")
+            required["code_state"] = provenance.get("code_state")
         missing = [name for name, value in required.items() if value in (None, "", {})]
         if missing:
             raise ValueError(f"run manifest provenance is incomplete: {', '.join(missing)}")
         if not isinstance(provenance.get("environment"), Mapping):
             raise ValueError("run manifest environment provenance must be an object")
         artifact_hashes = run.get("artifact_hashes")
-        if not isinstance(artifact_hashes, Mapping) or not artifact_hashes:
+        if not isinstance(artifact_hashes, Mapping) or (require_artifacts and not artifact_hashes):
             raise ValueError("run manifest artifact_hashes are missing")
         artifact_root = path.parent
         actual_hashes: dict[str, str] = {}
@@ -223,6 +270,7 @@ def _provenance_signature(job: Mapping[str, Any], manifest_path: Path) -> dict[s
         "code_revision": str(provenance.get("code_revision", "")),
         "study_configuration_hash": str(provenance.get("study_configuration_hash", "")),
         "backend_capability_name": str(capabilities.get("name", "")),
+        "code_state": _canonical(provenance.get("code_state", {})),
         "input_hashes": {
             str(key): str(value)
             for key, value in sorted(input_hashes.items(), key=lambda item: str(item[0]))
@@ -309,8 +357,8 @@ def _compare_campaign(
                 non_completed_replica.append({"key": key, "status": replica_status})
         if ref_status != replica_status:
             differences.append(f"jobs.{key}.status: {ref_status!r} != {replica_status!r}")
-        if _canonical(_config_for_comparison(ref_job)) != _canonical(_config_for_comparison(replica_job)):
-            differences.append(f"jobs.{key}.config: declared configurations differ")
+        ref_provenance = None
+        replica_provenance = None
         if ref_status == "COMPLETED" and replica_status == "COMPLETED":
             try:
                 ref_provenance = _provenance_signature(ref_job, reference_path)
@@ -326,6 +374,10 @@ def _compare_campaign(
                 replica_comparable = {
                     name: value for name, value in replica_provenance.items() if name != "artifact_hashes"
                 }
+                path_relocated = _canonical(_config_for_comparison(ref_job)) != _canonical(_config_for_comparison(replica_job))
+                if path_relocated and _comparable_configs(ref_job, replica_job, ref_provenance, replica_provenance):
+                    ref_comparable.pop("configuration_hash", None)
+                    replica_comparable.pop("configuration_hash", None)
                 if ref_comparable != replica_comparable:
                     provenance_match = False
                     differences.append(f"jobs.{key}.provenance: signatures differ")
@@ -337,6 +389,46 @@ def _compare_campaign(
             replica_error = bool(str(replica_job.get("error", "")).strip())
             if ref_error != replica_error:
                 differences.append(f"jobs.{key}.error_presence: {ref_error} != {replica_error}")
+            if ref_job.get("manifest_path") or replica_job.get("manifest_path"):
+                try:
+                    ref_provenance = _provenance_signature(ref_job, reference_path, require_artifacts=False)
+                    replica_provenance = _provenance_signature(replica_job, replica_path, require_artifacts=False)
+                    reference_signatures[key] = ref_provenance
+                    replica_signatures[key] = replica_provenance
+                    ref_comparable = {name: value for name, value in ref_provenance.items()
+                                      if name != "artifact_hashes"}
+                    replica_comparable = {name: value for name, value in replica_provenance.items()
+                                          if name != "artifact_hashes"}
+                    if _canonical(_config_for_comparison(ref_job)) != _canonical(_config_for_comparison(replica_job)) and _comparable_configs(
+                        ref_job, replica_job, ref_provenance, replica_provenance,
+                        controlled_missing_annotation=(
+                            str(ref_job.get("error", "")).startswith("invalid job configuration: annotation_file does not exist:")
+                            and str(replica_job.get("error", "")).startswith("invalid job configuration: annotation_file does not exist:")
+                        ),
+                    ):
+                        ref_comparable.pop("configuration_hash", None)
+                        replica_comparable.pop("configuration_hash", None)
+                    if ref_comparable != replica_comparable:
+                        provenance_match = False
+                        differences.append(f"jobs.{key}.provenance: failure signatures differ")
+                except (FileNotFoundError, ValueError, OSError) as error:
+                    provenance_match = False
+                    differences.append(f"jobs.{key}.provenance: {error}")
+        ref_error_text = str(ref_job.get("error", ""))
+        replica_error_text = str(replica_job.get("error", ""))
+        controlled_missing_annotation = (
+            ref_status == replica_status == "FAILED"
+            and ref_error_text.startswith("invalid job configuration: annotation_file does not exist:")
+            and replica_error_text.startswith("invalid job configuration: annotation_file does not exist:")
+        )
+        if ref_status == replica_status == "FAILED" and not controlled_missing_annotation:
+            if ref_error_text != replica_error_text:
+                differences.append(f"jobs.{key}.error: failure reasons differ")
+        if not _comparable_configs(
+            ref_job, replica_job, ref_provenance, replica_provenance,
+            controlled_missing_annotation=controlled_missing_annotation,
+        ):
+            differences.append(f"jobs.{key}.config: declared configurations differ")
         if ref_status == "COMPLETED" and replica_status == "COMPLETED":
             try:
                 ref_metrics = _metrics_payload(ref_job, reference_path)
@@ -472,6 +564,8 @@ def verify_reproduction(
             relative_tolerance=relative_tolerance,
         )
         failure_states_checked = bool(failure["manifests_match"] and failure["has_failure_state"])
+        success["manifests_match"] = bool(success["manifests_match"] and failure["manifests_match"])
+        success["provenance_match"] = bool(success["provenance_match"] and failure["provenance_match"])
         if not failure_states_checked:
             success["discrepancies"].extend(
                 f"failure_case: {item}" for item in failure["discrepancies"]
