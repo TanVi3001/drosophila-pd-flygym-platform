@@ -1,0 +1,42 @@
+{
+  "status": "NOT_PASSED",
+  "reason": "FROZEN_HANDOFF_INPUTS_NOT_PROVIDED",
+  "operator_name": "To Dang Minh Tuan",
+  "operator_role": "second_operator",
+  "independent_operator_claim_eligible": false,
+  "held_out_status": "LOCKED_NOT_RUN",
+  "platform_commit": "6bc7e001c9085cf6eba1b1237ac684d1e619e96e",
+  "neural_commit": "e8a3cb2de2107925311053f9afcf2bfbc39fdf3c",
+  "worktrees_clean": true,
+  "python_platform": "3.12.10",
+  "python_neural": "3.12.10",
+  "pip_check_platform": "PASS",
+  "pip_check_neural": "PASS",
+  "neural_import_smoke": "PASS",
+  "software_contract_tests": {
+    "status": "PASS",
+    "passed": 9
+  },
+  "source_identity": {
+    "protocol_raw_sha256": "8743feba5149f78d96238e9ee3bfacbc1d7dd8a33960b6a5eaf6bda77d8fdedb",
+    "protocol_hash_computed": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+    "protocol_hash_expected": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+    "normalized_mapping_sha256": "c9017c2559ad96bc980c378f59f533e9e96ebc58ef85734ae33c91c9513d196b",
+    "mapping_rows": 106,
+    "annotation_sha256": "ce8058f56b33ac105c62ade6ac257ecec02247547335a10bf16ae0bcd533a25b",
+    "development_case_count": 74,
+    "held_out_case_count": 32
+  },
+  "development_ablation": "NOT_RUN",
+  "technical_success_failure_reproduction": "NOT_RUN",
+  "verifier": "NOT_RUN",
+  "missing_inputs": [
+    "Frozen connectivity input; expected SHA256 0f1c42d7ce44aabd80f9e126aac675ad19f69b8e40bb0951e54078720ee15e54",
+    "Frozen completeness input; expected SHA256 479ed718404e7b1d898ee9a353410f481e6ed7694c30f579a7c2699f1c708a5d",
+    "Frozen per-case rewire scores (per_case_scores.csv) required for the 74-case development ablation",
+    "Owner frozen handoff package: development_ablation.json, development_score_table.csv, owner_validation_record.json, owner_subset_verification_v2.json, freeze_manifest.json, and checksums.sha256",
+    "Portable reference success/failure campaign manifests and their nested artifacts",
+    "Frozen second-operator success/failure subset runner or protocol script"
+  ],
+  "next_action": "Provide the frozen handoff package and the exact connectivity/completeness inputs; verify their checksums before resuming."
+}

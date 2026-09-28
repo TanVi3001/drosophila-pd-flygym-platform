@@ -1,0 +1,12 @@
+Handoff file search: D:\research, C:\fly-validation, C:\Users\JOHAN\Downloads
+development_ablation.json: NOT FOUND
+development_score_table.csv: NOT FOUND
+owner_validation_record.json: NOT FOUND
+owner_subset_verification_v2.json: NOT FOUND
+per_case_scores.csv: NOT FOUND
+freeze_manifest.json: NOT FOUND
+success_campaign.json: NOT FOUND
+failure_campaign.json: NOT FOUND
+Connectivity/completeness candidates: NOT FOUND by file-name search
+Held-out runs/labels inspected: NO
+Relevant archived handoff zips checked by member name; no Shiu owner handoff artifacts found.

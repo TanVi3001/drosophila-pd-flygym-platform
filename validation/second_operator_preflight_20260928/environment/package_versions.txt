@@ -1,0 +1,22 @@
+﻿Platform environment:
+drosophila-pd-flygym==1.0.0
+flygym==2.1.0
+mujoco==3.9.0
+matplotlib==3.11.2
+numpy==2.5.3
+pydantic==2.13.5
+pytest==9.1.1
+PyYAML==6.0.3
+scipy==1.18.1
+jsonschema==4.26.0
+Neural environment:
+drosophila-pd-neural-disease==0.1.0
+Brian2==2.10.1
+joblib==1.6.0
+jsonschema==4.26.0
+numpy==2.5.3
+pandas==3.0.5
+pyarrow==25.0.1
+PyYAML==6.0.3
+scipy==1.18.1
+pytest==9.1.1
