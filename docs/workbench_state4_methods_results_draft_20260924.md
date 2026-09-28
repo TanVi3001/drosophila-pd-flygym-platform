@@ -3,6 +3,10 @@
 Status: internal draft for the State 4 review branch. The results below are a
 development-only retrospective ablation and are not a held-out claim.
 
+The full PRE-HELDOUT workflow, validation-level definitions, and current gate
+status are documented in [Methods boundary](pre_heldout_methods.md) and
+[PRE-HELDOUT status](pre_heldout_status.md).
+
 ## Methods
 
 ### Study question and scope

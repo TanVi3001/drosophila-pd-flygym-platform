@@ -204,12 +204,16 @@ def _provenance_signature(job: Mapping[str, Any], manifest_path: Path) -> dict[s
         artifact_root = path.parent
         actual_hashes: dict[str, str] = {}
         for artifact in sorted(artifact_root.rglob("*")):
-            if artifact.is_file() and artifact.name != "run_manifest.json":
-                import hashlib
+            if not artifact.is_file():
+                continue
+            relative = artifact.relative_to(artifact_root).as_posix()
+            # WorkbenchService._inventory excludes only the outer manifest.
+            # A nested backend manifest remains part of the frozen artifact.
+            if relative == "run_manifest.json":
+                continue
+            import hashlib
 
-                actual_hashes[artifact.relative_to(artifact_root).as_posix()] = hashlib.sha256(
-                    artifact.read_bytes()
-                ).hexdigest()
+            actual_hashes[relative] = hashlib.sha256(artifact.read_bytes()).hexdigest()
         declared_hashes = {str(key): str(value) for key, value in artifact_hashes.items()}
         if actual_hashes != declared_hashes:
             raise ValueError("run manifest artifact hashes do not match files on disk")
@@ -313,7 +317,16 @@ def _compare_campaign(
                 replica_provenance = _provenance_signature(replica_job, replica_path)
                 reference_signatures[key] = ref_provenance
                 replica_signatures[key] = replica_provenance
-                if ref_provenance != replica_provenance:
+                # Each artifact inventory is checked against its own files
+                # above. Distinct run IDs and timestamps can change artifact
+                # bytes without changing scientific provenance or metrics.
+                ref_comparable = {
+                    name: value for name, value in ref_provenance.items() if name != "artifact_hashes"
+                }
+                replica_comparable = {
+                    name: value for name, value in replica_provenance.items() if name != "artifact_hashes"
+                }
+                if ref_comparable != replica_comparable:
                     provenance_match = False
                     differences.append(f"jobs.{key}.provenance: signatures differ")
             except (FileNotFoundError, ValueError, OSError) as error:
