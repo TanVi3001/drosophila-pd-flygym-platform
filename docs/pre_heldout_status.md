@@ -27,7 +27,7 @@ protocol/mapping identity and 9 software-contract tests. It explicitly records
 `status=NOT_PASSED`, `independent_operator_claim_eligible=false`, and missing
 frozen owner inputs. The owner-side package and rewired connectivity were
 located on drive E after this preflight. A portable handoff was generated and
-checksum-verified at `E:\research-\external\Drosophila_brain_model\results\workbench_benchmark_20260923\second_operator_handoff_20260928_v3`.
+checksum-verified at `E:\research-\external\Drosophila_brain_model\results\workbench_benchmark_20260923\second_operator_handoff_20260928_v5`.
 The owner-machine packaging check passes, but that does not establish an
 independent run. The final held-out gate remains closed.
 
