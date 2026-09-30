@@ -1,0 +1,136 @@
+{
+  "case_count": 74,
+  "case_feature_variance": {
+    "log1p_in_degree": 0.4666316334809368,
+    "log1p_in_strength": 0.8528227848368126,
+    "log1p_out_degree": 0.9553926805826887,
+    "log1p_out_strength": 2.0404850116972706
+  },
+  "case_neighbor_mean_feature_variance": {
+    "log1p_in_degree": 0.15420766174793243,
+    "log1p_in_strength": 0.2654269337654114,
+    "log1p_out_degree": 0.06726744025945663,
+    "log1p_out_strength": 0.15619899332523346
+  },
+  "cases_in_identical_input_pairs": 0,
+  "cases_sharing_any_target": 2,
+  "fraction_cases_sharing_any_target": 0.02702702702702703,
+  "graph_edge_count": 14687178,
+  "graph_node_count": 127400,
+  "graph_source_sha256": "94db8c650533bc36ffa3223f2e62325d5648b8d6bd31c3a4e1c804628c7557b3",
+  "graphsage_input_dimension_per_target": 8,
+  "identical_combined_input_pairs": 0,
+  "incoming_weight_concentration": {
+    "fraction_targets_top_edge_over_half_incoming_weight": 0.0,
+    "mapped_targets_with_incoming_edges": 246,
+    "mapped_targets_without_incoming_edges": 0,
+    "top_single_edge_fraction_of_incoming_weight": {
+      "max": 0.41025641025641024,
+      "median": 0.07368652783797357,
+      "min": 0.019386676066267185,
+      "p95": 0.30151006711409395
+    }
+  },
+  "labels_used": false,
+  "mapped_targets_total_degree_le_1": 0,
+  "mapped_targets_zero_in_degree": 0,
+  "mapped_targets_zero_out_degree": 0,
+  "mapping_source_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+  "multi_target_case_count": 68,
+  "multi_target_cases_any_node_feature_range_gt_1_log_unit": 15,
+  "near_duplicate_combined_input_pairs_max_abs_1e_minus_3": 0,
+  "near_zero_variance_case_features": [],
+  "near_zero_variance_threshold": 1e-08,
+  "node_feature_dimension": 4,
+  "original_cv_cross_fold_target_overlap": [
+    {
+      "fold": 0,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 1
+    },
+    {
+      "fold": 1,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 0
+    },
+    {
+      "fold": 2,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 1
+    },
+    {
+      "fold": 3,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 0
+    },
+    {
+      "fold": 4,
+      "validation_case_count": 14,
+      "validation_cases_sharing_train_targets": 0
+    }
+  ],
+  "partition": "DEVELOPMENT",
+  "schema_version": "ai-v2-task1b-representation-audit-v1",
+  "stratified_cv_cross_fold_target_overlap": [
+    {
+      "fold": 0,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 0
+    },
+    {
+      "fold": 1,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 0
+    },
+    {
+      "fold": 2,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 0
+    },
+    {
+      "fold": 3,
+      "validation_case_count": 15,
+      "validation_cases_sharing_train_targets": 0
+    },
+    {
+      "fold": 4,
+      "validation_case_count": 14,
+      "validation_cases_sharing_train_targets": 0
+    }
+  ],
+  "structural_case_feature_dimension": 4,
+  "target_count_per_case": {
+    "max": 15.0,
+    "median": 2.0,
+    "min": 1.0,
+    "p95": 12.349999999999994
+  },
+  "target_neurons_shared_across_cases": 3,
+  "target_node_degree_strength_distribution": {
+    "in_degree": {
+      "max": 1195.9997878100094,
+      "median": 146.00002421444552,
+      "min": 11.000000283720757,
+      "p95": 433.2499948363223
+    },
+    "in_strength": {
+      "max": 7105.999690076919,
+      "median": 611.0000726876101,
+      "min": 35.00000156518945,
+      "p95": 3289.998953953431
+    },
+    "out_degree": {
+      "max": 1184.9998867514194,
+      "median": 132.99999161991488,
+      "min": 1.0000000038093084,
+      "p95": 471.25000731308046
+    },
+    "out_strength": {
+      "max": 7410.997819898943,
+      "median": 476.49992538932906,
+      "min": 1.0000000038093084,
+      "p95": 3286.999222951597
+    }
+  },
+  "unique_mapped_target_neurons": 246
+}

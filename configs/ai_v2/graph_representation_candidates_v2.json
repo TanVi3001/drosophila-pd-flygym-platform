@@ -1,0 +1,54 @@
+{
+  "schema_version": "ai-v2-graph-representation-candidates-v2",
+  "status": "DESIGN_ONLY_NOT_EVALUATED",
+  "created_after_task1_results": true,
+  "partition": "DEVELOPMENT",
+  "source_audit_sha256": "dc9d435cfb7736eaba88a29dcbf9c417cb0a8c94e84e61fcd496e6e2d033322e",
+  "selection_rule": "No representation is selected from Task 1B; any future comparison requires a separate preregistered development experiment.",
+  "candidates": [
+    {
+      "id": "R0",
+      "name": "current_four_structural_features",
+      "node_features": ["log1p_in_degree", "log1p_out_degree", "log1p_in_strength", "log1p_out_strength"],
+      "neighbor_aggregation": "unweighted_incoming_mean",
+      "case_pooling": "mean",
+      "purpose": "Historical reference for information-loss comparison"
+    },
+    {
+      "id": "R1",
+      "name": "target_set_distribution_summary",
+      "base": "R0",
+      "additional_case_summary": ["target_count", "per_feature_standard_deviation", "per_feature_maximum"],
+      "purpose": "Preserve target-set size, spread and extremes hidden by a mean"
+    },
+    {
+      "id": "R2",
+      "name": "weighted_incoming_neighbor_mean",
+      "base": "R0",
+      "neighbor_aggregation": "sum_presynaptic_feature_times_synapse_count_divided_by_sum_synapse_count_per_target",
+      "purpose": "Test whether recorded edge weight changes the structural summary"
+    },
+    {
+      "id": "R3",
+      "name": "two_hop_local_structural_summary",
+      "base": "R0",
+      "additional_topology": "deterministic incoming two-hop degree/strength summary, with explicit cap and no labels",
+      "purpose": "Measure local context omitted by one incoming hop"
+    },
+    {
+      "id": "R4",
+      "name": "graphsage_distribution_pooling",
+      "base": "R0",
+      "case_pooling": "mean_plus_standard_deviation_of_target_embeddings",
+      "purpose": "Preserve variation among multiple mapped target neurons"
+    }
+  ],
+  "pooling_candidates": [
+    {"id": "P0", "method": "mean", "output_dimension_for_d": "d", "training_required": false},
+    {"id": "P1", "method": "mean_plus_max", "output_dimension_for_d": "2d", "training_required": false},
+    {"id": "P2", "method": "mean_plus_standard_deviation", "output_dimension_for_d": "2d", "training_required": false},
+    {"id": "P3", "method": "attention_or_set_pooling", "output_dimension_for_d": "d or configured", "training_required": true, "status": "LATER_EXPERIMENT_ONLY"}
+  ],
+  "outcome_driven_feature_selection": false,
+  "execution_authorized": false
+}

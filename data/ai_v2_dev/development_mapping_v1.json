@@ -1,0 +1,1892 @@
+{
+  "case_count": 74,
+  "mappings": [
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_002",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "roundup",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "roundup",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940607272649",
+        "720575940623211725"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_003",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "diatom",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "diatom",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 14,
+      "target_ids": [
+        "720575940626679317",
+        "720575940637107312",
+        "720575940641058523",
+        "720575940622198230",
+        "720575940627854595",
+        "720575940605699104",
+        "720575940638726717",
+        "720575940628527439",
+        "720575940627979782",
+        "720575940614897458",
+        "720575940617303857",
+        "720575940619697134",
+        "720575940621717025",
+        "720575940638280270"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_004",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "sink_sync",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "sink_sync",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940622624214",
+        "720575940638001498",
+        "720575940628029180",
+        "720575940647560500"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_006",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "clavicle",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "clavicle",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940632648868",
+        "720575940655014049"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_008",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "bract",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "bract",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940626557442",
+        "720575940645045527",
+        "720575940627285267",
+        "720575940610001220"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_010",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "rattle",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "rattle",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940630461660",
+        "720575940638103349"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_012",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "th_vum",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "TH_VUM",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 1,
+      "target_ids": [
+        "720575940616857174"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_014",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "seagull",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "seagull",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 1,
+      "target_ids": [
+        "720575940626278974"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_015",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "mist",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "mist",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940646530612",
+        "720575940637216624"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_016",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "kitty",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "kitty",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940644669732",
+        "720575940610056772",
+        "720575940624987175",
+        "720575940627704392"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_017",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "fudog",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "fudog",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940632877869",
+        "720575940612648106"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_019",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "asg1",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "aSG1",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940633376301",
+        "720575940620829878"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_020",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "asg7",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "aSG7",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 5,
+      "target_ids": [
+        "720575940636928398",
+        "720575940622273868",
+        "720575940625082298",
+        "720575940620879809",
+        "720575940613428707"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_021",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "amulet",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "amulet",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940604470240",
+        "720575940635211768"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_023",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "bamboo",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "bamboo",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940634333631",
+        "720575940612107673"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_024",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "basket",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "basket",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 15,
+      "target_ids": [
+        "720575940618299216",
+        "720575940626922810",
+        "720575940613043939",
+        "720575940626412298",
+        "720575940613950530",
+        "720575940624005868",
+        "720575940628134555",
+        "720575940633611418",
+        "720575940631177809",
+        "720575940620183462",
+        "720575940631416121",
+        "720575940621614246",
+        "720575940628069904",
+        "720575940616287645",
+        "720575940627565059"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_025",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "bluebell",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "bluebell",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940635166571",
+        "720575940631168057"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_027",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "box",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "box",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940637849822",
+        "720575940633340953"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_028",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "bridle",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "bridle",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940627293201",
+        "720575940637851069",
+        "720575940643847022",
+        "720575940638394446"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_029",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "brontosaraus",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "brontosaraus",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 12,
+      "target_ids": [
+        "720575940627514627",
+        "720575940609617614",
+        "720575940628362058",
+        "720575940638642547",
+        "720575940609030776",
+        "720575940632852124",
+        "720575940636734382",
+        "720575940636592270",
+        "720575940626390018",
+        "720575940627947772",
+        "720575940619559838",
+        "720575940621089741"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_030",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "broom",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "broom",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940624710653",
+        "720575940612033253"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_032",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "coy",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "coy",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 1,
+      "target_ids": [
+        "720575940618156689"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_033",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "crab",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "crab",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940626140164",
+        "720575940635206251"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_034",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "cradle",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "cradle",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940620979638",
+        "720575940625716357"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_035",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "damsel",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "damsel",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940623457535",
+        "720575940621583286"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_036",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "doublescoop",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "doublescoop",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940623366538",
+        "720575940620506996"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_037",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "earmuff",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "earmuff",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940629013199",
+        "720575940631448874",
+        "720575940611411057",
+        "720575940635642725"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_038",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "eiffel",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "eiffel",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940627327238",
+        "720575940629468026"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_040",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "foxglove",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "foxglove",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940611160930",
+        "720575940628755815"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_041",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "gallinule",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "gallinule",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 10,
+      "target_ids": [
+        "720575940629663596",
+        "720575940630620687",
+        "720575940640464373",
+        "720575940645859972",
+        "720575940639485648",
+        "720575940626519704",
+        "720575940638597283",
+        "720575940618926757",
+        "720575940628046635",
+        "720575940623301256"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_042",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "gazebo",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "gazebo",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940641282267",
+        "720575940620287623"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_046",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "gumdrop",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "gumdrop",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940631110095",
+        "720575940630697078"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_047",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "handle",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "handle",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940620527830",
+        "720575940620879476",
+        "720575940628306114",
+        "720575940629592567"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_048",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "handup",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "handup",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940611697394",
+        "720575940612206810"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_050",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "horn",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "horn",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 3,
+      "target_ids": [
+        "720575940630133110",
+        "720575940621333509",
+        "720575940604722278"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_051",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "horntail",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "horntail",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940631293202",
+        "720575940608451420"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_052",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "horseshoe",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "horseshoe",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 9,
+      "target_ids": [
+        "720575940604130481",
+        "720575940622028778",
+        "720575940603514141",
+        "720575940627498499",
+        "720575940621373278",
+        "720575940632012243",
+        "720575940630619719",
+        "720575940623600619",
+        "720575940620798284"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_054",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "hyacinth",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "hyacinth",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 6,
+      "target_ids": [
+        "720575940654057889",
+        "720575940623044103",
+        "720575940624532408",
+        "720575940626015640",
+        "720575940620096171",
+        "720575940630548751"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_055",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "justice",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "justice",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940614660519",
+        "720575940635175007"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_058",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "kokopelli",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "kokopelli",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940613761858",
+        "720575940634251164"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_059",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "landslide",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "landslide",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940617563577",
+        "720575940634290913"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_062",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "marge",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "marge",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940620262465",
+        "720575940610690372"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_064",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "mime",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "mime",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 14,
+      "target_ids": [
+        "720575940627936515",
+        "720575940637742150",
+        "720575940624273149",
+        "720575940634788247",
+        "720575940638557312",
+        "720575940613828202",
+        "720575940622688765",
+        "720575940614223154",
+        "720575940621149709",
+        "720575940630575943",
+        "720575940637788137",
+        "720575940624253991",
+        "720575940634844408",
+        "720575940629598935"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_065",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "moor",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "moor",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940635574958",
+        "720575940611849826"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_066",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "mothership",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "mothership",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940620714150",
+        "720575940644758308"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_068",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "nagini",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "nagini",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940625870640",
+        "720575940627825923"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_069",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "nori",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 3,
+      "source_biological_identifier": "nori",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 3,
+      "target_ids": [
+        "720575940616851030",
+        "720575940630670454",
+        "720575940630679801"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_070",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "oink",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 3,
+      "source_biological_identifier": "oink",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 9,
+      "target_ids": [
+        "720575940616172033",
+        "720575940633156799",
+        "720575940616851030",
+        "720575940635613358",
+        "720575940630670454",
+        "720575940626348106",
+        "720575940630679801",
+        "720575940613222195",
+        "720575940626376600"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_072",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "oval",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "oval",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940621522352",
+        "720575940626085562"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_074",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "peacock",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "peacock",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940612030899",
+        "720575940623687757",
+        "720575940631237203",
+        "720575940618563664"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_075",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "peafowl",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "peafowl",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940619985243",
+        "720575940622284947"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_078",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "planter",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "planter",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940617497437",
+        "720575940628129129"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_080",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "pringle",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "pringle",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940621218694",
+        "720575940611715813"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_083",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "rose",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "rose",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 1,
+      "target_ids": [
+        "720575940624101524"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_084",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "ruby",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "ruby",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940622168052",
+        "720575940608901897"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_085",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "salivary_mn13",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "Salivary_MN13",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940619455879",
+        "720575940618864725"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_086",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "shark",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "shark",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940635776760",
+        "720575940626770057",
+        "720575940620182181",
+        "720575940607641010"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_087",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "snake",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "snake",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940631643532",
+        "720575940625815562"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_088",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "spirit",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "spirit",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940621468404",
+        "720575940613461043"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_089",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "spray",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "spray",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940608402012",
+        "720575940629210490"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_091",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "sundrop",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "sundrop",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940626086842",
+        "720575940607014530"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_092",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "tentacular",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "tentacular",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940620673985",
+        "720575940621399899"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_093",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "tinctoria",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "tinctoria",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 4,
+      "target_ids": [
+        "720575940619048827",
+        "720575940625875504",
+        "720575940630868793",
+        "720575940618165019"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_095",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "tpn4",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "TPN4",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940634147936",
+        "720575940614238114"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_096",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "trident",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "trident",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 1,
+      "target_ids": [
+        "720575940624163303"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_097",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "trogon",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "trogon",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 1,
+      "target_ids": [
+        "720575940631595603"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_098",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "trumpet",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "trumpet",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940645056791",
+        "720575940628386295"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_099",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "tulip",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "tulip",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940617755220",
+        "720575940620061793"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_100",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "tundra",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "tundra",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940621573542",
+        "720575940621538142"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_101",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "turner",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "turner",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940629437378",
+        "720575940610956334"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_103",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "usnea",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "usnea",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940641366517",
+        "720575940632648612"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_104",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "wafflecone",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "wafflecone",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940624913959",
+        "720575940626075517"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_105",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "weaver",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "weaver",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 13,
+      "target_ids": [
+        "720575940616605441",
+        "720575940629460524",
+        "720575940628469508",
+        "720575940636887130",
+        "720575940633050524",
+        "720575940614728607",
+        "720575940612023922",
+        "720575940612938961",
+        "720575940625384323",
+        "720575940628330651",
+        "720575940619409135",
+        "720575940628546807",
+        "720575940613412002"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    },
+    {
+      "ambiguity_state": "NONE_TECHNICAL",
+      "case_id": "shiu_table3_row_107",
+      "duplicate_target_within_case_count": 0,
+      "mapping_method": "inherited_exact_name_to_upstream_neuron_set",
+      "mapping_provenance_citations": [
+        "Shiu et al. (2024), Nature, Supplementary Table 3",
+        "Upstream Shiu model neuron-set mapping",
+        "Upstream model Figure 2 notebook"
+      ],
+      "mapping_provenance_sha256": "2bc5a2a8289924f2de39a8e68bdc07025cb6d6c6c6ddc83a973c0cace7cec2ce",
+      "mapping_registry_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+      "normalized_identifier": "whisker",
+      "review_state": "REQUIRES_SCIENTIFIC_REVIEW",
+      "shared_target_with_other_case_count": 0,
+      "source_biological_identifier": "whisker",
+      "source_review_status": "PENDING_SCIENTIFIC_REVIEW",
+      "target_count": 2,
+      "target_ids": [
+        "720575940627429907",
+        "720575940627418387"
+      ],
+      "technical_state": "TECHNICAL_EXACT_MATCH"
+    }
+  ],
+  "partition": "DEVELOPMENT",
+  "schema_version": "ai-v2-dev-mapping-v1",
+  "source_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+  "valid_review_states": [
+    "TECHNICAL_EXACT_MATCH",
+    "REQUIRES_SCIENTIFIC_REVIEW",
+    "AMBIGUOUS",
+    "REJECTED",
+    "SCIENTIFICALLY_APPROVED"
+  ]
+}

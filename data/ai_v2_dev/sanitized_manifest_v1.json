@@ -1,0 +1,54 @@
+{
+  "artifacts": {
+    "configs/ai_v2/development_cv_stratified_5fold_v2.json": "ca7ceb87c6c73b72d0a93e5ed9ee42b9d2bde68a3f8a3d7ef795757ca5afaeb9",
+    "data/ai_v2_dev/development_effect_features_v1.json": "07a30b0f4709ed7cd16ee48599e58f581700bbf377675c0759477c49b23b84f1",
+    "data/ai_v2_dev/development_mapping_v1.json": "e8b07edbb948ad6641af746f3ef06f41f8abb80bec77ad44063fa00f4120f763"
+  },
+  "case_count": 74,
+  "created_after_task1_results": true,
+  "development_source_sha256": "7be3413b85be977a0eede4a57e6d0f682a9e1837f8431f8a04a9245311865fef",
+  "graph_source_sha256": "94db8c650533bc36ffa3223f2e62325d5648b8d6bd31c3a4e1c804628c7557b3",
+  "mapping_source_sha256": "67291ca3b68b79b2ec1d6f32c3ba7fcc938cbcffe1c25e867b39afc9e7e89165",
+  "original_fold_class_counts": [
+    {
+      "case_count": 15,
+      "fold": 0,
+      "negative_count": 14,
+      "positive_count": 1,
+      "positive_prevalence": 0.06666666666666667
+    },
+    {
+      "case_count": 15,
+      "fold": 1,
+      "negative_count": 13,
+      "positive_count": 2,
+      "positive_prevalence": 0.13333333333333333
+    },
+    {
+      "case_count": 15,
+      "fold": 2,
+      "negative_count": 10,
+      "positive_count": 5,
+      "positive_prevalence": 0.3333333333333333
+    },
+    {
+      "case_count": 15,
+      "fold": 3,
+      "negative_count": 14,
+      "positive_count": 1,
+      "positive_prevalence": 0.06666666666666667
+    },
+    {
+      "case_count": 14,
+      "fold": 4,
+      "negative_count": 13,
+      "positive_count": 1,
+      "positive_prevalence": 0.07142857142857142
+    }
+  ],
+  "partition": "DEVELOPMENT",
+  "schema_version": "ai-v2-task1b-sanitized-input-manifest-v1",
+  "task1_config_sha256": "55909e29f6f876407965e50f1be9b2cb61cf6e4da86624c3c9041f4c909ca137",
+  "task1_fold_membership_sha256": "6b054c6ff0a6669cb6038b0cd365a6787f5fa5f2d0e5018094badd6cce256dab",
+  "task1c_executed": false
+}

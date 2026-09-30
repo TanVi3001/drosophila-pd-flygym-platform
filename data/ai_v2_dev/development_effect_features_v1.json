@@ -1,0 +1,304 @@
+{
+  "case_count": 74,
+  "features": [
+    {
+      "case_id": "shiu_table3_row_002",
+      "effect_hz": 69.5
+    },
+    {
+      "case_id": "shiu_table3_row_003",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_004",
+      "effect_hz": 10.0
+    },
+    {
+      "case_id": "shiu_table3_row_006",
+      "effect_hz": 12.0
+    },
+    {
+      "case_id": "shiu_table3_row_008",
+      "effect_hz": 25.5
+    },
+    {
+      "case_id": "shiu_table3_row_010",
+      "effect_hz": 2.5
+    },
+    {
+      "case_id": "shiu_table3_row_012",
+      "effect_hz": 2.5
+    },
+    {
+      "case_id": "shiu_table3_row_014",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_015",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_016",
+      "effect_hz": 13.5
+    },
+    {
+      "case_id": "shiu_table3_row_017",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_019",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_020",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_021",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_023",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_024",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_025",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_027",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_028",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_029",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_030",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_032",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_033",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_034",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_035",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_036",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_037",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_038",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_040",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_041",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_042",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_046",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_047",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_048",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_050",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_051",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_052",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_054",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_055",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_058",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_059",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_062",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_064",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_065",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_066",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_068",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_069",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_070",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_072",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_074",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_075",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_078",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_080",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_083",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_084",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_085",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_086",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_087",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_088",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_089",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_091",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_092",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_093",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_095",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_096",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_097",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_098",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_099",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_100",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_101",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_103",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_104",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_105",
+      "effect_hz": 0.0
+    },
+    {
+      "case_id": "shiu_table3_row_107",
+      "effect_hz": 0.0
+    }
+  ],
+  "partition": "DEVELOPMENT",
+  "schema_version": "ai-v2-dev-effect-features-v1",
+  "source_sha256": "7be3413b85be977a0eede4a57e6d0f682a9e1837f8431f8a04a9245311865fef"
+}
