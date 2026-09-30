@@ -1,0 +1,7 @@
+# AI V2 data access — PROPOSED / DEVELOPMENT
+
+The central API is `DevelopmentDataAccess.read_bytes()` in `access.py`. During development it allows `PUBLIC_UNLABELED`, `DEVELOPMENT_INPUT` and `DEVELOPMENT_LABEL` only from configured roots **and exact file allowlists**. Denials and approvals append timestamped events to an audit JSONL file. Root checks resolve symlinks; forbidden directory names, known mixed 106-case benchmark files, unknown classes, unapproved files, paths outside approved roots, missing files and all validation classes fail closed.
+
+`INTERNAL_HELDOUT_INPUT`, `INTERNAL_HELDOUT_LABEL`, `EXTERNAL_VALIDATION_INPUT` and `EXTERNAL_VALIDATION_LABEL` are denied. External input may be enabled only by a later approved protocol. Sealed curator material is never mounted as a development root. This API is an application guard, not an operating-system access-control replacement; independent storage/account permissions remain required.
+
+Development labels must have exactly the approved 74 IDs and binary values. The runner accepts a `DevelopmentLabels` object and checks membership against the fold manifest. It emits prediction files with no label field. The runner's predictions are development artifacts and must not be copied into the V1 frozen record.
