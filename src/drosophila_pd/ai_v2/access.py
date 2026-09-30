@@ -50,7 +50,7 @@ class DevelopmentDataAccess:
         with self.audit_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps({"timestamp_utc": datetime.now(UTC).isoformat(), "class": access_class, "decision": decision, "reason": reason}, sort_keys=True) + "\n")
 
-    def read_bytes(self, access_class: AccessClass | str, path: Path) -> bytes:
+    def _checked_path(self, access_class: AccessClass | str, path: Path) -> tuple[AccessClass, Path]:
         name = str(access_class)
         try:
             category = AccessClass(access_class)
@@ -78,6 +78,16 @@ class DevelopmentDataAccess:
         if resolved not in self.approved_files.get(category, frozenset()):
             self._event(category.value, "DENY", "file_not_approved")
             raise DataAccessDenied("file is not on the development allowlist")
+        return category, resolved
+
+    def authorize_path(self, access_class: AccessClass | str, path: Path) -> Path:
+        """Authorize a large input for streaming without copying its bytes."""
+        category, resolved = self._checked_path(access_class, path)
+        self._event(category.value, "ALLOW", "approved_streaming_path")
+        return resolved
+
+    def read_bytes(self, access_class: AccessClass | str, path: Path) -> bytes:
+        category, resolved = self._checked_path(access_class, path)
         data = resolved.read_bytes()
         self._event(category.value, "ALLOW", "approved_root")
         return data
