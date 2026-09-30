@@ -1,0 +1,14 @@
+# Evaluation metric rationale
+
+The benchmark asks whether cases carrying a published response-presence label are prioritized near the top of a finite list. Standard ranking metrics answer that question; they do not establish biological truth. The score formula is a separate Workbench design choice frozen in `shiu_workbench_score_v1.json`. In keeping with that file, P@5 is the primary endpoint and AP is secondary in the proposed final protocol.
+
+| Metric | Meaning here | Why use it | Limitation |
+|---|---|---|---|
+| Average Precision (AP) | Precision averaged at the ranks where a positive published label is retrieved; computed on assessable scored cases. | Summarizes the precision/recall ranking across the list and uses more of the ranking than a single cutoff. It is a standard information-retrieval metric. | Sensitive to prevalence and the particular small retrospective case set; not a probability calibration measure, causal effect, or biological validation. |
+| Precision@5 | Fraction of the top five ranked assessable cases with a positive published label (the implementation uses `min(5, assessable_count)`). | Directly reflects the project's declared small candidate-budget question. | It is a coarse, high-variance cutoff metric; k=5 is a project protocol decision, not a choice prescribed by Shiu et al. |
+| Coverage | Assessable scored cases divided by declared cases, reported per system and alongside common-denominator analyses. | Makes abstention, missing predictions, and tool applicability visible instead of hiding them. | High coverage does not mean correct predictions; exclusions can change the evaluated population. |
+| Unassessable count/reasons | Cases without a finite, valid score or valid comparable mapping, separated from positive/negative labels. | Prevents unsupported cases from silently becoming negatives and helps interpret coverage. | Requires transparent reason codes and a common-denominator sensitivity analysis. |
+
+The protocol uses ascending case identifier as the deterministic tie-break, retains zero as a valid score, and treats missing/non-finite scores as unassessable. These are implementation/protocol rules, not literature-established biological principles. `k=5` remains locked for this benchmark.
+
+Methodological context: the Stanford *Introduction to Information Retrieval* describes AP and precision at k as ranking measures ([Manning, Raghavan & Schütze, 2008](https://nlp.stanford.edu/IR-book/)); Buckley and Voorhees discuss instability of evaluation measures on small test collections ([SIGIR 2000, DOI 10.1145/345508.345543](https://doi.org/10.1145/345508.345543)). These sources motivate reporting both a whole-list ranking summary and the budget-specific cutoff, with explicit small-sample caution. They do not justify Workbench's biological score design.
