@@ -1,0 +1,119 @@
+{
+  "schema_version": "workbench-comparator-lock-candidate-v1",
+  "candidate_id": "shiu_v2_comparator_lock_candidate_v1",
+  "status": "AWAITING_OWNER_APPROVAL",
+  "owner_approval": {
+    "status": "PENDING",
+    "approver": null,
+    "approved_at_utc": null
+  },
+  "source_identity": {
+    "platform_branch": "feature/workbench-state4-review",
+    "audit_start_commit": "4de0971750cf3e448055e81b675f2dcb4fc2130c",
+    "final_protocol_id": "shiu_v2_final_evaluation_v1",
+    "final_protocol_status_at_audit": "PROPOSED_OWNER_APPROVAL_REQUIRED",
+    "score_lock_id": "shiu_workbench_score_v1",
+    "score_lock_version": 1,
+    "score_lock_sha256": "e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452",
+    "benchmark_identity": "shiu_public_benchmark_v2",
+    "benchmark_registry_sha256": "8743feba5149f78d96238e9ee3bfacbc1d7dd8a33960b6a5eaf6bda77d8fdedb",
+    "benchmark_semantic_hash": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+    "split_membership_sha256": "45bb9c206ff3d35d75fcf6b1f888d270ab7bd1b105e03d1e5aa04ea4c42ee2e4",
+    "case_count": 106,
+    "development_case_count": 74,
+    "held_out_case_count": 32,
+    "development_artifact": "E:/research-/external/Drosophila_brain_model/results/workbench_benchmark_20260923/second_operator_handoff_20260928_v5/owner/development_ablation.json",
+    "development_artifact_sha256": "7BE3413B85BE977A0EEDE4A57E6D0F682A9E1837F8431F8A04A9245311865FEF",
+    "held_out_outcomes_inspected": false,
+    "held_out_execution_authorized": false
+  },
+  "proposed_primary_comparator_ids": [
+    "rewire_effect_only",
+    "rewire_plus_uncertainty",
+    "full_workbench_locked",
+    "random_reference"
+  ],
+  "comparators": {
+    "rewire_effect_only": {
+      "definition": "Frozen per-case degree_preserving_rewire score_hz; no uncertainty normalization or evidence/capability multiplier.",
+      "role": "Substantive effect-only ablation baseline",
+      "score_direction": "higher_is_better",
+      "information": ["frozen_degree_preserving_rewire_score_hz"],
+      "forbidden_information_used": [],
+      "development_metrics": {
+        "average_precision": 0.6591958741697497,
+        "precision_at_5": 0.8,
+        "coverage": 1.0
+      }
+    },
+    "rewire_plus_uncertainty": {
+      "definition": "Frozen rewire score_hz / max(mean published model_mn9_sd_hz at 50 Hz across left/right MN9 readouts, 1e-12); evidence/capability gates omitted.",
+      "role": "Uncertainty-normalization ablation",
+      "score_direction": "higher_is_better",
+      "information": ["frozen_degree_preserving_rewire_score_hz", "published_model_mn9_sd_hz_at_50_hz"],
+      "forbidden_information_used": [],
+      "development_metrics": {
+        "average_precision": 0.6258625408364163,
+        "precision_at_5": 0.8,
+        "coverage": 1.0
+      }
+    },
+    "full_workbench_locked": {
+      "definition": "Exact score-lock v1: frozen rewire score / max(published uncertainty mean, 1e-12) * evidence_gate * capability_gate.",
+      "role": "Frozen Workbench construction under evaluation",
+      "score_direction": "higher_is_better",
+      "information": ["frozen_degree_preserving_rewire_score_hz", "published_model_mn9_sd_hz_at_50_hz", "reviewed_mapping_fields", "assay_comparable", "declared_input_ids", "declared_mn9_readout_ids"],
+      "forbidden_information_used": [],
+      "development_metrics": {
+        "average_precision": 0.6258625408364163,
+        "precision_at_5": 0.8,
+        "coverage": 1.0
+      },
+      "gate_variation_in_full_registry": "NONE; all 106 registered cases pass both gates"
+    },
+    "random_reference": {
+      "definition": "Generate deterministic pseudorandom scores by Python random.Random(seed).random() over the frozen ordered case-ID list for the declared evaluation split; rank higher scores first.",
+      "role": "Negative reference only; not a tuned scientific baseline",
+      "score_direction": "higher_is_better",
+      "seed": 17092026,
+      "information": ["frozen_case_identifiers", "seed"],
+      "forbidden_information_used": [],
+      "development_metrics": {
+        "average_precision": 0.2477405976026132,
+        "precision_at_5": 0.4,
+        "coverage": 1.0
+      }
+    }
+  },
+  "legacy_comparator_disposition": {
+    "heuristic": {
+      "classification": "EXCLUDE",
+      "definition": "1 / (1 + shortest_path) in the legacy public evaluator.",
+      "reason": "shortest_path is a frozen forbidden score input; missing/nonfinite values also make its coverage potentially incomplete; it was absent from the frozen four-system development ablation."
+    },
+    "original_model": {
+      "classification": "EXCLUDE",
+      "definition": "Mean published left/right MN9 model rate at 50 Hz in the legacy evaluator.",
+      "reason": "It duplicates the legacy evaluator's effect_only score exactly, but is distinct from the current rewire_effect_only. It was not in the frozen four-system ablation and is unnecessary for the current component-ablation question."
+    }
+  },
+  "evaluation_contract": {
+    "primary_metric": "precision_at_k",
+    "secondary_metrics": ["average_precision", "coverage", "unassessable_count"],
+    "k": 5,
+    "score_direction": "higher_is_better",
+    "tie_behavior": "Sort descending ranking score, then ascending string case identifier; zero scores remain valid numeric values.",
+    "missing_or_nonfinite_behavior": "Mark unassessable, exclude from score ordering, report per-system coverage and reasons, and do not convert to a negative label.",
+    "denominator_policy": "Report per-system coverage and evaluate cross-system metrics on the predeclared common-assessable intersection; use the same case split and case universe.",
+    "forbidden_score_inputs": ["reference_label", "observed_response_fraction", "shortest_path"],
+    "ranking_calibration_note": "Development threshold calibration is only for binary classification; AP and precision_at_k use original ranking scores and are not threshold-tuned."
+  },
+  "scientific_question": "On the same predeclared benchmark cases, how does the frozen rewire-based Workbench ranking compare with raw effect-only, effect divided by frozen published uncertainty, and a deterministic random negative reference?",
+  "known_limitations": [
+    "All 106 registered cases pass both evidence and capability gates, so their incremental ranking contribution is not identifiable in this benchmark.",
+    "Development full Workbench does not outperform effect-only in average precision.",
+    "Ranking metrics do not establish biological efficacy, behavior prediction, Parkinson validity, wet-lab utility, or ranking-method novelty."
+  ],
+  "protocol_effect": "Candidate only. Do not copy into the final evaluation protocol or treat this record as owner approval.",
+  "heldout_status": "LOCKED_NOT_RUN"
+}
