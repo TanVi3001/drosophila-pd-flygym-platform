@@ -1,0 +1,135 @@
+{
+  "schema_version": "external-validation-access-policy-v1",
+  "policy_id": "blinded_external_validation_v1",
+  "dataset_status": "NOT_SELECTED",
+  "label_status_for_owner": "NOT_AVAILABLE",
+  "execution_authorized": false,
+  "current_32_case_execution": "FORBIDDEN",
+  "new_validation_execution": "FORBIDDEN",
+  "stages": [
+    "CURATION",
+    "INPUT_RELEASED",
+    "OWNER_MAPPING_REVIEW",
+    "PREDICTION_EXECUTION",
+    "PREDICTIONS_FROZEN",
+    "LABEL_RELEASE",
+    "FINAL_EVALUATION"
+  ],
+  "principals": {
+    "owner": {
+      "CURATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": true}
+    },
+    "codex_development_agent": {
+      "CURATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": true}
+    },
+    "llm_rag": {
+      "CURATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": true, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": true}
+    },
+    "simulation": {
+      "CURATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": true, "labels": false, "outcomes": false, "predictions": true, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false}
+    },
+    "model_training": {
+      "CURATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false}
+    },
+    "independent_curator": {
+      "CURATION": {"input": true, "labels": true, "outcomes": true, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": true, "labels": true, "outcomes": true, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": true, "labels": true, "outcomes": true, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": true, "labels": true, "outcomes": true, "predictions": false, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": true, "labels": true, "outcomes": true, "predictions": true, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": true, "labels": true, "outcomes": true, "predictions": true, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": true, "labels": true, "outcomes": true, "predictions": true, "aggregate_metrics": true}
+    },
+    "independent_evaluator": {
+      "CURATION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "INPUT_RELEASED": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "OWNER_MAPPING_REVIEW": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTION_EXECUTION": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "PREDICTIONS_FROZEN": {"input": false, "labels": false, "outcomes": false, "predictions": false, "aggregate_metrics": false},
+      "LABEL_RELEASE": {"input": true, "labels": true, "outcomes": true, "predictions": true, "aggregate_metrics": false},
+      "FINAL_EVALUATION": {"input": true, "labels": true, "outcomes": true, "predictions": true, "aggregate_metrics": true}
+    }
+  },
+  "enforcement_notes": [
+    "This file is a policy contract, not an operating-system ACL; deployment must enforce equivalent storage and account permissions.",
+    "Before PREDICTIONS_FROZEN, owner, Codex, LLM/RAG, simulation and model training have zero label/outcome access.",
+    "After reveal, raw labels remain curator/evaluator-only; owner and LLM/RAG may receive approved aggregate metrics only.",
+    "Training may use development data only. Validation features are inference-only under an explicitly frozen protocol.",
+    "Graph pretraining defaults to inductive: validation nodes/features/edges are not included. Any transductive use requires a separately declared protocol and is not authorized by this policy."
+  ],
+  "no_peeking_validator": {
+    "manifest_filename": "validation_manifest.json",
+    "input_directory": "validation_input_package",
+    "sealed_labels_directory": "validation_labels_sealed",
+    "required_input_files": ["input_schema.json", "cases.jsonl"],
+    "allowed_input_extensions": [".json", ".jsonl", ".csv", ".tsv"],
+    "prohibited_column_tokens": [
+      "label",
+      "labels",
+      "outcome",
+      "outcomes",
+      "phenotype",
+      "responseclass",
+      "referencelabel",
+      "groundtruth",
+      "observedresponse",
+      "targetvalue",
+      "truth"
+    ],
+    "prohibited_filename_tokens": [
+      "label",
+      "outcome",
+      "phenotype",
+      "result",
+      "groundtruth",
+      "reference"
+    ],
+    "prohibited_value_tokens": [
+      "positive",
+      "negative",
+      "hit",
+      "nonhit",
+      "responder",
+      "nonresponder",
+      "responsive",
+      "unresponsive",
+      "increased",
+      "decreased",
+      "suppressed",
+      "enhanced",
+      "effective",
+      "ineffective"
+    ],
+    "case_id_pattern": "^EXTVAL_[0-9]{4,}$"
+  }
+}

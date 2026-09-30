@@ -81,6 +81,6 @@ def test_readiness_docs_keep_heldout_and_scientific_review_pending() -> None:
 
 def test_manuscript_explicitly_separates_heldout_placeholder_and_claim_boundary() -> None:
     manuscript = (ROOT / "docs/workbench_state4_methods_results_draft_20260924.md").read_text(encoding="utf-8")
-    assert "Final held-out evaluation — pending locked one-time execution" in manuscript
+    assert "Internal 32-case evaluation — locked after integrity incident" in manuscript
     assert "MN9 firing/activity is a computational neural readout" in manuscript
     assert "DEVELOPMENT only" in manuscript

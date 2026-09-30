@@ -4,7 +4,7 @@
 
 ## Abstract (working)
 
-Connectome data and neural simulators make computational experiments possible, but do not by themselves determine whether a proposed question is supported by available evidence, within a model's capabilities, or reproducible with interpretable failure states. We present Fly Research Workbench, a scope-bounded software workflow that links evidence and capability checks to a hash-bound StudySpec, simulation, provenance/QC, analysis, and human prioritization. We demonstrate the workflow on a retrospective Drosophila MN9 leaky-integrate-and-fire benchmark derived from published Shiu et al. material and a pinned FlyWire-630 connectivity input. The frozen registry contains 106 cases, partitioned into 74 development and 32 locked held-out cases. On development, the full locked score had AP 0.626 and P@5 0.80; effect-only scoring had AP 0.659 and P@5 0.80; a seeded random reference had AP 0.248 and P@5 0.40. Both evidence and capability gates passed every registry case, so their incremental ranking value is not identifiable in this dataset. Owner-side reproduction evidence is available; independent second-operator reproduction and held-out evaluation remain pending. The results support a reproducibility and workflow contribution, not biological validity, behavior prediction, or wet-lab efficacy.
+Connectome data and neural simulators make computational experiments possible, but do not by themselves determine whether a proposed question is supported by available evidence, within a model's capabilities, or reproducible with interpretable failure states. We present Fly Research Workbench, a scope-bounded software workflow that links evidence and capability checks to a hash-bound StudySpec, simulation, provenance/QC, analysis, and human prioritization. We demonstrate the workflow on a retrospective Drosophila MN9 leaky-integrate-and-fire benchmark derived from published Shiu et al. material and a pinned FlyWire-630 connectivity input. The frozen registry contains 106 cases, partitioned into 74 development and 32 cases reserved for internal evaluation. On development, the full locked score had AP 0.626 and P@5 0.80; effect-only scoring had AP 0.659 and P@5 0.80; a seeded random reference had AP 0.248 and P@5 0.40. Both evidence and capability gates passed every registry case, so their incremental ranking value is not identifiable in this dataset. Owner-side reproduction evidence is available; independent second-operator reproduction remains pending. A label-display incident means the integrity of the 32-case set is unverifiable, so it remains locked and cannot be described as pristine confirmatory evidence. The results support a reproducibility and workflow contribution, not biological validity, behavior prediction, or wet-lab efficacy.
 
 ## Introduction
 
@@ -32,7 +32,7 @@ The explicit research-study path applies support checks; legacy demo pathways ar
 
 ### Benchmark, labels and split
 
-The active retrospective registry is `shiu_public_benchmark_v2`: 106 source-table cases, 74 development and 32 held-out. The benchmark labels represent published model-versus-experiment response-presence/agreement, not an independently collected biological endpoint, significance test, or causal effect. Development is used for the reported ablation and any development-only calibration. Held-out labels/outcomes have not been inspected for this draft and the held-out evaluation has not been run.
+The active retrospective registry is `shiu_public_benchmark_v2`: 106 source-table cases, 74 development and 32 cases originally reserved for evaluation. The benchmark labels represent published model-versus-experiment response-presence/agreement, not an independently collected biological endpoint, significance test, or causal effect. Development is used for the reported ablation and any development-only calibration. After two documented search-snippet exposures, the project cannot establish whether the displayed case-level information intersected the 32-case set. `HELDOUT_PRISTINE_CLAIM = UNAVAILABLE`; that set remains `LOCKED_NOT_RUN` and cannot support a pristine confirmatory claim.
 
 The case-level computational mapping uses the frozen rewire-LIF score and declared left/right MN9 readouts. Mapping records include reviewer and assay-comparability fields; computational validation of IDs does not independently validate cell identity or assay equivalence. Scientific case review remains pending.
 
@@ -53,7 +53,7 @@ P@5 is the primary endpoint as specified by the score-lock; AP is a secondary wh
 | Software validation | Targeted contracts and regression tests have passed in prior recorded runs; this package runs relevant tests again. | Software behavior on declared fixtures, not successful scientific generalization. |
 | Owner computational reproduction | Owner reports byte-identical development ablation and a success/failure subset verifier PASS; operator role is `same_operator`. | Reproducibility by the owner for those artifacts, not independence or biological validity. |
 | Independent second-operator reproduction | Pending Tuấn's clean independent execution and verifier artifact. | If passed, cross-operator computational reproduction of tested artifacts only. |
-| Held-out evaluation | `LOCKED_NOT_RUN`; protocol approval and execution commit still pending. | No generalization evidence yet. |
+| Held-out evaluation | `LOCKED_NOT_RUN`; exposure status is unverifiable and execution is forbidden. | No pristine confirmatory or generalization claim. |
 | Biological validation | Not completed; scientific case review pending and no wet-lab validation in scope. | Nothing about causal biology, behavior or intervention success. |
 
 ## Results — DEVELOPMENT only
@@ -71,7 +71,7 @@ Full Workbench does not outperform effect-only on these data: AP is lower and P@
 
 Owner-side records report successful reproduction of the development output and both a completed technical subset case and an explicit controlled failure/QC case. These records use the same operator. They are not an independent reproduction. The independent operator handoff is pending completion and owner review.
 
-### Final held-out evaluation — pending locked one-time execution
+### Internal 32-case evaluation — locked after integrity incident
 
 `HELDOUT_EXPOSURE_STATUS = UNVERIFIABLE`. `HELDOUT_PRISTINE_CLAIM = UNAVAILABLE`. `HELDOUT_STATUS = LOCKED_NOT_RUN`. `HELDOUT_EXECUTION_AUTHORIZED = FALSE`. No held-out metric is reported. Comparator approval is limited to selection and does not unlock this evaluation set. Do not describe it as pristine or strictly confirmatory; a new prospective validation design is required for a strong confirmatory claim.
 
