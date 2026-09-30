@@ -8,3 +8,4 @@
 
 # Preserve the frozen score-lock JSON bytes on Windows; its SHA-256 is a protocol gate.
 configs/workbench/shiu_workbench_score_v1.json -text
+configs/workbench/shiu_table3_neuron_mapping_v1.json -text
