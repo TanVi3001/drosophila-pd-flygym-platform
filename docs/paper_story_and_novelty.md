@@ -1,48 +1,49 @@
 # Paper story and novelty boundary
 
-**Working title:** *An evidence-aware and reproducible workbench for prioritizing connectome-based computational experiments*
+**Working title:** *An evidence-aware and reproducible workbench for planning connectome-based computational experiments*
 
-## Research problem and paper claim
+**Status:** focused literature audit complete for Task 1; **NOVELTY_RISK = HIGH**; **PAPER_NOVELTY_GO_WITH_REFRAME**. This does not authorize or report held-out evaluation.
 
-Connectome data and neural simulators do not by themselves tell a researcher whether a proposed question is supported by the available evidence, whether the model can represent its assay, what exact computational study should be run, or how to distinguish a failed run from a negative-looking model output. Fly Research Workbench is a software/methods layer between a biological question and a human decision: it checks evidence and model capability, records an explicit StudySpec, runs only a declared computational study, preserves provenance and QC states, and presents a bounded candidate ranking for human review.
+## Research problem and restrained claim
 
-The strongest claim currently supported is that the repository implements a scope-bounded, auditable workflow and a frozen retrospective development benchmark whose score construction is label-blind, with owner-side computational reproduction evidence. Development data show a rewire-based ranking above a seeded random reference, but do **not** show an advantage of full Workbench over effect-only scoring. Independent second-operator reproduction and final held-out evaluation are pending. This is a methods/software claim, not a claim that the system accurately models Parkinson disease, predicts whole-animal behavior, replaces wet-lab work, or identifies successful biological interventions.
+Connectome resources and neural simulators are not, by themselves, a complete operational process for checking whether a declared study is supported by available evidence and a backend, recording an approved study configuration, distinguishing unsupported scope from a failed run, and handing results to a human for review. Fly Research Workbench is a software/methods layer that implements such a process for selected Drosophila computational workflows.
 
-## Contribution status against repository evidence
+The defendable paper story is **a potentially useful, scope-bounded system integration and its software validation**, not a new brain model, causal estimator, ranking algorithm, biological discovery engine, or proof that ranking improves experiment choices. Prior work already covers executable fly circuits (FlyBrainLab), connectome-informed circuit/perturbation prioritization (Pospisil et al.), neural experiment workflows (Mozaik), and general provenance/workflow systems (AiiDA, Snakemake, DataJoint). A 2026 preprint, PRAXIS-VirtualCell, also describes evidence-aware, abstaining, traceable virtual experiments in other biological domains. The exact operational combination may still be useful, but its uniqueness and practical value are not yet established.
 
-| Candidate contribution | Classification | Evidence and boundary |
-|---|---|---|
-| Evidence-aware gating | SUPPORTING | Mapping/reviewer fields and label-blind score lock exist; all 106 benchmark cases pass, so incremental utility is not identified here. |
-| Capability-constrained simulation | SUPPORTING | Research-study path checks declared assay/intervention/readout/context; not every legacy/demo path is globally gated. |
-| Explicit abstention / NOT_SUPPORTED / REQUIRES_REVIEW | CORE | Unsupported, pending, unassessable and failed states are represented rather than silently converted into negative outcomes. |
-| StudySpec as experiment contract | CORE | Study configuration and candidate definitions are hash-bound and approval is tied to the assessed configuration. |
-| Provenance and artifact integrity | CORE | Manifests capture source, environment, input/output digests and run state; integrity verification has dedicated tests. |
-| Reproducible success/failure execution | CORE | Owner subset reports both a completed case and a controlled failure/QC case; remains owner-assisted, not independent. |
-| Frozen benchmark evaluation | SUPPORTING | 106-row registry and 74/32 split are declared; held-out remains locked and comparator choice still needs owner approval. |
-| Candidate prioritization / ranking | SUPPORTING | Ranking and budget-selection components exist; the new workflow's practical benefit has not been prospectively validated. |
-| Cross-machine / cross-operator reproduction support | SUPPORTING | Portable handoff and verifier exist; Tuấn's independent run is still pending. |
+## Primary contributions — limited to three
 
-These classifications describe implemented software and evidence status, not biological validity. See [novelty matrix](novelty_matrix.md) and [scientific case review status](scientific_case_review_status.md).
+| Contribution | Prior-art gap (tentative, not proof of absence) | Repository implementation | Current evidence | Remaining evidence needed |
+|---|---|---|---|---|
+| 1. A scoped support contract that relates source-backed mapping records and declared assay/intervention/context to backend capabilities, emitting explicit supported, review-required, mapping-required or out-of-scope states. | FlyBrainLab supports Drosophila circuit exploration/execution and PRAXIS-VirtualCell proposes evidence-aware contracts, but this repository implements a specific Drosophila study-support data contract; the audit has not established that this exact combination is unprecedented. | `src/drosophila_pd/workbench/support.py`, `models.py`, `service.py`; support assessment and gated research-study path. | Code paths and related contract tests exist. The frozen benchmark's two gates pass all 106 cases, so it does not measure their incremental value. External biological/case review is pending. | Independent scientific review of mappings and assay comparability; adversarial supported/unsupported/review-required test cases; prospective evaluation of whether the contract catches invalid or underspecified plans. |
+| 2. Hash-bound study assessment and researcher approval carried into execution, with explicit run/failure/QC and provenance artifacts. | Generic provenance and experiment workflows are established (AiiDA, Snakemake, DataJoint, Mozaik, Lancet). The possible contribution is domain-specific binding of the support assessment, StudySpec, approval and run records, not provenance itself. | `StudySpec` and stable configuration hash; approval binds to study and assessment hashes; adapters/jobs/manifests/artifacts and reproduction tooling. | Software-level tests and owner-side success/failure reproduction are reported. Independent second-operator reproduction remains pending; software tests do not validate biology. | Independent clean-environment reproduction; external software review; clear separation of the support-gated research path from legacy/demo paths; usability evidence. |
+| 3. A transparent, frozen retrospective ranking application that separates workflow claims from score-performance claims. | Connectome-based candidate/circuit ranking already exists (notably the effectome study). The potential contribution is a transparent, reproducible application of a frozen ranking within the described support/QC workflow, not a novel ranking method. | Score lock, development ablation artifacts, baseline evaluator, frozen protocol and reporting assets. | On 74 development cases: effect-only AP 0.6592/P@5 0.80; full Workbench AP 0.6259/P@5 0.80; random AP 0.2477/P@5 0.40. Full Workbench does not beat effect-only. Gates are non-discriminative on the registered cases. Independent reproduction pending; held-out is not run. | Complete independent reproduction, scientific review, owner-approved future evaluation protocol/comparators, and the single authorized held-out evaluation if/when every gate is satisfied. Even positive retrospective results would not establish biological utility. |
 
-## Position relative to prior work
+These are candidate manuscript contributions, not proof of priority over all prior art. Avoid “first” claims unless a broader systematic review and direct software comparison support them.
 
-FlyWire supplies a whole-brain wiring diagram and annotation resources; Shiu et al. provide the source computational brain model and its sensorimotor analyses; NeuroMechFly v2 targets embodied sensorimotor control. Reproducible simulation/provenance workflows also predate this project (for example, Lancet and AiiDA). The defensible distinction to investigate is the *combined operational contract* that refuses unsupported scopes, binds approval to a StudySpec, carries explicit failure/unassessable states, and tracks provenance into a human-facing prioritization step. These ingredients are not individually claimed as new. A broader literature audit of neuroscience virtual screening and candidate prioritization remains pending; novelty risk is therefore **HIGH** until direct overlap and the value beyond integration are externally reviewed.
+## Closest prior work and contribution type
 
-## Claim ladder
+There is no single prior system closest on every axis:
 
-1. **Now supportable:** software contracts, bounded computational workflow, frozen development findings, and owner-side reproduction—reported separately.
-2. **After second operator:** independent computational reproduction, only if Tuấn (or another genuinely independent operator) runs the declared clean setup and the verifier passes.
-3. **After owner authorization and one-time held-out run:** retrospective ranking generalization on the declared held-out subset, limited to the published label and approved comparator set.
-4. **Not established by this project state:** causal biological accuracy, in-vivo behavior prediction, Parkinson model validity, wet-lab utility, or clinical relevance.
+- **FlyBrainLab** is closest in Drosophila-specific platform scope: it integrates connectomic/neuroanatomical data with executable circuit models and interactive functional exploration.
+- **Pospisil et al. (2024)** is closest to the scientific prioritization objective: connectome-informed causal analysis identifies dominant circuits and testable perturbation hypotheses.
+- **PRAXIS-VirtualCell (2026 preprint)** is closest to the broad evidence-aware/abstaining virtual-experiment architecture, but it is cross-domain, agentic, and not peer reviewed as of this review.
+- **Mozaik** establishes prior art for experiment specification and automated neural simulation workflows.
 
-## Selected primary literature
+Current Workbench is best described as **engineering/system integration with a potentially useful methods contract**. Whether that contract is scientifically meaningful depends on demonstrating that it prevents unsupported runs or improves researcher decisions; neither has yet been established prospectively. See [novelty matrix](novelty_matrix.md), [claim audit](novelty_claim_audit.md), and [reviewer attack](reviewer_novelty_attack.md).
 
-- Dorkenwald et al. (2024), “Neuronal wiring diagram of an adult brain,” *Nature*, DOI [10.1038/s41586-024-07558-y](https://doi.org/10.1038/s41586-024-07558-y).
-- Schlegel et al. (2024), “Whole-brain annotation and multi-connectome cell typing of Drosophila,” *Nature*, DOI [10.1038/s41586-024-07686-5](https://doi.org/10.1038/s41586-024-07686-5).
-- Shiu et al. (2024), “A Drosophila computational brain model reveals sensorimotor processing,” *Nature*, DOI [10.1038/s41586-024-07763-9](https://doi.org/10.1038/s41586-024-07763-9).
-- Wang-Chen et al. (2024), “NeuroMechFly v2: simulating embodied sensorimotor control in adult Drosophila,” *Nature Methods*, DOI [10.1038/s41592-024-02497-y](https://doi.org/10.1038/s41592-024-02497-y).
-- McDougal et al. (2016), “Reproducibility in Computational Neuroscience Models and Simulations,” *IEEE TBME*, DOI [10.1109/TBME.2016.2539602](https://doi.org/10.1109/TBME.2016.2539602).
-- Stevens et al. (2013), “An automated and reproducible workflow for running and analyzing neural simulations using Lancet and IPython Notebook,” *Frontiers in Neuroinformatics*, DOI [10.3389/fninf.2013.00044](https://doi.org/10.3389/fninf.2013.00044).
-- Huber et al. (2020), “AiiDA 1.0, a scalable computational infrastructure for automated reproducible workflows and data provenance,” *Scientific Data*, DOI [10.1038/s41597-020-00638-4](https://doi.org/10.1038/s41597-020-00638-4).
+## Current evidence and claim ladder
 
-This is a targeted comparison, not a systematic review. Direct comparison against neuroscience prioritization/virtual-screening systems is `EXTERNAL_LITERATURE_CHECK_PENDING`.
+1. **Now:** report implemented software contracts, frozen development results and owner-assisted computational reproduction separately. The 74-case ablation shows the full score does not outperform effect-only; do not claim it does.
+2. **After independent operator:** report computational reproduction only if a genuinely separate operator completes the declared clean setup and the verifier passes.
+3. **After required approvals and one-time held-out run:** report retrospective generalization on the declared denominator and approved comparator set only. Current status remains `HELDOUT_STATUS = LOCKED_NOT_RUN`.
+4. **Not established by current project evidence:** causal biological accuracy, behavior prediction, Parkinson model validity, wet-lab utility, intervention efficacy, cost reduction or clinical relevance.
+
+## Decision
+
+**NOVELTY_RISK = HIGH.** There is meaningful overlap with FlyBrainLab, effectome-based prioritization, established neural experiment workflows and general provenance platforms; gates are not discriminative in this benchmark; and performance does not show superiority to effect-only. The exact integrated contract remains a plausible software/methods contribution, but its uniqueness and user value are untested. PRAXIS-VirtualCell further weakens broad architecture-first claims.
+
+**PAPER_NOVELTY_GO_WITH_REFRAME.** Proceed only with a narrow workflow/software framing and transparent limitations. If the group requires the primary claim to be a novel prioritization method or demonstrated biological advantage, the current project does not support it; a methodological pivot or new evaluation would be needed. This judgment uses no held-out outcomes.
+
+## Scope boundary
+
+This active paper is not a Parkinson's disease simulator, direct Drosophila behavior predictor, wet-lab replacement, biological validation, or clinical decision-support system. Historical disease-related repository artifacts must not be blended into the active benchmark as biological validation. See [`configs/workbench/active_manuscript_scope.yaml`](../configs/workbench/active_manuscript_scope.yaml).
