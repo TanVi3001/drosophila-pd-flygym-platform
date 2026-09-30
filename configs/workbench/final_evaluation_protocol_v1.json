@@ -1,0 +1,81 @@
+{
+  "schema_version": "workbench-final-evaluation-protocol-v1",
+  "protocol_id": "shiu_v2_final_evaluation_v1",
+  "status": "PROPOSED_OWNER_APPROVAL_REQUIRED",
+  "owner_approval": {
+    "status": "PENDING",
+    "approver": null,
+    "approved_at_utc": null,
+    "decision_note": "Resolve the legacy heuristic/original-model comparator discrepancy before held-out execution."
+  },
+  "benchmark": {
+    "registry": "configs/workbench/shiu_public_benchmark_v2.json",
+    "registry_sha256": "8743feba5149f78d96238e9ee3bfacbc1d7dd8a33960b6a5eaf6bda77d8fdedb",
+    "identity": "shiu_public_benchmark_v2",
+    "case_count": 106,
+    "development_count": 74,
+    "held_out_count": 32,
+    "protocol_semantic_hash": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+    "split_membership_sha256": "45bb9c206ff3d35d75fcf6b1f888d270ab7bd1b105e03d1e5aa04ea4c42ee2e4",
+    "split_hash_note": "SHA-256 over canonical sorted partition membership only; no outcome values."
+  },
+  "score_lock": {
+    "path": "configs/workbench/shiu_workbench_score_v1.json",
+    "score_lock_id": "shiu_workbench_score_v1",
+    "version": 1,
+    "sha256": "e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452",
+    "k": 5,
+    "primary_endpoint": "precision_at_k",
+    "direction": "higher_is_better"
+  },
+  "evaluation": {
+    "partition": "held_out",
+    "execution_policy": "single owner-authorized run after protocol approval; no interim metrics or outcome inspection",
+    "post_evaluation_policy": "No score, split, comparator, threshold, or endpoint changes may be presented as a fresh held-out test. Any changed method requires a new prospective dataset/split.",
+    "primary_metric": "precision_at_k",
+    "secondary_metrics": ["average_precision", "coverage", "unassessable_count"],
+    "permitted_reporting": ["per-system AP", "per-system P@5", "common-assessable denominator", "coverage", "unassessable reasons", "predeclared paired uncertainty interval if implemented without tuning"],
+    "ranking": {
+      "direction": "higher_is_better",
+      "tie_break": "ascending string case identifier, matching current ranking implementation",
+      "zero_score": "valid numeric score; retain in ranking, apply deterministic tie rule",
+      "missing_or_nonfinite": "unassessable; exclude from score ordering and report coverage; never convert to negative"
+    },
+    "uncertainty": "Use the frozen score-lock published MN9 SD at 50 Hz and its 1e-12 floor; no held-out-derived uncertainty or calibration.",
+    "thresholds": "No classification threshold is a primary held-out endpoint. Any descriptive threshold must be fitted on development only and frozen before authorization.",
+    "common_denominator": "Report each system's coverage and the predeclared common-assessable subset; do not turn absent predictions into negative labels.",
+    "numerical_tolerance": "1e-9 for deterministic reproduction comparisons where the same computational outputs are compared; not a ranking-performance margin."
+  },
+  "comparators": {
+    "proposed_primary_set": [
+      {"id": "rewire_effect_only", "definition": "Frozen per-case degree_preserving_rewire score_hz; no uncertainty normalization or evidence/capability multipliers."},
+      {"id": "rewire_plus_uncertainty", "definition": "The same frozen rewire score divided by the frozen mean published MN9 SD at 50 Hz; gates omitted."},
+      {"id": "full_workbench_locked", "definition": "Exact score-lock v1 construction: rewire score / frozen uncertainty times evidence and capability gates."},
+      {"id": "random_reference", "definition": "Deterministic seeded random score over the declared benchmark case identifiers using the frozen runner implementation; seed 17092026. This is a negative reference, not a tuned scientific baseline."}
+    ],
+    "legacy_additions_not_approved": [
+      {"id": "heuristic", "definition_in_existing_evaluator": "1/(1 + shortest_path); forbidden as a Workbench score input. Inclusion requires owner approval and an explicit rationale for this retrospective comparator."},
+      {"id": "original_model", "definition_in_existing_evaluator": "Mean published left/right MN9 model rate at 50 Hz; currently duplicates effect_only in that evaluator."}
+    ],
+    "decision": "The proposed primary set exactly follows the locked four-system development ablation. Do not execute held-out until the owner records either approval of this set with heuristic/original_model excluded, or an alternate predeclared set plus method/denominator and required development-only verification. No choice may use held-out outcomes."
+  },
+  "forbidden_score_inputs": ["reference_label", "observed_response_fraction", "shortest_path"],
+  "source_identity": {
+    "platform_branch": "feature/workbench-state4-review",
+    "platform_scientific_base_commit": "646c6e9ca35c771aca578994fe731353c7a26625",
+    "platform_execution_commit": "OWNER_MUST_PIN_AFTER_REVIEW_AND_BEFORE_APPROVAL",
+    "neural_source_commit": "e8a3cb2de2107925311053f9afcf2bfbc39fdf3c",
+    "connectivity_sha256": "0f1c42d7ce44aabd80f9e126aac675ad19f69b8e40bb0951e54078720ee15e54",
+    "completeness_sha256": "479ed718404e7b1d898ee9a353410f481e6ed7694c30f579a7c2699f1c708a5d",
+    "annotation_sha256": "ce8058f56b33ac105c62ade6ac257ecec02247547335a10bf16ae0bcd533a25b"
+  },
+  "heldout_guard": {
+    "approval_environment_variable": "HELDOUT_APPROVAL",
+    "required_value": "APPROVED",
+    "approval_is_set": false,
+    "result_directory_policy": "brand-new non-existing directory outside Git; refuse overwrite",
+    "output_checksum_manifest": true,
+    "record_operator_timestamp_source_revision": true
+  },
+  "approved_executor": null
+}
