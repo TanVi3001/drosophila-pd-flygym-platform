@@ -65,6 +65,22 @@ def test_guard_refuses_proposed_protocol_even_with_token(tmp_path: Path, monkeyp
     assert not (tmp_path / "new-output").exists()
 
 
+def test_executor_contract_must_be_exactly_the_32_case_heldout_partition() -> None:
+    valid = {
+        "evaluation_contract": "shiu_v2_heldout_only_v1",
+        "partition": "held_out",
+        "expected_case_count": 32,
+    }
+    MODULE._validate_executor_contract(valid)
+    for invalid in (
+        {**valid, "expected_case_count": 106},
+        {**valid, "partition": "all"},
+        {**valid, "evaluation_contract": "unreviewed"},
+    ):
+        with pytest.raises(MODULE.GuardError, match="exactly 32 held-out cases"):
+            MODULE._validate_executor_contract(invalid)
+
+
 def test_heldout_template_has_pending_label_and_no_input_arguments() -> None:
     template = ROOT / "scripts" / "render_heldout_figure_template.py"
     text = template.read_text(encoding="utf-8")

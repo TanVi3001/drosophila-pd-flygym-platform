@@ -28,6 +28,14 @@
     "primary_endpoint": "precision_at_k",
     "direction": "higher_is_better"
   },
+  "mapping": {
+    "path": "configs/workbench/shiu_v2_flywire630_mapping.csv",
+    "sha256": "c9017c2559ad96bc980c378f59f533e9e96ebc58ef85734ae33c91c9513d196b"
+  },
+  "rewire_score_input": {
+    "source_artifact": "second_operator_handoff_20260928_v5/owner/per_case_scores.csv",
+    "sha256": "b20646c5974051d39a8e4b4f64dd0093961a98fc59a1e6d59632f14fd742c7ae"
+  },
   "evaluation": {
     "partition": "held_out",
     "execution_policy": "single owner-authorized run after protocol approval; no interim metrics or outcome inspection",
@@ -63,7 +71,7 @@
   "source_identity": {
     "platform_branch": "feature/workbench-state4-review",
     "platform_scientific_base_commit": "646c6e9ca35c771aca578994fe731353c7a26625",
-    "platform_execution_commit": "OWNER_MUST_PIN_AFTER_REVIEW_AND_BEFORE_APPROVAL",
+    "platform_execution_commit": null,
     "neural_source_commit": "e8a3cb2de2107925311053f9afcf2bfbc39fdf3c",
     "connectivity_sha256": "0f1c42d7ce44aabd80f9e126aac675ad19f69b8e40bb0951e54078720ee15e54",
     "completeness_sha256": "479ed718404e7b1d898ee9a353410f481e6ed7694c30f579a7c2699f1c708a5d",
@@ -74,6 +82,10 @@
     "required_value": "APPROVED",
     "approval_is_set": false,
     "result_directory_policy": "brand-new non-existing directory outside Git; refuse overwrite",
+    "single_use_external_ledger_required": true,
+    "executor_contract": "shiu_v2_heldout_only_v1",
+    "executor_partition_must_equal": "held_out",
+    "executor_case_count_must_equal": 32,
     "output_checksum_manifest": true,
     "record_operator_timestamp_source_revision": true
   },

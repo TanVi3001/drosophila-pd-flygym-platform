@@ -50,6 +50,17 @@ def _manifest(output: Path) -> list[dict[str, Any]]:
     return entries
 
 
+def _validate_executor_contract(executor: Any) -> None:
+    if not isinstance(executor, dict):
+        raise GuardError("approved_executor is not configured; no evaluator will be launched")
+    if (
+        executor.get("evaluation_contract") != "shiu_v2_heldout_only_v1"
+        or executor.get("partition") != "held_out"
+        or executor.get("expected_case_count") != 32
+    ):
+        raise GuardError("approved evaluator is not contract-pinned to exactly 32 held-out cases")
+
+
 def execute(
     *,
     protocol_path: Path,
@@ -57,6 +68,7 @@ def execute(
     expected_protocol_sha256: str,
     expected_source_commit: str,
     rewire_scores: Path,
+    ledger: Path | None = None,
 ) -> dict[str, Any]:
     # Require the explicit token before reading protocol/executor configuration.
     if os.environ.get("HELDOUT_APPROVAL") != "APPROVED":
@@ -76,20 +88,24 @@ def execute(
 
     source = protocol.get("source_identity") or {}
     current_commit = _git("rev-parse", "HEAD")
-    pinned_commit = source.get("platform_execution_commit")
-    if not pinned_commit or pinned_commit == "OWNER_MUST_PIN_AFTER_REVIEW_AND_BEFORE_APPROVAL":
-        raise GuardError("owner has not pinned the exact platform execution commit")
-    if current_commit != expected_source_commit or current_commit != pinned_commit:
-        raise GuardError("current platform commit does not match both owner-pinned revisions")
+    if len(expected_source_commit) != 40 or any(char not in "0123456789abcdef" for char in expected_source_commit.lower()):
+        raise GuardError("expected source revision must be a full 40-character commit ID")
+    if current_commit != expected_source_commit:
+        raise GuardError("current platform commit does not match the externally owner-pinned revision")
     if _git("status", "--porcelain"):
         raise GuardError("worktree must be clean before held-out execution")
 
     registry = ROOT / protocol["benchmark"]["registry"]
     score_lock = ROOT / protocol["score_lock"]["path"]
+    mapping = ROOT / protocol["mapping"]["path"]
     if _sha256(registry) != protocol["benchmark"]["registry_sha256"].lower():
         raise GuardError("benchmark registry SHA-256 mismatch")
     if _sha256(score_lock) != protocol["score_lock"]["sha256"].lower():
         raise GuardError("score-lock SHA-256 mismatch")
+    if _sha256(mapping) != protocol["mapping"]["sha256"].lower():
+        raise GuardError("benchmark mapping SHA-256 mismatch")
+    if _sha256(rewire_scores.resolve()) != protocol["rewire_score_input"]["sha256"].lower():
+        raise GuardError("frozen per-case rewire score SHA-256 mismatch")
 
     output = output.resolve()
     if output.exists():
@@ -101,9 +117,20 @@ def execute(
     else:
         raise GuardError("held-out results must be written outside the Git worktree")
 
+    if ledger is None:
+        raise GuardError("an external single-use execution ledger path is required")
+    ledger = ledger.resolve()
+    try:
+        ledger.relative_to(ROOT)
+    except ValueError:
+        pass
+    else:
+        raise GuardError("single-use execution ledger must be outside the Git worktree")
+    if ledger.exists():
+        raise GuardError("single-use execution ledger already exists; refusing a second attempt")
+
     executor = protocol.get("approved_executor")
-    if not isinstance(executor, dict):
-        raise GuardError("approved_executor is not configured; no evaluator will be launched")
+    _validate_executor_contract(executor)
     executor_path = (ROOT / executor["script"]).resolve()
     if _sha256(executor_path) != executor.get("sha256", "").lower():
         raise GuardError("approved evaluator script hash mismatch")
@@ -121,12 +148,34 @@ def execute(
     if str(executor_path) not in command and executor["script"] not in command:
         raise GuardError("executor command must invoke the hash-pinned evaluator")
 
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    started = {
+        "status": "STARTED_SINGLE_USE_ATTEMPT",
+        "partition": "held_out",
+        "expected_case_count": 32,
+        "started_at_utc": datetime.now(timezone.utc).isoformat(),
+        "operator": approval["approver"],
+        "platform_commit": current_commit,
+        "evaluation_protocol_sha256": expected_protocol_sha256.lower(),
+    }
+    try:
+        with ledger.open("x", encoding="utf-8") as stream:
+            json.dump(started, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+    except FileExistsError as exc:
+        raise GuardError("single-use execution ledger already exists; refusing a second attempt") from exc
+
     output.parent.mkdir(parents=True, exist_ok=True)
     completed = subprocess.run(command, cwd=ROOT, check=False)
     if completed.returncode != 0:
-        raise GuardError(f"approved evaluator returned exit code {completed.returncode}")
+        started["status"] = "ATTEMPT_FAILED_DO_NOT_RERUN"
+        started["return_code"] = completed.returncode
+        ledger.write_text(json.dumps(started, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        raise GuardError(f"approved evaluator returned exit code {completed.returncode}; single-use lock retained")
     if not output.is_dir():
-        raise GuardError("approved evaluator did not create the new output directory")
+        started["status"] = "ATTEMPT_FAILED_DO_NOT_RERUN"
+        ledger.write_text(json.dumps(started, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        raise GuardError("approved evaluator did not create the new output directory; single-use lock retained")
     entries = _manifest(output)
     (output / "checksums.sha256").write_text(
         "".join(f"{item['sha256']}  {item['path']}\n" for item in entries), encoding="utf-8"
@@ -147,6 +196,7 @@ def execute(
     (output / "execution_record.json").write_text(
         json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    ledger.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(record, indent=2, sort_keys=True))
     return record
 
@@ -158,6 +208,7 @@ def main() -> int:
     parser.add_argument("--expected-source-commit", required=True)
     parser.add_argument("--rewire-scores", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--execution-ledger", type=Path, required=True)
     args = parser.parse_args()
     try:
         execute(
@@ -166,6 +217,7 @@ def main() -> int:
             expected_protocol_sha256=args.expected_protocol_sha256,
             expected_source_commit=args.expected_source_commit,
             rewire_scores=args.rewire_scores,
+            ledger=args.execution_ledger,
         )
     except (GuardError, OSError, KeyError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"HELDOUT_EXECUTION_REFUSED: {exc}", file=sys.stderr)

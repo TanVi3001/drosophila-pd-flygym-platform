@@ -17,6 +17,7 @@ def test_final_protocol_is_concrete_but_still_owner_gated() -> None:
     score_lock = json.loads((ROOT / "configs/workbench/shiu_workbench_score_v1.json").read_text())
     registry = ROOT / protocol["benchmark"]["registry"]
     score_path = ROOT / protocol["score_lock"]["path"]
+    mapping = ROOT / protocol["mapping"]["path"]
 
     assert protocol["status"] == "PROPOSED_OWNER_APPROVAL_REQUIRED"
     assert protocol["owner_approval"]["status"] == "PENDING"
@@ -27,8 +28,12 @@ def test_final_protocol_is_concrete_but_still_owner_gated() -> None:
     assert protocol["evaluation"]["primary_metric"] == score_lock["primary_endpoint"]
     assert protocol["benchmark"]["registry_sha256"] == _sha(registry)
     assert protocol["score_lock"]["sha256"] == _sha(score_path)
+    assert protocol["mapping"]["sha256"] == _sha(mapping)
+    assert len(protocol["rewire_score_input"]["sha256"]) == 64
     assert protocol["approved_executor"] is None
     assert protocol["heldout_guard"]["approval_is_set"] is False
+    assert protocol["heldout_guard"]["single_use_external_ledger_required"] is True
+    assert protocol["heldout_guard"]["executor_case_count_must_equal"] == 32
 
 
 def test_readiness_docs_keep_heldout_and_scientific_review_pending() -> None:

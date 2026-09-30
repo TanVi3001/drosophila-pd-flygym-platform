@@ -24,7 +24,7 @@ Owner development and technical success/failure subset reproduction are reported
 
 ## Final evaluation protocol
 
-Proposed version: `shiu_v2_final_evaluation_v1`. Comparator set follows the frozen four-system ablation, while legacy heuristic/original-model additions are explicitly unapproved. Protocol status: `PROPOSED_OWNER_APPROVAL_REQUIRED`; the dated owner approval, exact execution commit and approved evaluator command are intentionally absent. Score-lock v1 hash: `e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452`. Benchmark semantic identity: `43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f`. Proposed protocol file SHA-256: `e4435dafd2b5ffc79e000259c90326830a3dbda8f4751c020c02bd50e91b7487` (any edit invalidates this pin).
+Proposed version: `shiu_v2_final_evaluation_v1`. Comparator set follows the frozen four-system ablation, while legacy heuristic/original-model additions are explicitly unapproved. Protocol status: `PROPOSED_OWNER_APPROVAL_REQUIRED`; the dated owner approval, exact execution commit and approved evaluator command are intentionally absent. Score-lock v1 hash: `e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452`. Benchmark semantic identity: `43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f`. Proposed protocol file SHA-256: `ac253ef85b59dc0fe61dfdbd90c78740077ee452925978c4b5a32b8b0344ebdf` (any edit invalidates this pin).
 
 ## Manuscript and figures
 
@@ -38,7 +38,21 @@ The canonical draft [`workbench_state4_methods_results_draft_20260924.md`](workb
 
 `HELDOUT_STATUS = LOCKED_NOT_RUN`
 
-The 32 held-out outcomes were not inspected and no held-out run or metric was performed for this package. The launcher refuses unless a literal owner approval token, owner-approved protocol, pinned source revision, clean worktree, exact hashes, new output directory, and hash-pinned evaluator are all supplied. The current protocol cannot pass those gates.
+The 32 held-out outcomes were not inspected and no held-out run or metric was performed for this package. The launcher refuses unless a literal owner approval token, owner-approved protocol, pinned source revision, clean worktree, exact hashes, new output directory, external single-use ledger, and hash-pinned evaluator explicitly contract-pinned to the held-out partition and 32 cases are all supplied. The current protocol cannot pass those gates.
+
+The invocation is intentionally only a template; do not set the approval token from this preparation task:
+
+```powershell
+python scripts/run_guarded_heldout_evaluation.py `
+  --protocol configs/workbench/final_evaluation_protocol_v1.json `
+  --expected-protocol-sha256 <owner-verified-protocol-sha256> `
+  --expected-source-commit <owner-approved-clean-40-character-commit> `
+  --rewire-scores <frozen-score-file> `
+  --output <new-directory-outside-repository> `
+  --execution-ledger <new-external-single-use-ledger.json>
+```
+
+The expected commit and protocol digest are passed from the owner's reviewed execution record to avoid a self-referential commit hash inside the protocol being executed.
 
 ## Decision and remaining blockers
 
