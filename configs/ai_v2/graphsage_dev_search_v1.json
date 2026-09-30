@@ -1,0 +1,23 @@
+{
+  "schema_version": "ai-v2-graph-signal-v1",
+  "status": "PREDECLARED_DEVELOPMENT_ONLY",
+  "development_case_count": 74,
+  "fold_membership_sha256": "6b054c6ff0a6669cb6038b0cd365a6787f5fa5f2d0e5018094badd6cce256dab",
+  "graph_setting": "TRANSDUCTIVE_STRUCTURE_LABEL_ISOLATED",
+  "graph_source": "E:/research-/external/Drosophila_brain_model/2023_03_23_connectivity_630_final.parquet",
+  "graph_source_sha256": "94db8c650533bc36ffa3223f2e62325d5648b8d6bd31c3a4e1c804628c7557b3",
+  "mapping_source": "configs/workbench/shiu_table3_neuron_mapping_v1.json",
+  "development_artifact": "E:/research-/external/Drosophila_brain_model/results/workbench_benchmark_20260923/second_operator_handoff_20260928_v5/owner/development_ablation.json",
+  "node_features": ["log1p_in_degree", "log1p_out_degree", "log1p_in_strength", "log1p_out_strength"],
+  "neighbor_policy": "directed_incoming_unweighted_mean_of_source_node_features",
+  "case_pooling": "mean_of_exact_reviewed_target_ids",
+  "systems": ["B0_effect", "B1_structural", "B2_effect_structural", "B3_graphsage", "B4_effect_graphsage"],
+  "effect_feature": "rewire_effect_only_evaluated_cases.ranking_score",
+  "linear_head": {"penalty": "l2", "C": 1.0, "class_weight": "balanced", "max_iter": 1000},
+  "graphsage_candidates": [
+    {"candidate_id": "fixed_primary", "layers": 1, "hidden_dim": 8, "dropout": 0.1, "learning_rate": 0.01, "epochs": 80, "weight_decay": 0.001, "seed": 20260930}
+  ],
+  "selection_policy": "No candidate selection in Task 1; the sole GraphSAGE configuration is fixed before results.",
+  "metric_k": 5,
+  "score_direction": "higher_is_better"
+}
