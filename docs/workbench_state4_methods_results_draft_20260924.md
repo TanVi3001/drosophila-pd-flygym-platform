@@ -40,7 +40,7 @@ The case-level computational mapping uses the frozen rewire-LIF score and declar
 
 The score lock is `shiu_workbench_score_v1`, version 1, with `k=5` and higher scores ranked first. It starts from the frozen degree-preserving-rewire score; the uncertainty-adjusted version divides by the mean published MN9 SD at 50 Hz (floor `1e-12`); the full locked score multiplies by evidence and capability gates. The score builder excludes benchmark labels, observed response fractions and shortest-path values. The gate definitions and exact inputs are machine-readable in [`shiu_workbench_score_v1.json`](../configs/workbench/shiu_workbench_score_v1.json).
 
-The completed development ablation compares four systems: rewire effect-only, rewire plus uncertainty, full Workbench locked, and seeded random reference (seed 17092026). A discrepancy remains between this locked list and older documents/evaluators that mention heuristic and original-model comparators. The proposed final protocol exactly uses the four locked systems but is `PROPOSED_OWNER_APPROVAL_REQUIRED`; held-out execution is prohibited until the owner resolves this discrepancy in writing. No comparator is added or dropped based on held-out results.
+The completed development ablation compares four systems: rewire effect-only, rewire plus uncertainty, full Workbench locked, and seeded random reference (seed 17092026). The owner approved this comparator set under OPTION_A; `heuristic` and `original_model` are excluded. Protocol state is `OWNER_APPROVED_COMPARATORS_ONLY`, which freezes comparator choice but does not authorize evaluation. The 32-case set is potentially exposed after the documented label-display incident and cannot support a pristine confirmatory claim. No comparator is added or dropped based on held-out results; a new prospective validation design is required for a strong confirmatory claim.
 
 ### Ranking metrics and missingness
 
@@ -73,7 +73,7 @@ Owner-side records report successful reproduction of the development output and 
 
 ### Final held-out evaluation — pending locked one-time execution
 
-`HELDOUT_STATUS = LOCKED_NOT_RUN`. No held-out metric is reported. The comparator protocol remains proposed pending owner approval. This section may be completed only after the approved guard, clean source identity and one-time execution. The held-out cases must not be used for tuning or post-hoc method selection.
+`HELDOUT_EXPOSURE_STATUS = UNVERIFIABLE`. `HELDOUT_PRISTINE_CLAIM = UNAVAILABLE`. `HELDOUT_STATUS = LOCKED_NOT_RUN`. `HELDOUT_EXECUTION_AUTHORIZED = FALSE`. No held-out metric is reported. Comparator approval is limited to selection and does not unlock this evaluation set. Do not describe it as pristine or strictly confirmatory; a new prospective validation design is required for a strong confirmatory claim.
 
 ## Discussion
 

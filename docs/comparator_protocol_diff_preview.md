@@ -1,6 +1,10 @@
-# Comparator protocol diff preview — not applied
+# Comparator protocol diff preview — superseded
 
-This preview describes the minimum comparator-lock changes **if the owner later chooses OPTION A** in [`comparator_approval_packet.md`](comparator_approval_packet.md). It is not an approval record. The current final protocol remains `PROPOSED_OWNER_APPROVAL_REQUIRED`, and `owner_approval.status` remains `PENDING`.
+**Status:** Superseded by the owner decision record in [`comparator_lock_v1.json`](../configs/workbench/comparator_lock_v1.json) and the incident-aware [`final_evaluation_protocol_v1.json`](../configs/workbench/final_evaluation_protocol_v1.json). The owner approved OPTION_A for comparator selection only. This historical preview is retained for provenance; it is not the active protocol.
+
+The active status is `OWNER_APPROVED_COMPARATORS_ONLY`. Held-out integrity remains `UNVERIFIABLE`, the pristine claim is `UNAVAILABLE`, and execution remains locked. The approval timestamp records explicit reaffirmation because the original selection timestamp was not available.
+
+At the time this preview was written, it described changes that would be needed if the owner chose OPTION A. That historical statement is superseded by the owner approval record linked above.
 
 ## Changes required for comparator lock
 

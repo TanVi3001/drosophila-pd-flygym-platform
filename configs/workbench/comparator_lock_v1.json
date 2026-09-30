@@ -1,0 +1,69 @@
+{
+  "schema_version": "workbench-comparator-lock-v1",
+  "lock_id": "shiu_v2_comparator_lock_v1",
+  "status": "OWNER_APPROVED",
+  "decision": "OPTION_A",
+  "owner_approval": {
+    "status": "APPROVED",
+    "approver": "Lê Tấn Vĩ",
+    "approver_identity_source": "Owner identity previously provided in project conversation; no repository approval record named the owner.",
+    "approved_at_utc": "2026-09-30T06:50:07Z",
+    "timestamp_semantics": "Timestamp of the owner's explicit Task 2B-R reaffirmation/recording; original OPTION_A selection timestamp was not available."
+  },
+  "protocol_status": "OWNER_APPROVED_COMPARATORS_ONLY",
+  "approved_primary_comparator_ids": [
+    "rewire_effect_only",
+    "rewire_plus_uncertainty",
+    "full_workbench_locked",
+    "random_reference"
+  ],
+  "excluded_comparator_ids": [
+    "heuristic",
+    "original_model"
+  ],
+  "benchmark_identity": {
+    "benchmark_id": "shiu_public_benchmark_v2",
+    "registry_sha256": "8743feba5149f78d96238e9ee3bfacbc1d7dd8a33960b6a5eaf6bda77d8fdedb",
+    "semantic_hash": "43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f",
+    "split_membership_sha256": "45bb9c206ff3d35d75fcf6b1f888d270ab7bd1b105e03d1e5aa04ea4c42ee2e4",
+    "case_count": 106,
+    "development_case_count": 74,
+    "held_out_case_count": 32
+  },
+  "development_artifact": {
+    "path": "E:/research-/external/Drosophila_brain_model/results/workbench_benchmark_20260923/second_operator_handoff_20260928_v5/owner/development_ablation.json",
+    "sha256": "7BE3413B85BE977A0EEDE4A57E6D0F682A9E1837F8431F8A04A9245311865FEF"
+  },
+  "score_lock": {
+    "id": "shiu_workbench_score_v1",
+    "path": "configs/workbench/shiu_workbench_score_v1.json",
+    "version": 1,
+    "sha256": "e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452",
+    "k": 5
+  },
+  "evaluation_contract": {
+    "primary_metric": "precision_at_k",
+    "secondary_metrics": [
+      "average_precision",
+      "coverage",
+      "unassessable_count"
+    ],
+    "random_reference_seed": 17092026,
+    "forbidden_score_inputs": [
+      "reference_label",
+      "observed_response_fraction",
+      "shortest_path"
+    ],
+    "comparator_definitions_source": "configs/workbench/final_evaluation_protocol_v1.json; comparator formulas and ranking logic unchanged"
+  },
+  "integrity_incident": {
+    "record": "docs/heldout_integrity_incident_20260930.md",
+    "status": "HELDOUT_EXPOSURE_UNVERIFIABLE",
+    "heldout_exposure_status": "UNVERIFIABLE",
+    "heldout_pristine_claim": "UNAVAILABLE",
+    "current_32_case_set_classification": "POST_FREEZE_POTENTIALLY_EXPOSED_EVALUATION_SET",
+    "heldout_status": "LOCKED_NOT_RUN",
+    "execution_authorized": false
+  },
+  "decision_scope": "Comparator selection only. This lock does not authorize held-out execution, confirmatory claims, or a replacement split."
+}

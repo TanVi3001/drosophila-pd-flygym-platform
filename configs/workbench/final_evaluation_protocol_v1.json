@@ -1,12 +1,33 @@
 {
   "schema_version": "workbench-final-evaluation-protocol-v1",
   "protocol_id": "shiu_v2_final_evaluation_v1",
-  "status": "PROPOSED_OWNER_APPROVAL_REQUIRED",
+  "status": "OWNER_APPROVED_COMPARATORS_ONLY",
   "owner_approval": {
-    "status": "PENDING",
-    "approver": null,
-    "approved_at_utc": null,
-    "decision_note": "Resolve the legacy heuristic/original-model comparator discrepancy before held-out execution."
+    "status": "APPROVED_COMPARATORS_ONLY",
+    "approver": "Lê Tấn Vĩ",
+    "approved_at_utc": "2026-09-30T06:50:07Z",
+    "decision_note": "Owner reaffirmed OPTION_A in Task 2B-R. Approval is limited to comparator selection; held-out execution remains unauthorized. Original selection timestamp was not available; this timestamp records the explicit reaffirmation."
+  },
+  "owner_comparator_approval": "APPROVED_OPTION_A",
+  "heldout_exposure_status": "UNVERIFIABLE",
+  "heldout_pristine_claim": "UNAVAILABLE",
+  "heldout_pristine_status": "UNVERIFIABLE_AFTER_ACCIDENTAL_LABEL_DISPLAY",
+  "current_32_case_confirmatory_status": "NOT_PRISTINE_UNVERIFIABLE_EXPOSURE",
+  "current_32_case_set_classification": "POST_FREEZE_POTENTIALLY_EXPOSED_EVALUATION_SET",
+  "heldout_execution_authorized": false,
+  "heldout_status": "LOCKED_NOT_RUN",
+  "new_prospective_validation_design": "REQUIRED_FOR_STRONG_CONFIRMATORY_CLAIM",
+  "pre_incident_method_freeze": {
+    "status": "PRESERVED",
+    "commit": "7a1277338fe23169f961f9bd4cc1543670314eaf"
+  },
+  "execution_pins": {
+    "platform_execution_commit": null,
+    "approved_evaluator": null,
+    "evaluator_sha256": null,
+    "evaluator_command": null,
+    "execution_ledger": null,
+    "approval_token": null
   },
   "benchmark": {
     "registry": "configs/workbench/shiu_public_benchmark_v2.json",
@@ -38,7 +59,7 @@
   },
   "evaluation": {
     "partition": "held_out",
-    "execution_policy": "single owner-authorized run after protocol approval; no interim metrics or outcome inspection",
+    "execution_policy": "LOCKED; comparator approval only. Do not execute this potentially exposed evaluation set as pristine confirmatory validation.",
     "post_evaluation_policy": "No score, split, comparator, threshold, or endpoint changes may be presented as a fresh held-out test. Any changed method requires a new prospective dataset/split.",
     "primary_metric": "precision_at_k",
     "secondary_metrics": ["average_precision", "coverage", "unassessable_count"],
@@ -55,17 +76,24 @@
     "numerical_tolerance": "1e-9 for deterministic reproduction comparisons where the same computational outputs are compared; not a ranking-performance margin."
   },
   "comparators": {
-    "proposed_primary_set": [
+    "approved_primary_set": [
       {"id": "rewire_effect_only", "definition": "Frozen per-case degree_preserving_rewire score_hz; no uncertainty normalization or evidence/capability multipliers."},
       {"id": "rewire_plus_uncertainty", "definition": "The same frozen rewire score divided by the frozen mean published MN9 SD at 50 Hz; gates omitted."},
       {"id": "full_workbench_locked", "definition": "Exact score-lock v1 construction: rewire score / frozen uncertainty times evidence and capability gates."},
       {"id": "random_reference", "definition": "Deterministic seeded random score over the declared benchmark case identifiers using the frozen runner implementation; seed 17092026. This is a negative reference, not a tuned scientific baseline."}
     ],
-    "legacy_additions_not_approved": [
+    "excluded_legacy_comparators": [
       {"id": "heuristic", "definition_in_existing_evaluator": "1/(1 + shortest_path); forbidden as a Workbench score input. Inclusion requires owner approval and an explicit rationale for this retrospective comparator."},
       {"id": "original_model", "definition_in_existing_evaluator": "Mean published left/right MN9 model rate at 50 Hz; currently duplicates effect_only in that evaluator."}
     ],
-    "decision": "The proposed primary set exactly follows the locked four-system development ablation. Do not execute held-out until the owner records either approval of this set with heuristic/original_model excluded, or an alternate predeclared set plus method/denominator and required development-only verification. No choice may use held-out outcomes."
+    "decision": "OWNER_APPROVED_OPTION_A. The four-system comparator set is frozen; heuristic and original_model are excluded. This is comparator approval only and does not authorize evaluation execution."
+  },
+  "integrity_incident": {
+    "record": "docs/heldout_integrity_incident_20260930.md",
+    "status": "HELDOUT_EXPOSURE_UNVERIFIABLE",
+    "heldout_pristine_claim": "UNAVAILABLE",
+    "current_32_case_set_classification": "POST_FREEZE_POTENTIALLY_EXPOSED_EVALUATION_SET",
+    "execution_authorized": false
   },
   "forbidden_score_inputs": ["reference_label", "observed_response_fraction", "shortest_path"],
   "source_identity": {
@@ -81,6 +109,7 @@
     "approval_environment_variable": "HELDOUT_APPROVAL",
     "required_value": "APPROVED",
     "approval_is_set": false,
+    "execution_authorized": false,
     "result_directory_policy": "brand-new non-existing directory outside Git; refuse overwrite",
     "single_use_external_ledger_required": true,
     "executor_contract": "shiu_v2_heldout_only_v1",

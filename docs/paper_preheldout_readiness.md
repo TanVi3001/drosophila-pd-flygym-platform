@@ -24,7 +24,7 @@ Owner development and technical success/failure subset reproduction are reported
 
 ## Final evaluation protocol
 
-Proposed version: `shiu_v2_final_evaluation_v1`. Comparator set follows the frozen four-system ablation, while legacy heuristic/original-model additions are explicitly unapproved. Protocol status: `PROPOSED_OWNER_APPROVAL_REQUIRED`; the dated owner approval, exact execution commit and approved evaluator command are intentionally absent. Score-lock v1 hash: `e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452`. Benchmark semantic identity: `43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f`. Proposed protocol file SHA-256: `ac253ef85b59dc0fe61dfdbd90c78740077ee452925978c4b5a32b8b0344ebdf` (any edit invalidates this pin).
+Version: `shiu_v2_final_evaluation_v1`. The owner approved the four-system comparator set under OPTION_A; `heuristic` and `original_model` are excluded. Protocol status: `OWNER_APPROVED_COMPARATORS_ONLY`. This records comparator choice only; platform execution commit, approved evaluator and command, execution ledger, and approval token remain unresolved. The comparator lock is [`../configs/workbench/comparator_lock_v1.json`](../configs/workbench/comparator_lock_v1.json). Score-lock v1 hash: `e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452`. Benchmark semantic identity: `43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f`. Final protocol SHA-256: `A072A3822481EAEB01A49545FD08C472E1CF315E7064EDED3EA9F320D1BAE247` (any protocol edit invalidates this digest).
 
 ## Manuscript and figures
 
@@ -36,9 +36,14 @@ The canonical draft [`workbench_state4_methods_results_draft_20260924.md`](workb
 
 ## Held-out boundary
 
-`HELDOUT_STATUS = LOCKED_NOT_RUN`
+- `HELDOUT_EXPOSURE_STATUS = UNVERIFIABLE`
+- `HELDOUT_PRISTINE_CLAIM = UNAVAILABLE`
+- `HELDOUT_STATUS = LOCKED_NOT_RUN`
+- `HELDOUT_EXECUTION_AUTHORIZED = FALSE`
 
-The 32 held-out outcomes were not inspected and no held-out run or metric was performed for this package. The launcher refuses unless a literal owner approval token, owner-approved protocol, pinned source revision, clean worktree, exact hashes, new output directory, external single-use ledger, and hash-pinned evaluator explicitly contract-pinned to the held-out partition and 32 cases are all supplied. The current protocol cannot pass those gates.
+`PRE_INCIDENT_METHOD_FREEZE = PRESERVED` at `7a1277338fe23169f961f9bd4cc1543670314eaf`. `NEW_PROSPECTIVE_VALIDATION_DESIGN = REQUIRED_FOR_STRONG_CONFIRMATORY_CLAIM`.
+
+The integrity incident review could not determine whether any displayed case-level labels intersected the frozen 32-case set. The set is therefore `POST_FREEZE_POTENTIALLY_EXPOSED_EVALUATION_SET`, not a pristine confirmatory set. No held-out evaluation or metric was run for this task. The launcher remains execution-gated and the current protocol explicitly does not authorize a run. A new prospective validation design is required for a strong confirmatory claim; do not present this set as untouched or pristine.
 
 The invocation is intentionally only a template; do not set the approval token from this preparation task:
 
@@ -58,6 +63,6 @@ The expected commit and protocol digest are passed from the owner's reviewed exe
 
 **NOT_READY_FOR_HELDOUT**
 
-Reasons: (1) comparator choice awaits owner approval; (2) Tuấn's independent reproduction remains pending; (3) external scientific case review remains pending; (4) exact platform execution commit and evaluator pin are not yet set; (5) the platform worktree contains pre-existing user changes that must be preserved and reconciled before a clean execution release. Owner may decide whether independent reproduction is a submission gate or use the documented owner-only contingency, but this package does not make that choice.
+Reasons: (1) the current 32-case set is potentially exposed and cannot support a pristine confirmatory claim; (2) Tuấn's independent reproduction remains pending; (3) external scientific case review remains pending; (4) exact platform execution commit and evaluator pin are not yet set; (5) a prospective validation design is required for a strong confirmatory claim; (6) pre-existing user changes must be preserved and reconciled before any clean execution release. Comparator selection is approved, but that approval does not unlock execution.
 
 **POST_HELDOUT_DECISION_PENDING**. See [`paper_survival_gate.md`](paper_survival_gate.md) and [`pre_submission_checklist.md`](pre_submission_checklist.md).

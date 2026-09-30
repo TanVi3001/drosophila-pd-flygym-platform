@@ -1,12 +1,14 @@
 # Final comparator approval packet — Task 2A
 
-**Purpose:** provide the owner with a reviewable recommendation. This packet is advisory and does not approve or alter `configs/workbench/final_evaluation_protocol_v1.json`.
+**Historical purpose:** provide the owner with a reviewable recommendation. This packet's recommendation was advisory; the subsequent owner decision is separately recorded below and in the incident-aware final protocol.
+
+**Historical context:** this packet was prepared before the integrity incident and is retained for its development-only comparator rationale. Its original protocol-pending statements below describe the audit-time state, not the current approval status. The incident-aware approval record is at the end of this file.
 
 ## Source identity and audit basis
 
 - Branch: `feature/workbench-state4-review`
 - Source commit at audit start: `4de0971750cf3e448055e81b675f2dcb4fc2130c`
-- Protocol: `shiu_v2_final_evaluation_v1`, currently `PROPOSED_OWNER_APPROVAL_REQUIRED`; `owner_approval.status=PENDING`.
+- Protocol at Task 2A audit time: `shiu_v2_final_evaluation_v1`, then `PROPOSED_OWNER_APPROVAL_REQUIRED`; `owner_approval.status=PENDING`.
 - Score lock: `shiu_workbench_score_v1` v1; SHA-256 `e522aba1bb58a0883a589255c09debbfc2cf0ad1841358242b3dd248e93aa452`.
 - Benchmark registry SHA-256: `8743feba5149f78d96238e9ee3bfacbc1d7dd8a33960b6a5eaf6bda77d8fdedb`; semantic identity `43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f`; split-membership SHA-256 `45bb9c206ff3d35d75fcf6b1f888d270ab7bd1b105e03d1e5aa04ea4c42ee2e4` (membership only, not labels/outcomes).
 - Frozen development artifact: `E:\research-\external\Drosophila_brain_model\results\workbench_benchmark_20260923\second_operator_handoff_20260928_v5\owner\development_ablation.json`; SHA-256 `7BE3413B85BE977A0EEDE4A57E6D0F682A9E1837F8431F8A04A9245311865FEF`. Status `DEVELOPMENT_ABLATION_COMPLETE`, 74 development cases, protocol semantic hash matches, and `held_out_used_for_score_selection=false`.
@@ -70,9 +72,17 @@ This design distinguishes raw effect, uncertainty normalization, the full locked
 
 The four systems match the completed frozen development ablation and answer the bounded component-ablation question without introducing post hoc comparators. Exclude `heuristic` because it violates the forbidden-input contract; exclude `original_model` because the legacy implementation duplicates its own `effect_only` alias and this raw-rate score was not part of the frozen ablation. This recommendation is not owner approval.
 
-`OWNER_COMPARATOR_APPROVAL = PENDING`
+## Owner decision after integrity incident
 
-## Owner decision — choose exactly one
+The owner selected `OPTION_A`, approving the four primary systems listed above and excluding `heuristic` and `original_model`. The auditable comparator-only decision is recorded in [`configs/workbench/comparator_lock_v1.json`](../configs/workbench/comparator_lock_v1.json) and [`configs/workbench/final_evaluation_protocol_v1.json`](../configs/workbench/final_evaluation_protocol_v1.json).
+
+`OWNER_COMPARATOR_APPROVAL = APPROVED_OPTION_A`
+
+This approval freezes comparator selection only. Following the incident review, `HELDOUT_EXPOSURE_STATUS = UNVERIFIABLE` and `HELDOUT_PRISTINE_CLAIM = UNAVAILABLE`. The current 32-case set is `POST_FREEZE_POTENTIALLY_EXPOSED_EVALUATION_SET`; no held-out execution is authorized. The original selection timestamp was unavailable, so the recorded timestamp is explicitly the owner's Task 2B-R reaffirmation time, not an inferred original decision time.
+
+## Original owner decision prompt — superseded
+
+The options below are retained as historical context only. The owner has since selected OPTION_A, recorded in the incident-aware approval record above. They are no longer pending choices.
 
 ### OPTION A — APPROVE RECOMMENDED FOUR-SYSTEM SET
 

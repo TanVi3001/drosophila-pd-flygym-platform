@@ -1,9 +1,9 @@
 {
   "schema_version": "workbench-comparator-lock-candidate-v1",
   "candidate_id": "shiu_v2_comparator_lock_candidate_v1",
-  "status": "AWAITING_OWNER_APPROVAL",
+  "status": "SUPERSEDED_BY_INCIDENT_AWARE_FINAL_LOCK",
   "owner_approval": {
-    "status": "PENDING",
+    "status": "SUPERSEDED_NOT_CURRENT_APPROVAL_SOURCE",
     "approver": null,
     "approved_at_utc": null
   },
@@ -24,8 +24,13 @@
     "held_out_case_count": 32,
     "development_artifact": "E:/research-/external/Drosophila_brain_model/results/workbench_benchmark_20260923/second_operator_handoff_20260928_v5/owner/development_ablation.json",
     "development_artifact_sha256": "7BE3413B85BE977A0EEDE4A57E6D0F682A9E1837F8431F8A04A9245311865FEF",
-    "held_out_outcomes_inspected": false,
     "held_out_execution_authorized": false
+  },
+  "integrity_incident": {
+    "record": "docs/heldout_integrity_incident_20260930.md",
+    "status": "HELDOUT_EXPOSURE_UNVERIFIABLE",
+    "heldout_pristine_claim": "UNAVAILABLE",
+    "note": "Historical pre-incident candidate; use comparator_lock_v1.json and final_evaluation_protocol_v1.json as current records."
   },
   "proposed_primary_comparator_ids": [
     "rewire_effect_only",
