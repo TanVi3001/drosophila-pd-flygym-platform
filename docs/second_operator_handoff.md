@@ -4,9 +4,9 @@ This handoff is a frozen owner reference, **not** evidence that a second operato
 
 ## Independent setup
 
-Tô Đặng Minh Tuấn must use his own clean platform/neural checkouts and Python 3.12.10 environments, not the owner's environments. Record `git rev-parse HEAD` and `git status --short` for both repos. The neural revision must be `e8a3cb2de2107925311053f9afcf2bfbc39fdf3c`. The platform revision must contain the separately recorded portability fix commit and the handoff runner. Run `python -m pip check` in both environments and the related reproduction/score-lock tests before scientific execution.
+An independent teammate (currently designated: Tô Đặng Minh Tuấn) must use their own clean platform/neural checkouts and Python 3.12.10 environments, not the owner's environments. Record `git rev-parse HEAD` and `git status --short` for both repos. The neural revision must be `e8a3cb2de2107925311053f9afcf2bfbc39fdf3c`. The platform revision must contain the separately recorded portability fix commit and the handoff runner. Run `python -m pip check` in both environments and the related reproduction/score-lock tests before scientific execution.
 
-Copy the complete handoff directory to Tuấn's machine. Verify every line of `checksums.sha256` there. The original `owner/original_checksums.sha256` records the larger frozen source batch; the handoff manifest is the inventory of files actually supplied here. Never edit the package in place. The `reference/success_campaign.json` and `reference/failure_campaign.json` use relative artifact links. Their copies under `reference/original_campaigns/` preserve the owner's original absolute links for audit, but should not be used as portable verifier inputs.
+Copy the complete handoff directory to the independent operator's machine. Verify every line of `checksums.sha256` there. The original `owner/original_checksums.sha256` records the larger frozen source batch; the handoff manifest is the inventory of files actually supplied here. Never edit the package in place. The `reference/success_campaign.json` and `reference/failure_campaign.json` use relative artifact links. Their copies under `reference/original_campaigns/` preserve the owner's original absolute links for audit, but should not be used as portable verifier inputs.
 
 ## Development-only ablation
 
@@ -41,7 +41,7 @@ This runner refuses an existing output directory and verifies the three input ha
 
 ## Verification and evidence freeze
 
-Only Tuấn, after confirming his own independent environment, may declare `operator_role=second_operator`:
+Only the human who actually performed the separate run, after confirming their own independent environment, may declare `operator_role=second_operator`. The required `--operator-name` is metadata and must be the real operator's name; changing this text/name does not change the frozen scientific settings:
 
 ```powershell
 & $PlatformPython scripts/verify_workbench_reproduction.py `
@@ -49,7 +49,7 @@ Only Tuấn, after confirming his own independent environment, may declare `oper
   --replica-manifest "$Replica/technical_subset/success_campaign.json" `
   --failure-reference-manifest "$Handoff/reference/failure_campaign.json" `
   --failure-replica-manifest "$Replica/technical_subset/failure_campaign.json" `
-  --operator-name "To Dang Minh Tuan" `
+  --operator-name "<actual independent operator name>" `
   --operator-role second_operator --clean-install `
   --python-version 3.12.10 `
   --benchmark-protocol-hash 43b3704750572dade4774d514bcd986697f537b1b11de81ce918bac3310aad9f `
