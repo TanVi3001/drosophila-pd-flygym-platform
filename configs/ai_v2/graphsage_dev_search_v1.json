@@ -20,6 +20,11 @@
     {"candidate_id": "fixed_primary", "layers": 1, "hidden_dim": 8, "dropout": 0.1, "learning_rate": 0.01, "epochs": 80, "weight_decay": 0.001, "seed": 20260930}
   ],
   "selection_policy": "No candidate selection in Task 1; the sole GraphSAGE configuration is fixed before results.",
+  "decision_rule": {
+    "supported": "B4 mean AP minus B0 mean AP >= 0.05; B4 AP exceeds B0 in at least 4 of 5 folds; B4 mean P@5 is at least B0; B4 mean AP exceeds B2 mean AP",
+    "weak": "Supported rule fails, but any graph-containing system has positive mean AP delta versus B0",
+    "not_supported": "Neither supported nor weak rule holds"
+  },
   "metric_k": 5,
   "score_direction": "higher_is_better"
 }
