@@ -52,6 +52,7 @@ from .selection import SelectionPolicy, select_candidates as make_selection_repo
 from .support import MappingRecord, assess_study_support
 from .store import WorkbenchStore
 from .v2_runtime import V2RuntimeDisabledError, WorkbenchV2DraftRuntime
+from .v2_promotion import prepare_reviewed_study
 
 
 _INTERPRETER_SNAPSHOT_CACHE: dict[str, dict[str, Any]] = {}
@@ -251,6 +252,44 @@ class WorkbenchService:
         created = self.create_study(gated)
         self.assess_support(created.study_id)
         return created
+
+    def get_v2_study_draft(self, draft_id: str) -> dict[str, Any]:
+        if self.v2_draft_runtime is None:
+            raise V2RuntimeDisabledError("Workbench V2 runtime is disabled")
+        return self.v2_draft_runtime.read_study_spec_draft(draft_id)
+
+    def promote_v2_study_draft(
+        self, draft_id: str, *, expected_draft_sha256: str, reviewer: str,
+        review_decision: str, evaluation_split: str, study_payload: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        snapshot = self.get_v2_study_draft(draft_id)
+        if expected_draft_sha256 != snapshot["draft_sha256"]:
+            raise ValueError("draft checksum changed; review the current artifact before promotion")
+        runtime = self.v2_draft_runtime
+        if runtime.evidence_retriever is None:
+            raise ValueError("promotion requires the approved evidence corpus")
+        draft = snapshot["draft"]
+        if draft.get("corpus_sha256") != runtime.evidence_retriever.corpus.corpus_sha256:
+            raise ValueError("draft corpus does not match the currently configured approved corpus")
+        if not isinstance(study_payload, Mapping) or not isinstance(study_payload.get("backend"), str):
+            raise ValueError("reviewed study requires an explicit backend")
+        study = prepare_reviewed_study(
+            draft=draft, draft_sha256=snapshot["draft_sha256"], reviewer=reviewer,
+            review_decision=review_decision, evaluation_split=evaluation_split,
+            study_payload=study_payload,
+            capability=self._adapter(study_payload["backend"]).describe(),
+            mappings={key: MappingRecord.from_dict(raw) for key, raw in self.store.list_mappings().items()},
+        )
+        created = self.create_research_study(study)
+        assessment = self.get_support_assessment(created.study_id)
+        return {
+            "status": ("PROMOTED_REQUIRES_RUN_APPROVAL" if assessment["run_allowed"]
+                       else "PROMOTED_BLOCKED_BY_SUPPORT_GATE"),
+            "study": created.as_dict(),
+            "support_assessment": assessment,
+            "promotion": created.metadata["ai_draft_lineage"],
+            "job_created": False, "simulation_started": False,
+        }
 
     def _require_support_freeze(self, study: StudySpec) -> None:
         if study.metadata.get("workflow_contract") != "support-gated-1":
@@ -1120,7 +1159,18 @@ class WorkbenchService:
         common.pop("seed", None)
         for candidate_id in selected:
             for seed in normalized_seeds:
-                job_id = _confirmation_job_id(f"screening-{candidate_id}", str(seed))
+                job_id = "screening-" + stable_hash({
+                    "study_id": study_id, "candidate_id": candidate_id, "seed": str(seed),
+                })
+                # Preserve already-submitted legacy jobs when resuming the same study.
+                # New studies need scoped IDs even when candidate names/seeds repeat.
+                legacy_id = _confirmation_job_id(f"screening-{candidate_id}", str(seed))
+                try:
+                    legacy = self.get_job(legacy_id)
+                except KeyError:
+                    legacy = None
+                if legacy is not None and legacy.study_id == study_id:
+                    job_id = legacy_id
                 config = {
                     **common,
                     "candidate_id": candidate_id,

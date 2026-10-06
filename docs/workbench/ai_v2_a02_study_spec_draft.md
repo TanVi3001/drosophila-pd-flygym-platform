@@ -73,6 +73,11 @@ Every result is `DRAFT_REQUIRES_RESEARCHER_REVIEW` (or
 mapping, intervention/parameters, control, backend compatibility, run plan and
 human approval bound to the final configuration.
 
+The [A07 reviewed-study handoff](ai_v2_a07_reviewed_study_handoff.md) now provides
+an explicit local API for a researcher to review the saved draft checksum,
+submit a complete final design and create a support-gated study. Promotion is
+separate from run approval and leaves the original draft unchanged.
+
 ## Configure the optional provider
 
 Only after an approved A01 corpus is available, explicitly opt into V2 and set

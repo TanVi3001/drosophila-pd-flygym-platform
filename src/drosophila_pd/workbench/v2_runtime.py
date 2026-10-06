@@ -6,8 +6,10 @@ does not create directories until an explicit ``prepare`` or draft operation.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import re
 import tempfile
 import uuid
 from dataclasses import dataclass
@@ -167,6 +169,22 @@ class WorkbenchV2DraftRuntime:
         self.evidence_retriever = evidence_retriever
         self.study_spec_generator = study_spec_generator
         self.supported_assays = frozenset(supported_assays)
+
+    def read_study_spec_draft(self, draft_id: str) -> dict[str, Any]:
+        """Read an existing isolated artifact by ID, never a caller-supplied path."""
+        if not isinstance(draft_id, str) or not re.fullmatch(r"v2-study-draft-[0-9a-f]{32}", draft_id):
+            raise ValueError("invalid V2 study draft ID")
+        root = self.output_root.resolve()
+        target = root / f"{draft_id}.json"
+        if not target.is_file():
+            raise KeyError("V2 study draft not found")
+        if target.resolve().parent != root or target.is_symlink():
+            raise ValueError("draft artifact escapes the configured output directory")
+        payload = target.read_bytes()
+        draft = json.loads(payload.decode("utf-8"))
+        if not isinstance(draft, dict) or draft.get("draft_id") != draft_id:
+            raise ValueError("draft artifact identity mismatch")
+        return {"draft": draft, "draft_sha256": hashlib.sha256(payload).hexdigest()}
 
     def preview(self, protocol_text: str, *, source_uri: str | None = None) -> dict[str, Any]:
         if self.provider is None:

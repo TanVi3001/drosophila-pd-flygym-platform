@@ -8,9 +8,10 @@ submission, bounded execution, explicit resume, and a report built from
 Workbench-generated run/QC artifacts. It does not give an LLM tools, shell
 access, mapping authority, or permission to alter a frozen study.
 
-The initial `StudySpec` is still created through the existing researcher-facing
-study route. Promoting an A02 draft to an executable StudySpec remains a manual
-researcher action; the draft itself is never executable. A03 can also run with
+The initial `StudySpec` can be created through the existing researcher-facing
+study route or the [A07 reviewed draft handoff](ai_v2_a07_reviewed_study_handoff.md).
+Promotion requires a complete human-supplied design and records draft/mapping
+lineage; the draft itself is never executable. A03 can also run with
 no model provider and no evidence corpus. The workflow controller does not make
 a live LLM request.
 
@@ -61,6 +62,10 @@ and the audit-chain head. They explicitly state that the workflow did not use
 an LLM to execute, retrieve evidence for execution, compute metrics, or decide
 QC. Report generation does not assert biological or wet-lab validity.
 
+When the study was promoted through A07, the report also carries the original
+draft lineage and corpus/prompt hashes. These identify the drafting input;
+execution and metric calculation still use the approved StudySpec and backend.
+
 V2 paths are only constructed by the server when
 `FLY_WORKBENCH_V2_ENABLED=1` and the external runtime root is valid. With V2
 disabled, the original V1 defaults and routes remain in place.
@@ -88,7 +93,7 @@ Still outstanding before calling A03 operationally validated:
   backend-specific timeout behavior;
 - link a human-approved A01 corpus and, separately, conduct A02 answer-quality
   and citation review;
-- decide whether A02 drafts should have a formal human promotion/import route.
+- rehearse the A07 review/promotion route with the team's real approved inputs.
 
 The existing V1 `/v1/.../screening/run` route remains available for backward
 compatibility and is not governed by A03's timeout wrapper. Use the V2 route

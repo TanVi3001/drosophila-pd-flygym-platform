@@ -122,6 +122,27 @@ def create_app(
         except (KeyError, ValueError, TypeError, RuntimeError) as error:
             raise failure(error) from error
 
+    @app.get("/v2/study-spec/drafts/{draft_id}")
+    def get_v2_study_draft(draft_id: str) -> dict[str, Any]:
+        try:
+            return service.get_v2_study_draft(draft_id)
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/study-spec/drafts/{draft_id}/promote")
+    def promote_v2_study_draft(draft_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            fields = {"expected_draft_sha256", "reviewer", "review_decision", "evaluation_split", "study"}
+            if set(payload) != fields:
+                raise ValueError("promotion payload keys mismatch")
+            return service.promote_v2_study_draft(
+                draft_id, expected_draft_sha256=payload["expected_draft_sha256"],
+                reviewer=payload["reviewer"], review_decision=payload["review_decision"],
+                evaluation_split=payload["evaluation_split"], study_payload=payload["study"],
+            )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
     @app.get("/v2/workflows/{study_id}")
     def get_v2_workflow_status(study_id: str) -> dict[str, Any]:
         try:

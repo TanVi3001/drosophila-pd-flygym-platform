@@ -398,6 +398,9 @@ class WorkbenchV2Automation:
                         "manifest_sha256": _file_sha256(manifest_path),
                     })
         audit = self.verify_audit_chain()
+        lineage = study.metadata.get("ai_draft_lineage")
+        if not isinstance(lineage, Mapping):
+            lineage = None
         payload: dict[str, Any] = {
             "schema_version": "workbench-v2-artifact-report-1",
             "report_id": f"v2-report-{uuid.uuid4().hex}",
@@ -410,8 +413,9 @@ class WorkbenchV2Automation:
             "support_assessment_sha256": assessment.get("assessment_hash") if assessment else None,
             "human_approval_sha256": stable_hash(approval) if approval else None,
             "model_provider": "NOT_USED_FOR_WORKFLOW_EXECUTION_OR_METRIC_CALCULATION",
-            "prompt_template_sha256": None,
-            "evidence_corpus_sha256": None,
+            "prompt_template_sha256": lineage.get("prompt_template_sha256") if lineage else None,
+            "evidence_corpus_sha256": lineage.get("evidence_corpus_sha256") if lineage else None,
+            "ai_draft_lineage": lineage,
             "retrieval_used_for_execution": False,
             "results": result_rows,
             "run_manifest_hashes": manifest_hashes,
