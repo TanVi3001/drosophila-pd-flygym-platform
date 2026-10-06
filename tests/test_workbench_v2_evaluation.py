@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import copy
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -16,6 +21,7 @@ def _case_with_evidence():
         "case_id": "fixture-case-1",
         "expected_relevant_evidence_ids": ["evidence-a", "evidence-b"],
         "expected_fields": ["hypothesis", "assay"],
+        "expected_categorical_values": {"assay": "sensory_mn9"},
         "field_support": {
             "hypothesis": ["evidence-a"],
             "assay": ["evidence-a"],
@@ -28,7 +34,7 @@ def _case_with_evidence():
         },
         "draft": {
             "status": "DRAFT_REQUIRES_RESEARCHER_REVIEW",
-            "proposed_fields": {"hypothesis": "fixture", "assay": "fixture"},
+            "proposed_fields": {"hypothesis": "fixture", "assay": "sensory_mn9"},
             "field_citations": {
                 "hypothesis": ["evidence-a"],
                 "assay": ["evidence-not-retrieved"],
@@ -48,6 +54,7 @@ def _bundle():
         "case_id": "fixture-case-2",
         "expected_relevant_evidence_ids": [],
         "expected_fields": [],
+        "expected_categorical_values": {},
         "field_support": {},
         "expected_abstention": True,
         "forbidden_evidence_ids": ["evidence-secret"],
@@ -77,17 +84,25 @@ def test_reports_ranking_abstention_citation_and_safety_metrics():
     metrics = report["metrics"]
 
     assert report["evaluation_case_count"] == 2
+    assert metrics["retrieval_precision_at_k_macro"] == pytest.approx(0.5)
     assert metrics["retrieval_recall_at_k_macro"] == pytest.approx(0.5)
     assert metrics["retrieval_mrr"] == pytest.approx(0.5)
-    assert metrics["retrieval_ndcg_at_k_macro"] == pytest.approx(0.38685280723454163)
     assert metrics["abstention_accuracy"] == 1.0
+    assert metrics["answer_coverage"] == 0.5
+    assert metrics["false_acceptance_rate"] == 0.0
+    assert metrics["false_rejection_rate"] == 0.0
+    assert metrics["selective_risk"] == 1.0
     assert metrics["forbidden_evidence_case_count"] == 1
     assert metrics["expected_field_coverage"] == 1.0
-    assert metrics["reference_citation_alignment"] == 0.5
+    assert metrics["study_spec_categorical_field_accuracy"] == 1.0
+    assert metrics["citation_precision_reference_proxy"] == 0.5
+    assert metrics["unsupported_claim_rate_reference_proxy"] == 0.5
     assert metrics["citation_retrieval_membership"] == 0.5
     assert metrics["draft_non_executable_invariant_pass_rate"] == 1.0
     assert report["interpretation_limits"]["biological_validity"] == "NOT_ASSESSED"
     assert report["interpretation_limits"]["heldout_status"] == "LOCKED_NOT_RUN"
+    assert report["confidence_intervals_95"]["retrieval_recall_at_k_macro"] is None
+    assert report["confidence_intervals_95"]["abstention_accuracy"]["n_cases"] == 2
     assert len(report["input_bundle_sha256"]) == 64
     assert len(report["report_sha256"]) == 64
 
@@ -127,8 +142,42 @@ def test_flags_non_executable_boundary_violation():
     assert report["cases"][0]["draft_non_executable_invariant_pass"] is False
 
 
+def test_categorical_field_accuracy_detects_wrong_assay_value():
+    bundle = _bundle()
+    bundle["cases"][0]["draft"]["proposed_fields"]["assay"] = "wrong_assay"
+    report = evaluate_ai_v2_bundle(bundle)
+    assert report["metrics"]["study_spec_categorical_field_accuracy"] == 0.0
+
+
 def test_does_not_mutate_input_bundle():
     bundle = _bundle()
     original = copy.deepcopy(bundle)
-    evaluate_ai_v2_bundle(bundle)
+    first = evaluate_ai_v2_bundle(bundle)
+    second = evaluate_ai_v2_bundle(bundle)
     assert bundle == original
+    assert first == second
+
+
+def test_cli_writes_report_and_refuses_overwrite(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    input_path = tmp_path / "synthetic_bundle.json"
+    output_path = tmp_path / "synthetic_report.json"
+    input_path.write_text(json.dumps(_bundle()), encoding="utf-8")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(repo_root / "src")
+    command = [
+        sys.executable,
+        str(repo_root / "scripts" / "evaluate_workbench_v2_ai.py"),
+        "--input", str(input_path), "--output", str(output_path), "--k", "2",
+    ]
+
+    first = subprocess.run(command, check=False, capture_output=True, text=True, env=env)
+    assert first.returncode == 0, first.stderr
+    report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert report["evaluation_split"] == "synthetic_fixture"
+    prior_bytes = output_path.read_bytes()
+
+    second = subprocess.run(command, check=False, capture_output=True, text=True, env=env)
+    assert second.returncode == 2
+    assert "refusing to overwrite" in second.stderr
+    assert output_path.read_bytes() == prior_bytes
