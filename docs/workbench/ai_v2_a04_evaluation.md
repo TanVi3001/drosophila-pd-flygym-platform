@@ -13,7 +13,9 @@ This is an engineering and structured-output evaluation tool. Citation-ID
 alignment means that a field references a project-authored supporting evidence
 ID; it does **not** establish semantic entailment or biological truth. Real AI
 quality cannot be reported until the team has an approved evidence corpus,
-frozen evaluation questions, and reviewed reference annotations.
+frozen development questions, and reference annotations prepared internally by
+the project team. Testing an unfinished product with external labs or
+stakeholders is not part of A04.
 
 ## Metrics
 
