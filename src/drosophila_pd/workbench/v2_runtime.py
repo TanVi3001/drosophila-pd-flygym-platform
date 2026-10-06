@@ -14,7 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .evidence import OfflineEvidenceRetriever
 from .intake import IntakeProvider, create_intake_draft
+from .study_spec_draft import StudySpecDraftGenerator, create_study_spec_draft
 
 
 class V2RuntimeUnavailableError(RuntimeError):
@@ -149,11 +151,22 @@ def validate_external_workbench_paths(
 
 
 class WorkbenchV2DraftRuntime:
-    """Persist sanitized, researcher-reviewable drafts without graph execution."""
+    """Persist isolated V2 drafts without creating a study or executing a graph."""
 
-    def __init__(self, *, provider: IntakeProvider | None, output_root: str | Path) -> None:
+    def __init__(
+        self,
+        *,
+        provider: IntakeProvider | None,
+        output_root: str | Path,
+        evidence_retriever: OfflineEvidenceRetriever | None = None,
+        study_spec_generator: StudySpecDraftGenerator | None = None,
+        supported_assays: set[str] | frozenset[str] = frozenset(),
+    ) -> None:
         self.provider = provider
         self.output_root = Path(output_root).expanduser().resolve()
+        self.evidence_retriever = evidence_retriever
+        self.study_spec_generator = study_spec_generator
+        self.supported_assays = frozenset(supported_assays)
 
     def preview(self, protocol_text: str, *, source_uri: str | None = None) -> dict[str, Any]:
         if self.provider is None:
@@ -169,7 +182,7 @@ class WorkbenchV2DraftRuntime:
             {
                 "draft_id": draft_id,
                 "workflow_mode": "DRAFT_ONLY",
-                "retrieval_mode": "NOT_CONFIGURED_IN_A01",
+                "retrieval_mode": "NOT_USED_BY_LEGACY_INTAKE",
                 "graph_used": False,
                 "simulation_started": False,
                 "approval_granted": False,
@@ -180,6 +193,42 @@ class WorkbenchV2DraftRuntime:
         target = resolved_root / f"{draft_id}.json"
         draft["artifact_path"] = target.as_posix()
         _write_new_json(target, draft)
+        return draft
+
+    def retrieve_evidence(self, question: str, *, top_k: int = 5) -> dict[str, Any]:
+        if self.evidence_retriever is None:
+            raise V2RuntimeUnavailableError("no checksum-verified approved evidence corpus is configured")
+        return self.evidence_retriever.retrieve(question, top_k=top_k).as_dict()
+
+    def draft_study_spec(
+        self,
+        question: str,
+        *,
+        top_k: int = 5,
+        mapping_target: str | None = None,
+        mapping_records: dict[str, dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        if self.evidence_retriever is None:
+            raise V2RuntimeUnavailableError("no checksum-verified approved evidence corpus is configured")
+        draft = create_study_spec_draft(
+            question,
+            retriever=self.evidence_retriever,
+            generator=self.study_spec_generator,
+            supported_assays=self.supported_assays,
+            mapping_target=mapping_target,
+            mapping_records=mapping_records,
+            top_k=top_k,
+        )
+        draft_id = f"v2-study-draft-{uuid.uuid4().hex}"
+        draft.update(
+            {
+                "draft_id": draft_id,
+                "retrieval_mode": "OFFLINE_APPROVED_CORPUS_LEXICAL",
+                "artifact_path": (self.output_root / f"{draft_id}.json").as_posix(),
+            }
+        )
+        self.output_root.mkdir(parents=True, exist_ok=True)
+        _write_new_json(self.output_root / f"{draft_id}.json", draft)
         return draft
 
 

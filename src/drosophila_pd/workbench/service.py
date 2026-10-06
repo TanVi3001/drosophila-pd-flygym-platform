@@ -211,6 +211,23 @@ class WorkbenchService:
             raise V2RuntimeDisabledError("Workbench V2 runtime is disabled")
         return self.v2_draft_runtime.preview(protocol_text, source_uri=source_uri)
 
+    def retrieve_v2_evidence(self, question: str, *, top_k: int = 5) -> dict[str, Any]:
+        if self.v2_draft_runtime is None:
+            raise V2RuntimeDisabledError("Workbench V2 runtime is disabled")
+        return self.v2_draft_runtime.retrieve_evidence(question, top_k=top_k)
+
+    def draft_v2_study_spec(
+        self, question: str, *, top_k: int = 5, mapping_target: str | None = None,
+    ) -> dict[str, Any]:
+        if self.v2_draft_runtime is None:
+            raise V2RuntimeDisabledError("Workbench V2 runtime is disabled")
+        return self.v2_draft_runtime.draft_study_spec(
+            question,
+            top_k=top_k,
+            mapping_target=mapping_target,
+            mapping_records=self.store.list_mappings(),
+        )
+
     def create_research_study(self, study: StudySpec) -> StudySpec:
         """Create a v2 study whose simulation path requires reviewed support."""
 

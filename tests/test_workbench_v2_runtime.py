@@ -113,7 +113,7 @@ def test_v2_draft_is_sanitized_graph_free_and_does_not_persist_protocol_text(tmp
     draft = runtime.preview(private_protocol, source_uri="https://example.org/protocol")
 
     assert draft["workflow_mode"] == "DRAFT_ONLY"
-    assert draft["retrieval_mode"] == "NOT_CONFIGURED_IN_A01"
+    assert draft["retrieval_mode"] == "NOT_USED_BY_LEGACY_INTAKE"
     assert draft["graph_used"] is False
     assert draft["simulation_started"] is False
     assert draft["approval_granted"] is False

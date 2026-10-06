@@ -1,18 +1,18 @@
-# AI V2 Runtime Isolation — A01
+# AI V2 Runtime Isolation — A0 bootstrap (legacy filename)
 
 ## Purpose and boundary
 
-A01 establishes a separate, opt-in runtime boundary for AI V2 while preserving
+A0 establishes a separate, opt-in runtime boundary for AI V2 while preserving
 the existing V1 server defaults and intake endpoint. The first V2 operation is
 deliberately small: read protocol text through an explicitly configured intake
 provider and write a sanitized `DRAFT_REQUIRES_RESEARCHER_REVIEW` artifact.
 
-This draft path does not load a connectome, retrieve from a corpus, create a
-biological mapping, create a StudySpec, approve anything, or start a simulation.
+This legacy intake path does not load a connectome, retrieve from a corpus,
+create a biological mapping, create a StudySpec, approve anything, or start a simulation.
 The response records `graph_used=false`, `simulation_started=false`, and
-`approval_granted=false`. Retrieval is explicitly reported as
-`NOT_CONFIGURED_IN_A01`; the directories are reserved, not evidence of a working
-RAG implementation.
+`approval_granted=false`. Its retrieval mode is `NOT_USED_BY_LEGACY_INTAKE`.
+Offline evidence retrieval and evidence-grounded StudySpec drafting are documented
+in `ai_v2_a01_evidence_retrieval.md` and `ai_v2_a02_study_spec_draft.md`.
 
 ## Runtime layout
 
@@ -84,7 +84,7 @@ a new destination; it also refuses to overwrite. These helpers do not run
 automatically, do not touch any user's existing database, and do not claim to
 recover a database for which no backup exists.
 
-## A01 verification scope and remaining work
+## A0 verification scope and remaining work
 
 The accompanying tests cover opt-in/path validation, unchanged V1 defaults,
 the graph-free V2 draft contract, API separation, and backup/restore behavior
@@ -95,8 +95,9 @@ benchmark, held-out evaluation, or biological experiment.
 HELDOUT_STATUS = LOCKED_NOT_RUN
 ```
 
-Still out of scope for A01: a real evidence retriever/RAG corpus, prompt
-versioning and review UI, cache semantics, LLM quality/safety evaluation,
-connectome graph-model integration, multimodal feature fusion, candidate
-ranking, and AI V2 comparison against baselines. Those should be separate,
-reviewable tasks with their own tests and scientific controls.
+This file is named for the original bootstrap task; it is not the specification
+for current A01/A02. A01/A02 now have offline retrieval and guarded draft
+infrastructure, but there is no real approved corpus configured in this checkout.
+Prompt review UI, LLM quality/safety evaluation against a human rubric, cache
+semantics, graph-model integration, multimodal feature fusion, candidate ranking,
+and AI V2 comparison against baselines remain later, separate tasks.

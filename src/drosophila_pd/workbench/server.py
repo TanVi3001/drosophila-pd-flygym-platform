@@ -9,8 +9,10 @@ from typing import Mapping
 
 from .adapters import default_adapters
 from .api import create_app
+from .evidence import ApprovedEvidenceCorpus, OfflineEvidenceRetriever
 from .intake import configured_intake_provider
 from .service import WorkbenchService
+from .study_spec_draft import configured_study_spec_generator
 from .store import WorkbenchStore
 from .v2_runtime import (
     RuntimeLayout,
@@ -66,6 +68,31 @@ def main() -> int:
     parser.add_argument("--v2-intake-base-url", help="Optional V2-only OpenAI-compatible intake API base URL")
     parser.add_argument("--v2-intake-model", help="Optional V2-only intake model name")
     parser.add_argument("--v2-intake-api-key-env", help="Environment variable containing the V2 intake API key")
+    parser.add_argument(
+        "--v2-evidence-corpus-path",
+        default=os.environ.get("FLY_WORKBENCH_V2_CORPUS_PATH"),
+        help="Optional approved corpus.json under the external V2 corpus directory",
+    )
+    parser.add_argument(
+        "--v2-evidence-corpus-sha256",
+        default=os.environ.get("FLY_WORKBENCH_V2_CORPUS_SHA256"),
+        help="Required SHA-256 when an approved V2 evidence corpus is configured",
+    )
+    parser.add_argument(
+        "--v2-study-spec-base-url",
+        default=os.environ.get("FLY_WORKBENCH_V2_STUDY_SPEC_BASE_URL"),
+        help="Optional V2-only OpenAI-compatible StudySpec generation endpoint",
+    )
+    parser.add_argument(
+        "--v2-study-spec-model",
+        default=os.environ.get("FLY_WORKBENCH_V2_STUDY_SPEC_MODEL"),
+        help="Optional V2-only StudySpec generation model name",
+    )
+    parser.add_argument(
+        "--v2-study-spec-api-key-env",
+        default=os.environ.get("FLY_WORKBENCH_V2_STUDY_SPEC_API_KEY_ENV"),
+        help="Environment variable name containing the optional V2 model API key",
+    )
     args = parser.parse_args()
     repository_root = Path(__file__).resolve().parents[3]
     try:
@@ -83,27 +110,79 @@ def main() -> int:
         args.intake_model,
         api_key_env=args.intake_api_key_env,
     )
-    v2_provider = (
-        configured_intake_provider(
-            args.v2_intake_base_url,
-            args.v2_intake_model,
-            api_key_env=args.v2_intake_api_key_env,
+    try:
+        v2_provider = (
+            configured_intake_provider(
+                args.v2_intake_base_url,
+                args.v2_intake_model,
+                api_key_env=args.v2_intake_api_key_env,
+            )
+            if runtime_layout is not None
+            else None
         )
-        if runtime_layout is not None
-        else None
-    )
+        v2_study_spec_generator = (
+            configured_study_spec_generator(
+                args.v2_study_spec_base_url,
+                args.v2_study_spec_model,
+                api_key_env=args.v2_study_spec_api_key_env,
+            )
+            if runtime_layout is not None
+            else None
+        )
+        if runtime_layout is not None and bool(args.v2_evidence_corpus_path) != bool(args.v2_evidence_corpus_sha256):
+            raise ValueError("both V2 evidence corpus path and SHA-256 are required together")
+        if runtime_layout is None and (
+            args.v2_intake_base_url
+            or args.v2_intake_model
+            or args.v2_intake_api_key_env
+            or args.v2_evidence_corpus_path
+            or args.v2_evidence_corpus_sha256
+            or args.v2_study_spec_base_url
+            or args.v2_study_spec_model
+            or args.v2_study_spec_api_key_env
+        ):
+            raise ValueError("V2 corpus and StudySpec provider options require FLY_WORKBENCH_V2_ENABLED=1")
+    except ValueError as error:
+        parser.error(str(error))
     if runtime_layout is not None:
         runtime_layout.prepare()
+    adapters = default_adapters(
+        neural_repo_root=args.neural_repo,
+        neural_interpreter=args.neural_python,
+    )
+    evidence_retriever = None
+    if runtime_layout is not None and args.v2_evidence_corpus_path:
+        try:
+            corpus = ApprovedEvidenceCorpus.load(
+                args.v2_evidence_corpus_path,
+                expected_sha256=args.v2_evidence_corpus_sha256,
+                corpus_root=runtime_layout.v2_corpus,
+            )
+            evidence_retriever = OfflineEvidenceRetriever(
+                corpus,
+                audit_path=runtime_layout.v2_outputs / "retrieval_audit.jsonl",
+                output_root=runtime_layout.v2_outputs,
+            )
+        except (OSError, ValueError) as error:
+            parser.error(f"V2 evidence corpus rejected: {error}")
+    supported_assays = {
+        assay
+        for adapter in adapters.values()
+        for assay in adapter.describe().supported_assays
+    }
     service = WorkbenchService(
         store=WorkbenchStore(db_path),
         artifact_root=artifact_path,
-        adapters=default_adapters(
-            neural_repo_root=args.neural_repo,
-            neural_interpreter=args.neural_python,
-        ),
+        adapters=adapters,
         intake_provider=intake_provider,
         v2_draft_runtime=(
-            WorkbenchV2DraftRuntime(provider=v2_provider, output_root=runtime_layout.v2_outputs / "drafts")
+            WorkbenchV2DraftRuntime(
+                provider=v2_provider,
+                output_root=runtime_layout.v2_outputs / "drafts",
+                evidence_retriever=evidence_retriever,
+                study_spec_generator=v2_study_spec_generator,
+                supported_assays=supported_assays,
+            )
             if runtime_layout is not None
             else None
         ),

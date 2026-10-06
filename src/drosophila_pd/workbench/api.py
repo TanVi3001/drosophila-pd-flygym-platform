@@ -75,6 +75,41 @@ def create_app(service: WorkbenchService) -> Any:
         except (KeyError, ValueError, TypeError, RuntimeError) as error:
             raise failure(error) from error
 
+    @app.post("/v2/evidence/retrieve")
+    def retrieve_v2_evidence(payload: dict[str, Any]) -> dict[str, Any]:
+        """Retrieve only from the configured, checksum-verified offline corpus."""
+        try:
+            question = payload.get("question")
+            if not isinstance(question, str):
+                raise ValueError("question must be a string")
+            top_k = payload.get("top_k", 5)
+            if isinstance(top_k, bool) or not isinstance(top_k, int):
+                raise ValueError("top_k must be an integer")
+            return service.retrieve_v2_evidence(question, top_k=top_k)
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/study-spec/draft")
+    def draft_v2_study_spec(payload: dict[str, Any]) -> dict[str, Any]:
+        """Return a cited, non-executable draft; this route cannot approve or run it."""
+        try:
+            question = payload.get("question")
+            if not isinstance(question, str):
+                raise ValueError("question must be a string")
+            mapping_target = payload.get("mapping_target")
+            if mapping_target is not None and not isinstance(mapping_target, str):
+                raise ValueError("mapping_target must be a string when supplied")
+            top_k = payload.get("top_k", 5)
+            if isinstance(top_k, bool) or not isinstance(top_k, int):
+                raise ValueError("top_k must be an integer")
+            return service.draft_v2_study_spec(
+                question,
+                top_k=top_k,
+                mapping_target=mapping_target,
+            )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
     @app.post("/v1/studies/research")
     def create_research_study(payload: dict[str, Any]) -> dict[str, Any]:
         try:
