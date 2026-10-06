@@ -31,6 +31,9 @@ outside and non-overlapping with the source checkout. The current layout is:
     prompts/
     cache/
     outputs/drafts/
+    automation/
+      workflow_events.jsonl
+      reports/
 ```
 
 The directories are created only after explicit V2 opt-in and server start, or
@@ -101,3 +104,7 @@ infrastructure, but there is no real approved corpus configured in this checkout
 Prompt review UI, LLM quality/safety evaluation against a human rubric, cache
 semantics, graph-model integration, multimodal feature fusion, candidate ranking,
 and AI V2 comparison against baselines remain later, separate tasks.
+
+The guarded A03 workflow controller and its current limitations are documented
+in `ai_v2_a03_workflow_automation.md`; it is created only when the server starts
+with V2 enabled and writes its audit/reports under the external runtime root.

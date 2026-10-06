@@ -10,10 +10,15 @@ from .ranking import RankingPolicy
 from .selection import SelectionPolicy
 from .support import MappingRecord
 from .service import WorkbenchService
+from .v2_automation import WorkbenchV2Automation
 from .v2_runtime import V2RuntimeUnavailableError
 
 
-def create_app(service: WorkbenchService) -> Any:
+def create_app(
+    service: WorkbenchService,
+    *,
+    workflow_automation: WorkbenchV2Automation | None = None,
+) -> Any:
     """Create the localhost API; FastAPI remains an optional dependency."""
 
     try:
@@ -36,6 +41,13 @@ def create_app(service: WorkbenchService) -> Any:
         else:
             status = 400
         return HTTPException(status_code=status, detail=str(error))
+
+    def require_workflow_automation() -> WorkbenchV2Automation:
+        if workflow_automation is None:
+            from .v2_runtime import V2RuntimeDisabledError
+
+            raise V2RuntimeDisabledError("AI V2 workflow automation is disabled")
+        return workflow_automation
 
     @app.get("/v1/capabilities")
     def capabilities() -> dict[str, Any]:
@@ -107,6 +119,83 @@ def create_app(service: WorkbenchService) -> Any:
                 top_k=top_k,
                 mapping_target=mapping_target,
             )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.get("/v2/workflows/{study_id}")
+    def get_v2_workflow_status(study_id: str) -> dict[str, Any]:
+        try:
+            return require_workflow_automation().status(study_id)
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/workflows/{study_id}/assess")
+    def assess_v2_workflow(study_id: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        try:
+            data = payload or {}
+            context = data.get("required_context")
+            if context is not None and not isinstance(context, dict):
+                raise ValueError("required_context must be an object")
+            return require_workflow_automation().assess(study_id, required_context=context)
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/workflows/{study_id}/approve")
+    def approve_v2_workflow(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            reviewer = payload.get("reviewer")
+            return require_workflow_automation().approve(
+                study_id,
+                reviewer=reviewer if isinstance(reviewer, str) else "",
+            )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/workflows/{study_id}/screening/submit")
+    def submit_v2_workflow_screening(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            seeds = payload.get("seeds")
+            if not isinstance(seeds, list):
+                raise ValueError("seeds must be a list")
+            candidates = payload.get("candidate_ids")
+            if candidates is not None and not isinstance(candidates, list):
+                raise ValueError("candidate_ids must be a list when supplied")
+            config = payload.get("config")
+            if config is not None and not isinstance(config, dict):
+                raise ValueError("config must be an object when supplied")
+            return require_workflow_automation().submit(
+                study_id,
+                seeds=seeds,
+                candidate_ids=candidates,
+                base_config=config,
+            )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/workflows/{study_id}/screening/run")
+    def run_v2_workflow_screening(study_id: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        try:
+            value = (payload or {}).get("timeout_s", 600.0)
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError("timeout_s must be a finite number between 0.01 and 3600")
+            return require_workflow_automation().run(study_id, timeout_s=float(value))
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/workflows/{study_id}/screening/resume")
+    def resume_v2_workflow_screening(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            job_ids = payload.get("job_ids")
+            if not isinstance(job_ids, list) or not all(isinstance(item, str) for item in job_ids):
+                raise ValueError("job_ids must be a list of strings")
+            return require_workflow_automation().resume(study_id, job_ids=job_ids)
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.get("/v2/workflows/{study_id}/report")
+    def get_v2_workflow_report(study_id: str) -> dict[str, Any]:
+        try:
+            return require_workflow_automation().report(study_id)
         except (KeyError, ValueError, TypeError, RuntimeError) as error:
             raise failure(error) from error
 

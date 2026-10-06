@@ -14,6 +14,7 @@ from .intake import configured_intake_provider
 from .service import WorkbenchService
 from .study_spec_draft import configured_study_spec_generator
 from .store import WorkbenchStore
+from .v2_automation import WorkbenchV2Automation
 from .v2_runtime import (
     RuntimeLayout,
     WorkbenchV2DraftRuntime,
@@ -187,7 +188,19 @@ def main() -> int:
             else None
         ),
     )
-    uvicorn.run(create_app(service), host=args.host, port=args.port)
+    workflow_automation = (
+        WorkbenchV2Automation(
+            service,
+            output_root=runtime_layout.v2_outputs / "automation",
+        )
+        if runtime_layout is not None
+        else None
+    )
+    uvicorn.run(
+        create_app(service, workflow_automation=workflow_automation),
+        host=args.host,
+        port=args.port,
+    )
     return 0
 
 
