@@ -444,11 +444,29 @@ def test_v2_api_exposes_retrieval_and_non_executable_study_draft_routes(tmp_path
             supported_assays={"sensory_mn9"},
         ),
     )
+    service.register_mapping_record(MappingRecord(
+        mapping_id="api-reviewed-map-v1",
+        biological_target="Reviewed target A",
+        backend="lif_2024",
+        id_namespace="flywire_root_id",
+        dataset_id="flywire-630",
+        intervention_type="activation",
+        target_ids=("fw-root-api",),
+        sources=({"citation": "Reviewed mapping source", "locator": "Table 1"},),
+        review_status="BIOLOGY_REVIEWED",
+        reviewer="Fixture reviewer",
+        reviewed_at="2026-10-06T10:00:00Z",
+    ))
     app = create_app(service)
     retrieved = endpoint_for(app, "/v2/evidence/retrieve")({"question": "MN9 sensory assay firing rate"})
-    draft = endpoint_for(app, "/v2/study-spec/draft")({"question": "MN9 sensory assay firing rate"})
+    draft = endpoint_for(app, "/v2/study-spec/draft")({
+        "question": "MN9 sensory assay firing rate",
+        "mapping_target": "Reviewed target A",
+    })
     assert retrieved["status"] == "RETRIEVED"
     assert draft["workflow_mode"] == "DRAFT_ONLY"
+    assert draft["mapping_lookup"]["matches"][0]["mapping_id"] == "api-reviewed-map-v1"
+    assert draft["mapping_lookup"]["inserted_into_study"] is False
     assert (v2_root / "outputs/drafts" / f"{draft['draft_id']}.json").is_file()
     assert not (tmp_path / "v1-artifacts/intake_drafts").exists()
 
