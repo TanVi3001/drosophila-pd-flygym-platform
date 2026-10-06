@@ -1,4 +1,4 @@
-# AI V2 A00–A07 implementation status
+# AI V2 A00–A09 implementation status
 
 Status checked on 2026-10-06. Percentages are transparent engineering estimates
 for implementation/test deliverables—not scientific validity, real-world
@@ -13,7 +13,9 @@ readiness, or paper acceptance probabilities.
 | A04 — internal AI artifact evaluation | 80% | Offline evaluator, metric denominators, development/synthetic split firewall, deterministic intervals, CLI and regression tests | Validate evaluation annotations and interpretation on team-approved artifacts; semantic support still needs human review |
 | A05 — development-only AI evaluation | **50%** | Metric plan aligned with project Metrics page; evaluator/CLI and synthetic checks prepared; no held-out access | Approved real corpus and frozen development question/reference bundle; provider/privacy decision; run, inspect errors and report real measurements. **Real AI quality result: 0% measured** |
 | A06 — offline integration qualification | **100% of scoped synthetic task** | A01 retrieval → A02 fixture draft → A04 evaluation; no-evidence abstention/no-call; non-executable draft invariants. Found and fixed the A02/A04 `uncertainties` schema mismatch. | This does not replace real-provider evaluation or a rehearsal on the team's external runtime; complete those under A05/A00/A03 when prerequisites exist |
-| A07 — reviewed draft-to-study integration | **85%** | Saved draft checksum bound to review, human design/control/registry-mapping validation, gated promotion API, separate run approval, revised-study approval isolation, synthetic console demo and success/failure report lineage | Real approved corpus/provider/development inputs; team runtime rehearsal; visual review UI and production identity integration |
+| A07 — reviewed draft-to-study integration | **85%** | Saved draft checksum bound to review, human design/control/registry-mapping validation, gated promotion API, separate run approval, revised-study approval isolation, synthetic console demo and success/failure report lineage | Real approved corpus/provider/development inputs; team runtime rehearsal; production identity integration |
+| A08 — local human-review interface | **85%** | Added UI flow for draft → saved checksum → researcher-authored StudySpec → gated promotion → separate assessment/approval/submit/run/report controls; no held-out option; API contract exercised and JavaScript syntax checked | Visual browser inspection unavailable in this environment; team rehearsal; real approved corpus/provider; authenticated reviewer identities and production UX |
+| A09 — end-to-end acceptance/regression | **90% of scoped synthetic acceptance** | API-level success path, pre-approval rejection, held-out-scope rejection, report/audit/provenance assertions, and UI contract checks; regression suite run in isolated Python 3.12 | Real-provider A05 quality run; target-runtime/real-backend rehearsal; production security review |
 
 ## Interpreting the percentages
 
@@ -53,3 +55,19 @@ passed. Runtime/test artifacts were directed to the external directory on E:.
 The immediate A05 blockers are an approved real corpus, frozen development-only
 questions/references, and an explicit provider/privacy decision. Until those
 are supplied, the honest state is `PREPARED_NOT_RUN_REAL_MODEL_EVALUATION`.
+
+## A08–A09 scope and verification
+
+The repository had no formal A08/A09 task specifications. The percentages above
+therefore describe the explicitly scoped engineering tasks, not a hidden
+official acceptance rubric. See [A08 local review UI](ai_v2_a08_review_ui.md)
+and [A09 acceptance/regression gate](ai_v2_a09_acceptance_and_regression.md).
+A08 adds the missing local interface around existing guarded APIs; A09 tests
+those real API routes with synthetic-only fixtures. Neither adds live model
+evaluation, scientific mapping, a verified reviewer identity system, or
+production deployment. The expanded V2 API/UI/evidence/evaluation/runtime
+regression suite passed **75 tests, 0 skipped**. Inline JavaScript syntax
+checking passed, and the local server returned HTTP 200. Browser visual
+inspection could not be completed because no browser session was available.
+The broader non-V2 repository test suite and target-runtime rehearsal remain
+outside this verification.

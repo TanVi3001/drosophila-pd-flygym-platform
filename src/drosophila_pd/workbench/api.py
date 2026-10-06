@@ -570,6 +570,46 @@ pre{white-space:pre-wrap;background:#17212b;padding:1rem;border-radius:4px;overf
 <textarea id="selectionPolicy">{"assay":"sensory_mn9","primary_metric":"mn9_rate","budget_k":3,"control_candidate_id":"control","minimum_pairs":3,"bootstrap_samples":1000,"minimum_direction_stability":0.8}</textarea>
 <br><button onclick="assessSupport()">Assess support</button><button onclick="approveSupport()">Approve support assessment</button><button onclick="submitResearchScreening()">Submit screening jobs</button><button onclick="runResearchScreening()">Run screening jobs</button><button onclick="selectBudget()">Select within candidate budget</button>
 <pre id="supportResult">Support assessment and candidate selection are recorded here.</pre></section>
+<section class="card" id="aiV2Review">
+<h2>AI V2 — Evidence draft → human review → gated Workbench run</h2>
+<p class="muted">The model can only draft from the configured approved evidence corpus. Review the saved draft, complete the final StudySpec yourself, and select an existing reviewed mapping. Promotion does not approve or run a simulation. This local interface does not authenticate reviewer identity; keep the server on 127.0.0.1.</p>
+<label for="v2Question">Research question (development only)</label>
+<textarea id="v2Question" placeholder="Enter a development question answerable from the approved evidence corpus."></textarea>
+<button onclick="v2CreateDraft()">1. Retrieve evidence and create draft</button>
+<label for="v2DraftId">Saved draft ID</label>
+<input id="v2DraftId" placeholder="Filled after draft creation" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<button onclick="v2LoadDraft()">Load saved draft + checksum</button><pre id="v2DraftResult">No AI V2 draft loaded.</pre>
+<label for="v2FinalStudy">Complete, researcher-reviewed final StudySpec JSON (not copied into an executable study automatically)</label>
+<textarea id="v2FinalStudy" spellcheck="false">{
+  "study_id": "REPLACE_WITH_NEW_UNIQUE_ID",
+  "name": "",
+  "hypothesis": "",
+  "falsifiable_prediction": "",
+  "assay": "",
+  "primary_metric": "",
+  "backend": "",
+  "candidates": [],
+  "controls": [],
+  "sources": [],
+  "run_plan": {},
+  "metadata": {}
+}</textarea>
+<label for="v2Reviewer">Reviewer attestation (local API does not verify identity)</label>
+<input id="v2Reviewer" placeholder="Name of researcher who reviewed the complete design" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<label for="v2Split">Evaluation scope</label>
+<select id="v2Split" style="background:#17212b;color:#e8eef4;padding:.45rem"><option value="development">development</option><option value="synthetic_fixture">synthetic_fixture (software test only)</option></select>
+<br><button onclick="v2PromoteDraft()">2. Promote reviewed design (does not run)</button><pre id="v2PromotionResult">Promotion has not been requested.</pre>
+<h3>Separate computational-run gate</h3>
+<p class="muted">Promotion performs a support preflight. Inspect or refresh that assessment, then record a separate human run approval, explicitly submit jobs, and explicitly run them. No button here invokes the AI provider.</p>
+<label for="v2StudyId">Promoted study ID</label>
+<input id="v2StudyId" placeholder="Filled after promotion" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<label for="v2Seeds">Seeds (JSON list; choose and record these before running)</label>
+<textarea id="v2Seeds" placeholder="e.g. [101, 202] — enter only the predeclared development seeds"></textarea>
+<label for="v2Timeout">Run timeout in seconds</label>
+<input id="v2Timeout" type="number" min="0.01" max="3600" value="600" style="width:8rem;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.45rem">
+<br><button onclick="v2WorkflowStatus()">Check status</button><button onclick="v2Assess()">3. Assess/refresh support</button><button onclick="v2Approve()">4. Record human run approval</button><button onclick="v2Submit()">5. Submit declared jobs</button><button onclick="v2Run()">6. Run submitted jobs</button><button onclick="v2Report()">Get provenance/QC report</button>
+<pre id="v2WorkflowResult">No workflow action yet.</pre>
+</section>
 <section class="card"><h2>Capabilities</h2><pre id="capabilities">Loading...</pre></section>
 <section class="card"><h2>Studies and reports</h2><pre id="studies">Loading...</pre></section>
 <section class="card"><h2>Ranking and confirmation</h2>
@@ -600,6 +640,16 @@ async function makeConfirmationPlan(){try{const id=studyId();show('ranking',awai
 async function submitConfirmation(){try{const id=studyId();show('ranking',await get('/v1/studies/'+id+'/confirmation-plan/submit',{method:'POST',body:JSON.stringify({include_sensitivity:document.getElementById('includeSensitivity').checked})}))}catch(e){show('ranking',{error:String(e)})}}
 async function runConfirmation(){try{const id=studyId();show('ranking',await get('/v1/studies/'+id+'/confirmation-plan/run',{method:'POST',body:'{}'}))}catch(e){show('ranking',{error:String(e)})}}
 async function loadHandoff(){try{show('ranking',await get('/v1/studies/'+studyId()+'/evidence-bundle'))}catch(e){show('ranking',{error:String(e)})}}
+const v2id=()=>document.getElementById('v2StudyId').value.trim();
+async function v2CreateDraft(){try{const question=document.getElementById('v2Question').value.trim();if(!question)throw Error('Enter a development question first.');const result=await get('/v2/study-spec/draft',{method:'POST',body:JSON.stringify({question})});document.getElementById('v2DraftId').value=result.draft_id||'';show('v2DraftResult',result)}catch(e){show('v2DraftResult',{error:String(e)})}}
+async function v2LoadDraft(){try{const id=document.getElementById('v2DraftId').value.trim();if(!id)throw Error('Enter or create a saved draft ID first.');const result=await get('/v2/study-spec/drafts/'+encodeURIComponent(id));show('v2DraftResult',result)}catch(e){show('v2DraftResult',{error:String(e)})}}
+async function v2PromoteDraft(){try{const id=document.getElementById('v2DraftId').value.trim();const snapshot=await get('/v2/study-spec/drafts/'+encodeURIComponent(id));const study=JSON.parse(document.getElementById('v2FinalStudy').value);const reviewer=document.getElementById('v2Reviewer').value.trim();if(!reviewer)throw Error('A reviewer attestation is required.');const result=await get('/v2/study-spec/drafts/'+encodeURIComponent(id)+'/promote',{method:'POST',body:JSON.stringify({expected_draft_sha256:snapshot.draft_sha256,reviewer,review_decision:'APPROVED',evaluation_split:document.getElementById('v2Split').value,study})});if(result.study&&result.study.study_id)document.getElementById('v2StudyId').value=result.study.study_id;show('v2PromotionResult',result)}catch(e){show('v2PromotionResult',{error:String(e)})}}
+async function v2WorkflowStatus(){try{show('v2WorkflowResult',await get('/v2/workflows/'+encodeURIComponent(v2id())))}catch(e){show('v2WorkflowResult',{error:String(e)})}}
+async function v2Assess(){try{show('v2WorkflowResult',await get('/v2/workflows/'+encodeURIComponent(v2id())+'/assess',{method:'POST',body:'{}'}))}catch(e){show('v2WorkflowResult',{error:String(e)})}}
+async function v2Approve(){try{const reviewer=document.getElementById('v2Reviewer').value.trim();show('v2WorkflowResult',await get('/v2/workflows/'+encodeURIComponent(v2id())+'/approve',{method:'POST',body:JSON.stringify({reviewer})}))}catch(e){show('v2WorkflowResult',{error:String(e)})}}
+async function v2Submit(){try{const seeds=JSON.parse(document.getElementById('v2Seeds').value);show('v2WorkflowResult',await get('/v2/workflows/'+encodeURIComponent(v2id())+'/screening/submit',{method:'POST',body:JSON.stringify({seeds})}))}catch(e){show('v2WorkflowResult',{error:String(e)})}}
+async function v2Run(){try{show('v2WorkflowResult',await get('/v2/workflows/'+encodeURIComponent(v2id())+'/screening/run',{method:'POST',body:JSON.stringify({timeout_s:Number(document.getElementById('v2Timeout').value)})}))}catch(e){show('v2WorkflowResult',{error:String(e)})}}
+async function v2Report(){try{show('v2WorkflowResult',await get('/v2/workflows/'+encodeURIComponent(v2id())+'/report'))}catch(e){show('v2WorkflowResult',{error:String(e)})}}
 loadAll();
 </script></body></html>"""
 
