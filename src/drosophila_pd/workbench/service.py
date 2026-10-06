@@ -51,6 +51,7 @@ from .ranking import RankingPolicy, rank_candidates
 from .selection import SelectionPolicy, select_candidates as make_selection_report
 from .support import MappingRecord, assess_study_support
 from .store import WorkbenchStore
+from .v2_runtime import V2RuntimeDisabledError, WorkbenchV2DraftRuntime
 
 
 _INTERPRETER_SNAPSHOT_CACHE: dict[str, dict[str, Any]] = {}
@@ -67,6 +68,7 @@ class WorkbenchService:
         adapters: Mapping[str, BackendAdapter] | None = None,
         assays: Mapping[str, AssayAdapter] | None = None,
         intake_provider: IntakeProvider | None = None,
+        v2_draft_runtime: WorkbenchV2DraftRuntime | None = None,
     ) -> None:
         self.store = store
         self.artifact_root = Path(artifact_root).resolve()
@@ -81,6 +83,7 @@ class WorkbenchService:
             }
         )
         self.intake_provider = intake_provider
+        self.v2_draft_runtime = v2_draft_runtime
         self._run_lock = threading.Lock()
         self._active_processes: dict[str, subprocess.Popen[str]] = {}
         self._cancel_events: dict[str, threading.Event] = {}
@@ -200,6 +203,13 @@ class WorkbenchService:
         draft["artifact_path"] = target.as_posix()
         _write_json(target, draft)
         return draft
+
+    def preview_v2_intake(self, protocol_text: str, *, source_uri: str | None = None) -> dict[str, Any]:
+        """Create an isolated V2 draft only; this never creates a StudySpec or job."""
+
+        if self.v2_draft_runtime is None:
+            raise V2RuntimeDisabledError("Workbench V2 runtime is disabled")
+        return self.v2_draft_runtime.preview(protocol_text, source_uri=source_uri)
 
     def create_research_study(self, study: StudySpec) -> StudySpec:
         """Create a v2 study whose simulation path requires reviewed support."""

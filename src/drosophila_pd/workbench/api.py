@@ -10,6 +10,7 @@ from .ranking import RankingPolicy
 from .selection import SelectionPolicy
 from .support import MappingRecord
 from .service import WorkbenchService
+from .v2_runtime import V2RuntimeUnavailableError
 
 
 def create_app(service: WorkbenchService) -> Any:
@@ -28,7 +29,12 @@ def create_app(service: WorkbenchService) -> Any:
         return _WORKBENCH_HTML
 
     def failure(error: Exception) -> HTTPException:
-        status = 404 if isinstance(error, KeyError) else 400
+        if isinstance(error, V2RuntimeUnavailableError):
+            status = 503
+        elif isinstance(error, KeyError):
+            status = 404
+        else:
+            status = 400
         return HTTPException(status_code=status, detail=str(error))
 
     @app.get("/v1/capabilities")
@@ -51,6 +57,18 @@ def create_app(service: WorkbenchService) -> Any:
     def protocol_intake_draft(payload: dict[str, Any]) -> dict[str, Any]:
         try:
             return service.preview_intake(
+                str(payload["protocol_text"]),
+                source_uri=None if payload.get("source_uri") is None else str(payload["source_uri"]),
+            )
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v2/protocol-intake/draft")
+    def protocol_intake_draft_v2(payload: dict[str, Any]) -> dict[str, Any]:
+        """Graph-free V2 intake: emit an isolated draft, never a study or run."""
+
+        try:
+            return service.preview_v2_intake(
                 str(payload["protocol_text"]),
                 source_uri=None if payload.get("source_uri") is None else str(payload["source_uri"]),
             )
