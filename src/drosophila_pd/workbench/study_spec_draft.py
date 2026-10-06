@@ -18,6 +18,7 @@ from .mapping_resolution import resolve_reviewed_mappings
 
 
 PROMPT_VERSION = "workbench-v2-study-spec-draft-1"
+DRAFT_SCHEMA = "workbench-v2-study-spec-draft-2"
 _PROPOSAL_FIELDS = {
     "title", "hypothesis", "falsifiable_prediction", "assay", "primary_metric",
     "primary_metric_unit", "context", "field_citations", "uncertainties",
@@ -202,13 +203,13 @@ def create_study_spec_draft(
         raise ValueError("StudySpec generator output must be a JSON object")
     generated_hash = hashlib.sha256(json.dumps(dict(raw), sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()
     _validate_model_object(raw)
-    proposal, citations, missing, findings, unit_check, assay_check = _validate_proposal(
+    proposal, citations, missing, findings, unit_check, assay_check, uncertainties = _validate_proposal(
         raw, retrieved, supported_assays,
     )
-    if _contains_mapping_identifier_text(proposal):
+    if _contains_mapping_identifier_text(proposal) or _contains_mapping_identifier_text(uncertainties):
         raise ValueError("generator included a mapping/neuron identifier in draft prose")
     result = {
-        "schema_version": "workbench-v2-study-spec-draft-1",
+        "schema_version": DRAFT_SCHEMA,
         "status": "DRAFT_REQUIRES_RESEARCHER_REVIEW",
         "workflow_mode": "DRAFT_ONLY",
         "research_question_sha256": query_hash,
@@ -222,6 +223,7 @@ def create_study_spec_draft(
         "retrieved_evidence_ids": [item.evidence_id for item in retrieved.evidence],
         "mapping_lookup": mapping_lookup,
         "proposed_fields": proposal,
+        "uncertainties": uncertainties,
         "field_citations": citations,
         "citation_validation": "IDS_AND_LOCATORS_VALIDATED; SEMANTIC_ENTAILMENT_NOT_AUTOMATED",
         "missing_fields": missing,
@@ -339,7 +341,7 @@ def _validate_proposal(raw: Mapping[str, Any], retrieved: RetrievalResult,
     uncertainties = raw.get("uncertainties", [])
     if not isinstance(uncertainties, list) or any(not isinstance(item, str) for item in uncertainties):
         raise ValueError("uncertainties must be a list of strings")
-    proposal["uncertainties"] = [item.strip()[:1000] for item in uncertainties if item.strip()]
+    normalized_uncertainties = [item.strip()[:1000] for item in uncertainties if item.strip()]
 
     missing = sorted(field for field in _REQUIRED_DRAFT_FIELDS if field not in proposal)
     assay = proposal.get("assay")
@@ -374,7 +376,15 @@ def _validate_proposal(raw: Mapping[str, Any], retrieved: RetrievalResult,
     else:
         unit_check = "REVIEW_REQUIRED_NO_MACHINE_VERIFIED_UNIT_REGISTRY"
         findings.append("unit_not_verified_against_metric_registry")
-    return proposal, citations, sorted(set(missing)), sorted(set(findings)), unit_check, assay_check
+    return (
+        proposal,
+        citations,
+        sorted(set(missing)),
+        sorted(set(findings)),
+        unit_check,
+        assay_check,
+        normalized_uncertainties,
+    )
 
 
 def _citation_record(chunk: EvidenceChunk) -> dict[str, str]:
@@ -401,7 +411,7 @@ def _citation_record(chunk: EvidenceChunk) -> dict[str, str]:
 
 def _empty_draft(query_hash: str, retrieved: RetrievalResult, status: str, reason: str) -> dict[str, Any]:
     return {
-        "schema_version": "workbench-v2-study-spec-draft-1",
+        "schema_version": DRAFT_SCHEMA,
         "status": status,
         "workflow_mode": "DRAFT_ONLY",
         "research_question_sha256": query_hash,
@@ -422,6 +432,7 @@ def _empty_draft(query_hash: str, retrieved: RetrievalResult, status: str, reaso
             "inserted_into_study": False,
         },
         "proposed_fields": {},
+        "uncertainties": [],
         "field_citations": {},
         "citation_validation": "NO_CITATION_AVAILABLE",
         "missing_fields": list(_REQUIRED_DRAFT_FIELDS),

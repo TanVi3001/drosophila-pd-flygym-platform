@@ -1,43 +1,41 @@
-# AI V2 A00–A05 implementation status
+# AI V2 A00–A06 implementation status
 
-Status is evaluated as of 2026-10-06. Percentages below measure completion of
-each task's **software and test deliverables**, not scientific validation,
-operational adoption, or paper readiness. They are engineering estimates, not
-benchmark metrics.
+Status checked on 2026-10-06. Percentages are transparent engineering estimates
+for implementation/test deliverables—not scientific validity, real-world
+readiness, or paper acceptance probabilities.
 
-| Task | Estimated completion | Verified in this checkout | Remaining before task can be called fully validated |
+| Task | Estimated completion | Verified here | Still missing for broader validation |
 | --- | ---: | --- | --- |
-| A00 — isolation/runtime bootstrap | 90% | V2 opt-in; external path validation; V1 defaults retained; separate draft runtime; backup helpers and fixture tests | Configure and exercise the team's actual external runtime; live provider/data-retention review; confirm operator launch procedure |
-| A01 — approved evidence/retrieval | 75% | Strict corpus/hash contract; offline deterministic retrieval; source/chunk citations; API and tests; no crawling or outcome fields | Project team curates and approves its real source/chunk corpus; run retrieval on that corpus; quantify relevance and check leakage before product demo |
-| A02 — guarded StudySpec draft | 75% | Prompt assembly; optional pretrained provider contract; schema/citation checks; exact reviewed-mapping lookup; fixture/API tests | After corpus approval, run a provider smoke test; evaluate drafts against a project-curated development reference set; finish researcher-controlled draft promotion route |
-| A03 — workflow automation/reporting | 80% | Fixed tool routes; support/mapping and human-approval gates; 100-job bound; zero automatic retries; timeout/cancel; explicit resume; status/progress; chained audit; artifact report; synthetic success/failure tests | Tuấn's runtime integration; team-run end-to-end and backend timeout/resume checks; decide how reviewed A02 drafts become executable StudySpecs |
-| A04 — internal AI artifact evaluation | 80% | Offline evaluator for Precision/Recall@k, MRR, abstention, selective risk, forbidden evidence, categorical fields/citations, bootstrap intervals, non-executable invariants; split firewall; CLI and synthetic regression tests | Project team prepares an approved development-only retrieval/draft reference set; evaluate the approved corpus and provider; report semantic-quality limits without using held-out |
-| A05 — development-only AI evaluation | PREPARED / NOT RUN | Metric plan aligned to Notion; A04 evaluator extended with Precision@k, Recall@k, MRR, categorical field match, citation-reference proxy, coverage/selective-risk and report hashes; synthetic tests | No approved real corpus or frozen internal question/reference bundle is configured in this environment; provider/model and retention review; run and analyze real development artifacts |
+| A00 — isolation/runtime bootstrap | 90% | V2 opt-in, external-path checks, V1 defaults, isolated draft paths and fixtures | Team's actual external runtime rehearsal; provider/data-retention decision |
+| A01 — approved evidence/retrieval | 75% | Strict corpus/hash contract, deterministic offline retrieval, citation provenance and safety tests | Team-approved real corpus; relevance/leakage evaluation on that corpus |
+| A02 — guarded StudySpec draft | 75% | Prompt/provider contract, citations/schema/capability checks, exact reviewed-mapping lookup, non-executable result; uncertainties now have a separate output field | Live provider smoke test after corpus/privacy approval; draft quality evaluation; researcher promotion workflow |
+| A03 — workflow automation/reporting | 80% | Fixed tools, support/mapping/human gates, bounded jobs, timeout/cancel, explicit resume, audit chain, reports and synthetic success/failure tests | Team rehearsal against Tuấn's target runtime; timeout/resume operational checks; explicit human promotion handoff from A02 |
+| A04 — internal AI artifact evaluation | 80% | Offline evaluator, metric denominators, development/synthetic split firewall, deterministic intervals, CLI and regression tests | Validate evaluation annotations and interpretation on team-approved artifacts; semantic support still needs human review |
+| A05 — development-only AI evaluation | **50%** | Metric plan aligned with project Metrics page; evaluator/CLI and synthetic checks prepared; no held-out access | Approved real corpus and frozen development question/reference bundle; provider/privacy decision; run, inspect errors and report real measurements. **Real AI quality result: 0% measured** |
+| A06 — offline integration qualification | **100% of scoped synthetic task** | A01 retrieval → A02 fixture draft → A04 evaluation; no-evidence abstention/no-call; non-executable draft invariants. Found and fixed the A02/A04 `uncertainties` schema mismatch. | This does not replace real-provider evaluation or a rehearsal on the team's external runtime; complete those under A05/A00/A03 when prerequisites exist |
 
-These estimates do not imply the end-to-end AI pipeline is ready for research
-use. A01 has no real approved corpus shipped/configured in this environment,
-A02 has not had a live provider and quality evaluation, and A03 has not been
-exercised by the team on the external runtime. A05 is prepared but has no real
-AI quality measurements yet. The present A03 workflow operates on an already
-researcher-authored, support-gated StudySpec; it does not automatically convert
-an AI draft into a study.
+## Interpreting the percentages
 
-## Claim and evaluation boundary
+A05 is about halfway prepared, but its central scientific/quality result has
+not been measured: the 50% reflects evaluation design, implementation and
+synthetic regression coverage—not a claim that the AI is "50% accurate".
+A06 reaches 100% only for the narrowly defined **offline synthetic integration
+contract**. Across A00–A06, the unweighted mean of these rough estimates is
+about 79%; this is a planning indicator, not a validated project-completion
+score. The team should not present that mean as evidence of AI quality.
 
-- Software contracts can be described as implemented only where tests pass.
-- Fixture-provider and synthetic-backend tests demonstrate interface behavior,
-  not model quality or biological correctness.
-- Mapping remains a human-reviewed project input; software checks its declared
-  provenance and capability compatibility.
-- Reports surface existing Workbench metrics and QC; AI does not compute or
-  override them.
-- This work does not establish a biological effect, a Parkinson mechanism, or
-  wet-lab benefit.
-- `HELDOUT_STATUS = LOCKED_NOT_RUN`.
+## Claim and data boundary
 
-After targeted tests pass, the current best short summary is: **A00–A04 are
-substantially implemented as guarded software scaffolding; the real approved
-evidence corpus, live-provider evaluation, operational rehearsal, and scientific
-quality evaluation are still needed before claiming a validated AI Workbench.
-A05 is planned and instrumented, but its real development-only run is not yet
-available.**
+- The A06 fixture uses a deterministic local fake generator; it sends no
+  request to a model provider and contains no scientific evaluation cases.
+- Automated retrieval/citation checks establish identifier traceability, not
+  semantic entailment or biological truth.
+- Mapping remains a reviewed human input. AI does not create mappings, approve
+  StudySpecs, choose interventions, control QC, or calculate ranking metrics.
+- V1 ranking metrics and A05 RAG/draft metrics remain separate.
+- No Parkinson mechanism, biological effect, or wet-lab benefit is claimed.
+- **`HELDOUT_STATUS = LOCKED_NOT_RUN`**. No held-out cases were inspected or run.
+
+The immediate A05 blockers are an approved real corpus, frozen development-only
+questions/references, and an explicit provider/privacy decision. Until those
+are supplied, the honest state is `PREPARED_NOT_RUN_REAL_MODEL_EVALUATION`.

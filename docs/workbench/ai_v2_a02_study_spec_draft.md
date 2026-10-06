@@ -26,9 +26,12 @@ endpoint with no retrieval. Its output reports
 - Model/provider is opt-in and separate from V1 and the older V2 intake provider.
   No fine-tuning is performed. No live model request is part of the test suite.
 
-The artifact contains the question hash, prompt version/hash, provider ID,
+The artifact uses schema `workbench-v2-study-spec-draft-2` and contains the
+question hash, prompt version/hash, provider ID,
 corpus hash, retrieval algorithm, retrieved evidence IDs, validated citations,
-proposed fields, missing fields, checks and an explicit non-executable status.
+proposed fields, a separate `uncertainties` list, missing fields, checks and an
+explicit non-executable status. Uncertainties are not executable StudySpec
+fields and are excluded from the A04 structured-field accuracy denominator.
 It does not store the raw question, prompt, model response, or retrieved chunk
 text. The retrieval and draft event share the privacy-minimized JSONL audit log.
 

@@ -188,6 +188,8 @@ def test_draft_uses_only_retrieved_evidence_and_is_non_executable(tmp_path):
 
     assert draft["status"] == "DRAFT_REQUIRES_RESEARCHER_REVIEW"
     assert draft["proposed_fields"]["assay"] == "sensory_mn9"
+    assert draft["uncertainties"] == ["Human review must confirm assay comparability."]
+    assert "uncertainties" not in draft["proposed_fields"]
     assert draft["field_citations"]["assay"][0]["locator"] == "Methods, subsection 2"
     assert draft["field_citations"]["assay"][0]["approval_record_id"] == "review-001"
     assert draft["validation"]["assay"].startswith("RECOGNIZED_BY_CONFIGURED_BACKEND")
@@ -240,6 +242,7 @@ def test_matching_evidence_requires_provider_and_duplicate_model_json_is_rejecte
         ({**_valid_response(), "mapping_id": "invented"}, "prohibited"),
         ({**_valid_response(), "backend": "lif_2024"}, "prohibited"),
         ({**_valid_response(), "hypothesis": "Activate neuron ID 1234567."}, "mapping/neuron identifier"),
+        ({**_valid_response(), "uncertainties": ["Activate neuron ID 1234567."]}, "mapping/neuron identifier"),
         ({**_valid_response(), "field_citations": {"assay": ["not-retrieved"]}}, "not retrieved"),
         ({**_valid_response(), "unexpected": "value"}, "unsupported"),
     ],
