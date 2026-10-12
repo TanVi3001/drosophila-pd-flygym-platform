@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
+import hmac
+import os
+from typing import Any, Mapping
 
 from .benchmark import BenchmarkProtocol, freeze_benchmark_protocol
 from .models import StudySpec
@@ -12,16 +14,87 @@ from .support import MappingRecord
 from .service import WorkbenchService
 
 
-def create_app(service: WorkbenchService) -> Any:
-    """Create the localhost API; FastAPI remains an optional dependency."""
+def create_app(
+    service: WorkbenchService,
+    *,
+    api_token: str | None = None,
+    deployment_env: str = "local",
+    rag_corpus: Any | None = None,
+    allow_ungrounded_intake: bool = False,
+) -> Any:
+    """Create a local or token-protected staging API.
+
+    The staging token is a coarse internal-test gate, not production identity
+    management. Public deployment still requires a TLS-terminating gateway and
+    user-level authentication/authorization.
+    """
 
     try:
         from fastapi import FastAPI, HTTPException
-        from fastapi.responses import HTMLResponse
+        from fastapi.responses import HTMLResponse, JSONResponse
     except ImportError as error:  # pragma: no cover - depends on optional extra
         raise RuntimeError("install the 'workbench' extra to run the FastAPI server") from error
 
-    app = FastAPI(title="Fly Research Workbench", version="0.1")
+    if deployment_env not in {"local", "staging"}:
+        raise ValueError("deployment_env must be 'local' or 'staging'")
+    if api_token and len(api_token) < 32:
+        raise ValueError("api_token must contain at least 32 characters")
+    if deployment_env == "staging" and not api_token:
+        raise ValueError("staging requires an API token")
+
+    app = FastAPI(
+        title="Fly Research Workbench",
+        version="0.2",
+        docs_url=None if deployment_env == "staging" else "/docs",
+        redoc_url=None if deployment_env == "staging" else "/redoc",
+        openapi_url=None if deployment_env == "staging" else "/openapi.json",
+    )
+    app.state.deployment_env = deployment_env
+    app.state.rag_corpus_configured = rag_corpus is not None
+
+    @app.middleware("http")
+    async def require_staging_token(request: Any, call_next: Any) -> Any:
+        public_paths = {"/", "/healthz", "/readyz"}
+        if api_token and request.url.path not in public_paths:
+            authorization = request.headers.get("authorization", "")
+            scheme, separator, supplied = authorization.partition(" ")
+            if (
+                not separator
+                or scheme.casefold() != "bearer"
+                or not hmac.compare_digest(supplied.encode("utf-8"), api_token.encode("utf-8"))
+            ):
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": "A valid staging bearer token is required."},
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        return await call_next(request)
+
+    @app.get("/healthz")
+    def health() -> dict[str, Any]:
+        return {
+            "status": "ok",
+            "service": "fly-research-workbench",
+            "environment": deployment_env,
+            "authentication_required": bool(api_token),
+        }
+
+    @app.get("/readyz")
+    def readiness() -> dict[str, Any]:
+        checks = {"database": False, "artifact_storage": False}
+        try:
+            connection = service.store._connect()
+            try:
+                connection.execute("SELECT 1").fetchone()
+                checks["database"] = True
+            finally:
+                connection.close()
+        except Exception:
+            checks["database"] = False
+        checks["artifact_storage"] = service.artifact_root.is_dir() and os.access(service.artifact_root, os.W_OK)
+        if not all(checks.values()):
+            raise HTTPException(status_code=503, detail={"status": "not_ready", "checks": checks})
+        return {"status": "ready", "checks": checks}
 
     @app.get("/", response_class=HTMLResponse)
     def workbench_page() -> str:
@@ -47,14 +120,206 @@ def create_app(service: WorkbenchService) -> Any:
         except (KeyError, ValueError, TypeError) as error:
             raise failure(error) from error
 
+    @app.post("/v1/ai/mappings/resolve")
+    def resolve_ai_mapping(payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            from drosophila_pd.ai_v2.contracts import AIStudySpec
+            from drosophila_pd.ai_v2.mapping_resolution import resolve_mapping
+
+            draft = AIStudySpec.from_dict(payload["draft"])
+            request = _mapping_request_for_draft(draft, str(payload["candidate_id"]))
+            records = [MappingRecord.from_dict(item) for item in service.list_mapping_records().values()]
+            return resolve_mapping(request, records).as_dict()
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/ai/studies/draft")
+    def create_ai_study_draft(payload: dict[str, Any]) -> dict[str, Any]:
+        """Bind an explicitly selected reviewed mapping, then persist a DRAFT."""
+
+        try:
+            from drosophila_pd.ai_v2.contracts import AIStudySpec
+            from drosophila_pd.ai_v2.mapping_resolution import (
+                bind_mapping_to_draft,
+                resolve_mapping,
+                select_mapping,
+            )
+            from drosophila_pd.ai_v2.workbench_workflow import AIV2WorkbenchWorkflow
+
+            draft = AIStudySpec.from_dict(payload["draft"])
+            candidate_id = str(payload["candidate_id"])
+            selection = payload["mapping_selection"]
+            if not isinstance(selection, dict):
+                raise ValueError("mapping_selection must be an object")
+            request = _mapping_request_for_draft(draft, candidate_id)
+            records = [MappingRecord.from_dict(item) for item in service.list_mapping_records().values()]
+            resolution = resolve_mapping(request, records)
+            if resolution.status != "HUMAN_SELECTION_REQUIRED":
+                raise HTTPException(
+                    status_code=409,
+                    detail={"message": "No reviewed compatible mapping is selectable.", "resolution": resolution.as_dict()},
+                )
+            binding = select_mapping(
+                resolution,
+                records,
+                mapping_id=str(selection["mapping_id"]),
+                version=str(selection["version"]),
+                record_hash=str(selection["record_hash"]),
+            )
+            bound_draft = bind_mapping_to_draft(draft, candidate_id=candidate_id, binding=binding)
+            created = AIV2WorkbenchWorkflow(service).create_draft(bound_draft)
+            return {**created, "mapping_binding": binding.as_dict()}
+        except HTTPException:
+            raise
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.get("/v1/ai/studies/{study_id}/workflow")
+    def get_ai_workflow(study_id: str) -> dict[str, Any]:
+        try:
+            from drosophila_pd.ai_v2.workbench_workflow import AIV2WorkbenchWorkflow
+
+            return AIV2WorkbenchWorkflow(service).status(study_id)
+        except (KeyError, ValueError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/ai/studies/{study_id}/approval")
+    def approve_ai_workflow(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            from drosophila_pd.ai_v2.workbench_workflow import AIV2WorkbenchWorkflow
+
+            reviewer = payload.get("reviewer")
+            return AIV2WorkbenchWorkflow(service).approve(
+                study_id,
+                reviewer=reviewer if isinstance(reviewer, str) else None,
+            )
+        except (KeyError, ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/ai/studies/{study_id}/jobs")
+    def submit_ai_job(study_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        try:
+            from drosophila_pd.ai_v2.workbench_workflow import AIV2WorkbenchWorkflow
+
+            return AIV2WorkbenchWorkflow(service).submit(study_id, candidate_id=str(payload["candidate_id"]))
+        except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/ai/jobs/{job_id}/run")
+    def run_ai_job(job_id: str) -> dict[str, Any]:
+        try:
+            from drosophila_pd.ai_v2.workbench_workflow import AIV2WorkbenchWorkflow
+
+            return AIV2WorkbenchWorkflow(service).run(job_id)
+        except (KeyError, ValueError, RuntimeError) as error:
+            raise failure(error) from error
+
     @app.post("/v1/protocol-intake/draft")
     def protocol_intake_draft(payload: dict[str, Any]) -> dict[str, Any]:
+        if not allow_ungrounded_intake:
+            raise HTTPException(
+                status_code=403,
+                detail="Ungrounded provider intake is disabled; use the approved-corpus RAG endpoint.",
+            )
         try:
+            protocol_text = payload.get("protocol_text")
+            if not isinstance(protocol_text, str):
+                raise ValueError("protocol_text must be a string")
+            source_uri = payload.get("source_uri")
+            if source_uri is not None and not isinstance(source_uri, str):
+                raise ValueError("source_uri must be a string or null")
             return service.preview_intake(
-                str(payload["protocol_text"]),
-                source_uri=None if payload.get("source_uri") is None else str(payload["source_uri"]),
+                protocol_text,
+                source_uri=source_uri,
             )
         except (KeyError, ValueError, TypeError, RuntimeError) as error:
+            raise failure(error) from error
+
+    @app.get("/v1/ai/rag/status")
+    def rag_status() -> dict[str, Any]:
+        if rag_corpus is None:
+            return {
+                "status": "DISABLED",
+                "retriever_configured": False,
+                "provider_configured": service.intake_provider is not None,
+                "provider_ready": False,
+                "heldout_status": "LOCKED_NOT_RUN",
+            }
+        configured_provider_id = (
+            str(getattr(service.intake_provider, "provider_id", service.intake_provider.__class__.__name__))
+            if service.intake_provider is not None else ""
+        )
+        configured_provider_endpoint = str(getattr(service.intake_provider, "endpoint", "")) if service.intake_provider else ""
+        provider_identity_matches = bool(
+            service.intake_provider is not None
+            and configured_provider_id == rag_corpus.approved_provider_id
+            and configured_provider_endpoint == rag_corpus.approved_provider_endpoint
+        )
+        return {
+            "status": "RETRIEVAL_READY" if rag_corpus.chunk_count else "NOT_READY",
+            "retriever_configured": True,
+            "provider_configured": service.intake_provider is not None,
+            "provider_identity_matches_approval": provider_identity_matches,
+            "provider_ready": bool(
+                service.intake_provider is not None
+                and rag_corpus.provider_sharing_approved
+                and rag_corpus.protocol_text_sharing_approved
+                and provider_identity_matches
+            ),
+            "corpus_id": rag_corpus.corpus_id,
+            "corpus_sha256": rag_corpus.corpus_sha256,
+            "manifest_sha256": rag_corpus.manifest_sha256,
+            "chunk_count": rag_corpus.chunk_count,
+            "provider_sharing_approved": rag_corpus.provider_sharing_approved,
+            "protocol_text_sharing_approved": rag_corpus.protocol_text_sharing_approved,
+            "heldout_status": "LOCKED_NOT_RUN",
+        }
+
+    @app.post("/v1/ai/rag/retrieve")
+    def retrieve_rag_evidence(payload: dict[str, Any]) -> dict[str, Any]:
+        if rag_corpus is None:
+            raise HTTPException(status_code=503, detail="Frozen approved RAG corpus is not configured.")
+        try:
+            if set(payload) - {"query", "k"}:
+                raise ValueError("RAG retrieval request contains unsupported fields")
+            query = payload.get("query")
+            if not isinstance(query, str):
+                raise ValueError("query must be a string")
+            k = payload.get("k", 5)
+            hits = rag_corpus.retrieve(query, k=k)
+            return {
+                "status": "MATCHES_FOUND" if hits else "NO_APPROVED_EVIDENCE_MATCH",
+                "corpus_id": rag_corpus.corpus_id,
+                "corpus_sha256": rag_corpus.corpus_sha256,
+                "manifest_sha256": rag_corpus.manifest_sha256,
+                "retrieved_evidence": [hit.as_dict() for hit in hits],
+                "provider_called": False,
+            }
+        except (ValueError, TypeError) as error:
+            raise failure(error) from error
+
+    @app.post("/v1/ai/rag/draft")
+    def create_rag_draft(payload: dict[str, Any]) -> dict[str, Any]:
+        if rag_corpus is None:
+            raise HTTPException(status_code=503, detail="Frozen approved RAG corpus is not configured.")
+        try:
+            protocol_text = payload.get("protocol_text")
+            if not isinstance(protocol_text, str):
+                raise ValueError("protocol_text must be a string")
+            source_uri = payload.get("source_uri")
+            if source_uri is not None and not isinstance(source_uri, str):
+                raise ValueError("source_uri must be a string or null")
+            k = payload.get("k", 5)
+            if set(payload) - {"protocol_text", "source_uri", "k"}:
+                raise ValueError("RAG draft request contains unsupported fields")
+            return service.preview_rag_intake(protocol_text, rag_corpus, source_uri=source_uri, k=k)
+        except PermissionError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        except RuntimeError as error:
+            if "not configured" in str(error):
+                raise HTTPException(status_code=503, detail=str(error)) from error
+            raise HTTPException(status_code=502, detail="RAG provider request failed; no draft was saved.") from error
+        except (KeyError, ValueError, TypeError) as error:
             raise failure(error) from error
 
     @app.post("/v1/studies/research")
@@ -375,6 +640,38 @@ def create_app(service: WorkbenchService) -> Any:
     return app
 
 
+def _mapping_request_for_draft(draft: Any, candidate_id: str) -> Any:
+    from drosophila_pd.ai_v2.mapping_resolution import MappingRequest
+
+    study = draft.study
+    candidate = next((item for item in study.candidates if item.candidate_id == candidate_id), None)
+    if candidate is None or not candidate.target:
+        raise ValueError("candidate_id must identify a draft candidate with an explicit target name")
+    intervention_type = str(candidate.intervention.get("type", "none")).strip()
+    if not intervention_type or intervention_type == "none":
+        raise ValueError("mapping resolution requires a non-control intervention type")
+    requirements = study.run_plan.get("backend_requirements", {})
+    if not isinstance(requirements, Mapping):
+        requirements = {}
+    dataset_id = study.metadata.get("dataset_id") or requirements.get("dataset_id")
+    id_namespace = study.metadata.get("id_namespace") or requirements.get("id_namespace")
+    if study.metadata.get("dataset_id") and requirements.get("dataset_id") and study.metadata["dataset_id"] != requirements["dataset_id"]:
+        raise ValueError("StudySpec dataset metadata conflict")
+    if study.metadata.get("id_namespace") and requirements.get("id_namespace") and study.metadata["id_namespace"] != requirements["id_namespace"]:
+        raise ValueError("StudySpec namespace metadata conflict")
+    context = study.metadata.get("context", {})
+    if not isinstance(context, Mapping):
+        raise ValueError("StudySpec metadata.context must be an object")
+    return MappingRequest(
+        biological_target=candidate.target,
+        backend=study.backend,
+        dataset_id=str(dataset_id or ""),
+        id_namespace=str(id_namespace or ""),
+        intervention_type=intervention_type,
+        context=dict(context),
+    )
+
+
 _WORKBENCH_HTML = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fly Research Workbench</title>
@@ -385,16 +682,31 @@ button{margin:.4rem .4rem .4rem 0;padding:.5rem .8rem;background:#2d7fc1;color:w
 pre{white-space:pre-wrap;background:#17212b;padding:1rem;border-radius:4px;overflow:auto}.card{border:1px solid #304657;border-radius:6px;padding:1rem;margin:1rem 0}
 .muted{color:#9ab0c0}.pass{color:#7bd88f}.warn{color:#f2c66d}
 </style></head><body>
-<h1>Fly Research Workbench <small>v0.1</small></h1>
+<h1>Fly Research Workbench <small>v0.2 staging-capable</small></h1>
 <p class="muted">Local study/job coordination. Computational completion is not biological validation.</p>
+<section class="card"><h2>Staging API connection</h2>
+<p class="muted">For an authenticated staging server, paste the temporary team token here. It is kept in this browser tab's session storage only.</p>
+<input id="apiToken" type="password" autocomplete="off" placeholder="Staging bearer token" style="width:75%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<button onclick="connectApi()">Connect</button><button onclick="disconnectApi()">Disconnect</button><span id="connectionStatus" class="muted">Checking server…</span></section>
 <section class="card"><h2>Legacy study demo</h2><p class="muted">This endpoint preserves older ungated demo workflows. Use the evidence-gated research form below for new research studies.</p>
 <textarea id="study">{"name":"motor pilot","hypothesis":"a declared perturbation changes path speed","falsifiable_prediction":"path speed differs from matched control","assay":"motor_flat_ground","primary_metric":"mean_planar_path_speed_mm_s","backend":"flygym_healthy","candidates":[{"candidate_id":"control","label":"No perturbation"}],"controls":[{"id":"control","role":"negative_control"}],"sources":[],"run_plan":{"seed_repetitions":10}}</textarea>
 <br><button onclick="createStudy()">Create study</button><button onclick="loadAll()">Refresh</button></section>
-<section class="card"><h2>Protocol intake draft</h2>
-<p class="muted">Optional AI reads protocol text and returns a source-linked draft for researcher review. It cannot create studies, mappings, interventions, simulation settings, approvals, or jobs. A provider must be explicitly configured at server start.</p>
+<section class="card"><h2>Evidence-grounded RAG protocol draft</h2>
+<p class="muted">Retrieval is local and limited to a frozen, checksum-verified, owner-approved DEVELOPMENT corpus. The AI provider receives the protocol and retrieved excerpts only when the corpus manifest explicitly approves both kinds of sharing. The result is a draft for researcher review; it cannot create studies, mappings, interventions, simulation settings, approvals, or jobs.</p>
+<button onclick="loadRagStatus()">Check RAG readiness</button><button onclick="retrieveEvidence()">Retrieve evidence only</button><pre id="ragStatus">RAG status not checked.</pre>
 <textarea id="protocolText" placeholder="Paste protocol text here"></textarea>
 <input id="protocolSource" placeholder="Source URI (optional)" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
-<br><button onclick="draftProtocol()">Create intake draft</button><pre id="intakeResult">No intake draft yet.</pre></section>
+<br><button onclick="draftProtocol()">Retrieve + create AI draft</button><pre id="intakeResult">No RAG draft yet.</pre></section>
+<section class="card"><h2>AI V2 workflow smoke test — synthetic only</h2>
+<p class="muted">This example exercises exact mapping lookup, explicit human choice, separate approval, job submission and run. Its values and IDs are synthetic; it does not call an LLM, FlyWire, MN9, or a biological simulator. Do not present its output as science.</p>
+<textarea id="aiStudyDraft">{"schema_version":"ai-v2-study-draft-1","study":{"name":"Synthetic staging smoke test","hypothesis":"The synthetic fixture changes an arbitrary scalar.","falsifiable_prediction":"Synthetic response differs from its fixture control.","assay":"synthetic_demo","primary_metric":"metrics.response","backend":"staging_fixture","candidates":[{"candidate_id":"control","label":"Synthetic control","intervention":{"type":"none"}},{"candidate_id":"condition","label":"Synthetic condition","target":"synthetic target","intervention":{"type":"activation"}}],"controls":[{"id":"control","role":"negative_control"}],"sources":[],"run_plan":{"backend_requirements":{"dataset_id":"synthetic_dataset","id_namespace":"synthetic_id"}},"metadata":{"dataset_id":"synthetic_dataset","id_namespace":"synthetic_id","context":{}}},"evidence_ids":["SYNTHETIC_EVIDENCE_CHUNK"],"approval_status":"DRAFT","provenance":{"provider_id":"synthetic-fixture-not-llm","prompt_version":"synthetic-ui-example-v1"}}</textarea>
+<input id="aiCandidateId" value="condition" aria-label="Candidate ID" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<br><button onclick="resolveAiMapping()">Resolve available mapping</button>
+<select id="aiMappingChoice" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem"><option value="">Resolve first, then choose a mapping</option></select>
+<br><button onclick="createAiDraft()">Create mapped DRAFT</button>
+<input id="aiReviewer" placeholder="Human approver name" style="width:100%;background:#17212b;color:#e8eef4;border:1px solid #496274;padding:.55rem">
+<br><button onclick="approveAiStudy()">Approve draft</button><button onclick="submitAiJob()">Submit job</button><button onclick="runAiJob()">Run synthetic job</button><button onclick="refreshAiWorkflow()">Refresh workflow/report</button>
+<pre id="aiWorkflowResult">No synthetic workflow has been created.</pre></section>
 <section class="card"><h2>Evidence-gated research study</h2>
 <p class="muted">Create a support-gated study only after a researcher has checked the protocol draft. Candidate mappings are entered and reviewed separately.</p>
 <textarea id="researchStudy">{"name":"MN9 pilot","hypothesis":"declared activation changes the MN9 response","falsifiable_prediction":"MN9 rate differs from matched control","assay":"sensory_mn9","primary_metric":"mn9_rate","backend":"lif_2024","candidates":[{"candidate_id":"control","label":"No stimulation","intervention":{"type":"none"}},{"candidate_id":"candidate-1","label":"Reviewed target","target":"target-name","intervention":{"type":"activation"},"metadata":{"mapping_id":"mapping-v1"}}],"controls":[{"id":"control","role":"negative_control"}],"sources":[],"run_plan":{"seed_repetitions":10},"metadata":{"dataset_id":"flywire-630","id_namespace":"flywire_root_id","context":{}}}</textarea>
@@ -419,12 +731,23 @@ pre{white-space:pre-wrap;background:#17212b;padding:1rem;border-radius:4px;overf
 <pre id="ranking">No ranking action yet.</pre></section>
 <p class="muted">This local page uses the same service as the CLI. Submission creates pending computational jobs; it does not run them or establish biological validation.</p>
 <script>
-const get=async (url,opts={})=>{const r=await fetch(url,{headers:{'content-type':'application/json'},...opts});const x=await r.json();if(!r.ok)throw Error(JSON.stringify(x));return x};
+const get=async (url,opts={})=>{const token=sessionStorage.getItem('workbench_api_token');const headers={'content-type':'application/json',...(opts.headers||{})};if(token)headers.Authorization='Bearer '+token;const r=await fetch(url,{...opts,headers});const x=await r.json();if(!r.ok)throw Error(JSON.stringify(x));return x};
 const show=(id,x)=>document.getElementById(id).textContent=JSON.stringify(x,null,2);
 const studyId=()=>document.getElementById('rankingStudy').value.trim();
+let aiResolvedDraft=null, aiStudyId=null, aiJobId=null;
+async function connectApi(){const token=document.getElementById('apiToken').value.trim();if(token)sessionStorage.setItem('workbench_api_token',token);try{await get('/v1/capabilities');document.getElementById('connectionStatus').textContent='Connected';await loadAll();await loadRagStatus()}catch(e){document.getElementById('connectionStatus').textContent='Connection failed: '+String(e)}}
+function disconnectApi(){sessionStorage.removeItem('workbench_api_token');document.getElementById('apiToken').value='';document.getElementById('connectionStatus').textContent='Disconnected'}
+async function resolveAiMapping(){try{aiResolvedDraft=JSON.parse(document.getElementById('aiStudyDraft').value);const result=await get('/v1/ai/mappings/resolve',{method:'POST',body:JSON.stringify({draft:aiResolvedDraft,candidate_id:document.getElementById('aiCandidateId').value.trim()})});const select=document.getElementById('aiMappingChoice');select.replaceChildren(new Option('Choose a reviewed mapping explicitly',''));for(const item of result.options||[]){select.add(new Option(item.mapping_id+' v'+item.version+' — '+item.review_status,JSON.stringify({mapping_id:item.mapping_id,version:item.version,record_hash:item.record_hash})))}show('aiWorkflowResult',result)}catch(e){show('aiWorkflowResult',{error:String(e)})}}
+async function createAiDraft(){try{if(!aiResolvedDraft)throw Error('Resolve mappings first.');const value=document.getElementById('aiMappingChoice').value;if(!value)throw Error('Choose a mapping explicitly; the system will not auto-select.');const result=await get('/v1/ai/studies/draft',{method:'POST',body:JSON.stringify({draft:aiResolvedDraft,candidate_id:document.getElementById('aiCandidateId').value.trim(),mapping_selection:JSON.parse(value)})});aiStudyId=result.study.study_id;document.getElementById('rankingStudy').value=aiStudyId;show('aiWorkflowResult',result)}catch(e){show('aiWorkflowResult',{error:String(e)})}}
+async function refreshAiWorkflow(){try{if(!aiStudyId)throw Error('Create the mapped draft first.');show('aiWorkflowResult',await get('/v1/ai/studies/'+aiStudyId+'/workflow'))}catch(e){show('aiWorkflowResult',{error:String(e)})}}
+async function approveAiStudy(){try{if(!aiStudyId)throw Error('Create the mapped draft first.');show('aiWorkflowResult',await get('/v1/ai/studies/'+aiStudyId+'/approval',{method:'POST',body:JSON.stringify({reviewer:document.getElementById('aiReviewer').value.trim()})}))}catch(e){show('aiWorkflowResult',{error:String(e)})}}
+async function submitAiJob(){try{if(!aiStudyId)throw Error('Create and approve the draft first.');const result=await get('/v1/ai/studies/'+aiStudyId+'/jobs',{method:'POST',body:JSON.stringify({candidate_id:document.getElementById('aiCandidateId').value.trim()})});aiJobId=result.job.job_id;show('aiWorkflowResult',result)}catch(e){show('aiWorkflowResult',{error:String(e)})}}
+async function runAiJob(){try{if(!aiJobId)throw Error('Submit a job first.');show('aiWorkflowResult',await get('/v1/ai/jobs/'+aiJobId+'/run',{method:'POST',body:'{}'}))}catch(e){show('aiWorkflowResult',{error:String(e)})}}
 async function loadAll(){try{show('capabilities',await get('/v1/capabilities'));const studies=await get('/v1/studies');for(const s of studies.studies){s.jobs=await get('/v1/studies/'+s.study_id+'/jobs');s.report=await get('/v1/studies/'+s.study_id+'/report')}if(!studyId()&&studies.studies.length){document.getElementById('rankingStudy').value=studies.studies[0].study_id;const p=JSON.parse(document.getElementById('rankingPolicy').value);p.study_id=studies.studies[0].study_id;document.getElementById('rankingPolicy').value=JSON.stringify(p,null,2)}show('studies',studies)}catch(e){show('studies',{error:String(e)})}}
 async function createStudy(){try{const value=JSON.parse(document.getElementById('study').value);await get('/v1/studies',{method:'POST',body:JSON.stringify(value)});await loadAll()}catch(e){show('studies',{error:String(e)})}}
-async function draftProtocol(){try{show('intakeResult',await get('/v1/protocol-intake/draft',{method:'POST',body:JSON.stringify({protocol_text:document.getElementById('protocolText').value,source_uri:document.getElementById('protocolSource').value||null})}))}catch(e){show('intakeResult',{error:String(e)})}}
+async function loadRagStatus(){try{show('ragStatus',await get('/v1/ai/rag/status'))}catch(e){show('ragStatus',{error:String(e)})}}
+async function retrieveEvidence(){try{show('intakeResult',await get('/v1/ai/rag/retrieve',{method:'POST',body:JSON.stringify({query:document.getElementById('protocolText').value,k:5})}))}catch(e){show('intakeResult',{error:String(e)})}}
+async function draftProtocol(){try{show('intakeResult',await get('/v1/ai/rag/draft',{method:'POST',body:JSON.stringify({protocol_text:document.getElementById('protocolText').value,source_uri:document.getElementById('protocolSource').value||null,k:5})}))}catch(e){show('intakeResult',{error:String(e)})}}
 async function createResearchStudy(){try{const value=JSON.parse(document.getElementById('researchStudy').value);const result=await get('/v1/studies/research',{method:'POST',body:JSON.stringify(value)});document.getElementById('rankingStudy').value=result.study.study_id;show('supportResult',result);await loadAll()}catch(e){show('supportResult',{error:String(e)})}}
 async function registerMapping(){try{show('supportResult',await get('/v1/mapping-records',{method:'POST',body:JSON.stringify(JSON.parse(document.getElementById('mappingRecord').value))}))}catch(e){show('supportResult',{error:String(e)})}}
 async function assessSupport(){try{show('supportResult',await get('/v1/studies/'+studyId()+'/support-assessment',{method:'POST',body:'{}'}))}catch(e){show('supportResult',{error:String(e)})}}
@@ -437,7 +760,8 @@ async function makeConfirmationPlan(){try{const id=studyId();show('ranking',awai
 async function submitConfirmation(){try{const id=studyId();show('ranking',await get('/v1/studies/'+id+'/confirmation-plan/submit',{method:'POST',body:JSON.stringify({include_sensitivity:document.getElementById('includeSensitivity').checked})}))}catch(e){show('ranking',{error:String(e)})}}
 async function runConfirmation(){try{const id=studyId();show('ranking',await get('/v1/studies/'+id+'/confirmation-plan/run',{method:'POST',body:'{}'}))}catch(e){show('ranking',{error:String(e)})}}
 async function loadHandoff(){try{show('ranking',await get('/v1/studies/'+studyId()+'/evidence-bundle'))}catch(e){show('ranking',{error:String(e)})}}
-loadAll();
+async function bootstrap(){try{const state=await get('/healthz');if(state.authentication_required){document.getElementById('connectionStatus').textContent='Token required for staging';const saved=sessionStorage.getItem('workbench_api_token');if(saved){document.getElementById('apiToken').value=saved;await connectApi()}}else{document.getElementById('connectionStatus').textContent='Local mode';await loadAll()}}catch(e){document.getElementById('connectionStatus').textContent='Server unavailable'}}
+bootstrap();
 </script></body></html>"""
 
 

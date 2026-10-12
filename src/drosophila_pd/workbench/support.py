@@ -34,6 +34,7 @@ class MappingRecord:
     reviewed_at: str | None = None
     limitations: tuple[str, ...] = ()
     version: str = "1"
+    readout_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         for name in (
@@ -53,6 +54,10 @@ class MappingRecord:
         if len(ids) != len(set(ids)):
             raise ValueError("target_ids must be unique")
         object.__setattr__(self, "target_ids", ids)
+        readouts = tuple(str(value).strip() for value in self.readout_ids)
+        if any(not value for value in readouts) or len(readouts) != len(set(readouts)):
+            raise ValueError("readout_ids must contain unique non-empty identifiers")
+        object.__setattr__(self, "readout_ids", readouts)
         sources = tuple(dict(item) for item in self.sources)
         if not sources or any(not (item.get("citation") or item.get("locator")) for item in sources):
             raise ValueError("each mapping source requires a citation or locator")
@@ -77,7 +82,7 @@ class MappingRecord:
         return payload
 
     def _payload(self) -> dict[str, Any]:
-        return {
+        payload = {
             "mapping_id": self.mapping_id,
             "version": self.version,
             "biological_target": self.biological_target,
@@ -93,6 +98,10 @@ class MappingRecord:
             "reviewed_at": self.reviewed_at,
             "limitations": list(self.limitations),
         }
+        # Historical records without readout IDs retain their previous digest.
+        if self.readout_ids:
+            payload["readout_ids"] = list(self.readout_ids)
+        return payload
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "MappingRecord":
@@ -106,6 +115,7 @@ class MappingRecord:
             intervention_type=str(value["intervention_type"]),
             target_ids=tuple(str(item) for item in value.get("target_ids", ())),
             sources=tuple(dict(item) for item in value.get("sources", ())),
+            readout_ids=tuple(str(item) for item in value.get("readout_ids", ())),
             review_status=str(value.get("review_status", "PENDING_SCIENTIFIC_REVIEW")),
             context=dict(value.get("context", {})),
             reviewer=None if value.get("reviewer") is None else str(value["reviewer"]),
@@ -165,6 +175,18 @@ def assess_study_support(
                 status = "MAPPING_REQUIRED"
                 priority_eligible = False
             else:
+                pinned_version = candidate.metadata.get("mapping_version")
+                pinned_hash = candidate.metadata.get("mapping_record_hash")
+                if pinned_version is not None and str(pinned_version) != mapping.version:
+                    reasons.append("mapping_version_mismatch")
+                if pinned_hash is not None and str(pinned_hash) != mapping.record_hash:
+                    reasons.append("mapping_record_hash_mismatch")
+                if pinned_hash is not None:
+                    declared_readouts = requirements.get("readout_ids", ())
+                    if not mapping.readout_ids:
+                        reasons.append("mapping_reviewed_readout_ids_missing")
+                    elif tuple(str(item) for item in declared_readouts) != mapping.readout_ids:
+                        reasons.append("mapping_readout_ids_mismatch")
                 if mapping.backend != capability.name:
                     reasons.append(f"mapping_backend_mismatch:{mapping.backend}")
                 if mapping.intervention_type != intervention_type:
@@ -207,6 +229,7 @@ def assess_study_support(
             "priority_eligible": priority_eligible,
             "mapping_id": None if mapping is None else mapping.mapping_id,
             "mapping_hash": None if mapping is None else mapping.record_hash,
+            "mapping_version": None if mapping is None else mapping.version,
             "mapping_review_status": None if mapping is None else mapping.review_status,
             "dataset_id": None if mapping is None else mapping.dataset_id,
             "id_namespace": None if mapping is None else mapping.id_namespace,

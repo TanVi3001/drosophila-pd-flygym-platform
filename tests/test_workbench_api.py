@@ -37,7 +37,8 @@ def test_api_registers_confirmation_routes_and_local_ui_actions(tmp_path) -> Non
     assert "Run confirmation jobs" in html
     assert "include declared sensitivity reruns" in html
     assert "This local page uses the same service as the CLI" in html
-    assert "Protocol intake draft" in html
+    assert "Evidence-grounded RAG protocol draft" in html
+    assert "Retrieve evidence only" in html
     assert "Create support-gated study" in html
     assert "Register human-authored mapping record" in html
     assert "Approve support assessment" in html

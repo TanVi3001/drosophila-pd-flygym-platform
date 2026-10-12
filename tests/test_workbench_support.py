@@ -131,3 +131,20 @@ def test_mapping_record_round_trip_preserves_provenance():
 
     assert restored.as_dict() == mapping.as_dict()
     assert restored.record_hash == mapping.record_hash
+
+
+def test_support_assessment_rejects_stale_mapping_version_or_record_hash():
+    mapping = _mapping()
+    stale_study = _study(candidate_metadata={
+        "mapping_id": mapping.mapping_id,
+        "mapping_version": "0",
+        "mapping_record_hash": "0" * 64,
+    })
+
+    result = assess_study_support(stale_study, _capability(), {mapping.mapping_id: mapping})
+
+    candidate = result["candidate_assessments"]["sugar"]
+    assert candidate["status"] == "OUT_OF_SCOPE"
+    assert candidate["run_allowed"] is False
+    assert "mapping_version_mismatch" in candidate["reasons"]
+    assert "mapping_record_hash_mismatch" in candidate["reasons"]

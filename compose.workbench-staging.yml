@@ -1,0 +1,47 @@
+services:
+  workbench:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fly-research-workbench:staging
+    init: true
+    restart: unless-stopped
+    environment:
+      WORKBENCH_ENV: staging
+      WORKBENCH_API_TOKEN: ${WORKBENCH_API_TOKEN:?Set a strong WORKBENCH_API_TOKEN before starting}
+      WORKBENCH_ENABLE_SYNTHETIC_FIXTURE: "true"
+      WORKBENCH_INTAKE_BASE_URL: ${WORKBENCH_INTAKE_BASE_URL:-}
+      WORKBENCH_INTAKE_MODEL: ${WORKBENCH_INTAKE_MODEL:-}
+      WORKBENCH_INTAKE_API_KEY_ENV: ${WORKBENCH_INTAKE_API_KEY_ENV:-}
+      WORKBENCH_LLM_KEY: ${WORKBENCH_LLM_KEY:-}
+      WORKBENCH_RAG_MANIFEST: ${WORKBENCH_RAG_MANIFEST:-}
+      WORKBENCH_ALLOW_UNGROUNDED_INTAKE: ${WORKBENCH_ALLOW_UNGROUNDED_INTAKE:-false}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "127.0.0.1:${WORKBENCH_PORT:-8000}:8000"
+    volumes:
+      - workbench_state:/var/lib/workbench
+      - "${WORKBENCH_RAG_HOST_DIR:-./.workbench/evidence}:/opt/workbench/evidence:ro"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    user: "10001:10001"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=2).read()"
+      interval: 20s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
+
+volumes:
+  workbench_state:

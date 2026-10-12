@@ -29,7 +29,7 @@ from .benchmark import (
     summarize_sensitivity,
 )
 from .confirmation import build_confirmation_plan as make_confirmation_plan
-from .intake import IntakeProvider, create_intake_draft
+from .intake import IntakeProvider, create_intake_draft, create_rag_intake_draft
 from .handoff import (
     REVIEW_DECISIONS,
     build_evidence_bundle,
@@ -196,6 +196,25 @@ class WorkbenchService:
             raise RuntimeError("protocol intake provider is not configured")
         draft = create_intake_draft(protocol_text, self.intake_provider, source_uri=source_uri)
         draft["draft_id"] = f"intake-{uuid.uuid4().hex}"
+        target = self.artifact_root / "intake_drafts" / f"{draft['draft_id']}.json"
+        draft["artifact_path"] = target.as_posix()
+        _write_json(target, draft)
+        return draft
+
+    def preview_rag_intake(
+        self,
+        protocol_text: str,
+        corpus: Any,
+        *,
+        source_uri: str | None = None,
+        k: int = 5,
+    ) -> dict[str, Any]:
+        """Create and persist an evidence-conditioned proposal, never a StudySpec."""
+
+        draft = create_rag_intake_draft(
+            protocol_text, corpus, self.intake_provider, source_uri=source_uri, k=k,
+        )
+        draft["draft_id"] = f"rag-intake-{uuid.uuid4().hex}"
         target = self.artifact_root / "intake_drafts" / f"{draft['draft_id']}.json"
         draft["artifact_path"] = target.as_posix()
         _write_json(target, draft)
@@ -889,6 +908,21 @@ class WorkbenchService:
         job_config["intervention_type"] = intervention_type
         job_config["intervention"] = intervention
         job_config.setdefault("candidate_configuration_hash", stable_hash(candidate.as_dict()))
+        if support_gated:
+            ai_provenance = study.metadata.get("ai_v2_provenance")
+            if ai_provenance is not None:
+                if not isinstance(ai_provenance, Mapping):
+                    raise ValueError("ai_v2_provenance must be an object")
+                # This allowlist intentionally excludes prompt bodies, API keys,
+                # protocol text and free-form provider responses from run logs.
+                allowed_provenance = {
+                    "schema_version", "evidence_ids", "evidence_ids_sha256",
+                    "provider_id", "model_id", "prompt_version", "corpus_sha256",
+                    "retrieval_log_sha256", "generator_output_sha256",
+                }
+                if set(ai_provenance) - allowed_provenance:
+                    raise ValueError("ai_v2_provenance contains fields that must not enter run logs")
+                job_config["ai_v2_provenance"] = jsonable(ai_provenance)
 
         parameters = intervention.get("parameters")
         backend_requirements = study.run_plan.get("backend_requirements", {})
@@ -986,6 +1020,18 @@ class WorkbenchService:
             if raw_mapping is None:
                 raise ValueError(f"candidate {candidate_id} has no registered mapping record")
             mapping = MappingRecord.from_dict(raw_mapping)
+            pinned_version = candidate.metadata.get("mapping_version")
+            pinned_hash = candidate.metadata.get("mapping_record_hash")
+            if pinned_version is not None and str(pinned_version) != mapping.version:
+                raise ValueError("candidate mapping version differs from the frozen StudySpec")
+            if pinned_hash is not None and str(pinned_hash) != mapping.record_hash:
+                raise ValueError("candidate mapping hash differs from the frozen StudySpec")
+            if pinned_hash is not None:
+                declared_readouts = backend_requirements.get("readout_ids", ())
+                if not mapping.readout_ids:
+                    raise ValueError("candidate mapping has no reviewed readout IDs")
+                if tuple(str(item) for item in declared_readouts) != mapping.readout_ids:
+                    raise ValueError("StudySpec readout IDs differ from reviewed mapping")
             if mapping.backend != study.backend:
                 raise ValueError("candidate mapping backend differs from frozen study backend")
             if mapping.intervention_type != intervention_type:
@@ -1024,7 +1070,10 @@ class WorkbenchService:
             if requested_mapping_id is not None and str(requested_mapping_id) != mapping.mapping_id:
                 raise ValueError("job mapping_id differs from the frozen StudySpec candidate")
             job_config["mapping_id"] = mapping.mapping_id
+            job_config["mapping_version"] = mapping.version
             job_config["mapping_record_hash"] = mapping.record_hash
+            if mapping.readout_ids:
+                job_config["readout_ids"] = list(mapping.readout_ids)
             job_config["id_namespace"] = mapping.id_namespace
             job_config["dataset_id"] = mapping.dataset_id
         return job_config
