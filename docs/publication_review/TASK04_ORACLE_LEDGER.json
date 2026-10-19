@@ -1,0 +1,20 @@
+{
+  "version": "task04-support-oracle-1",
+  "fixture_version": "task04-engineering-1",
+  "label": "ENGINEERING_ONLY_NOT_BIOLOGICAL_EVIDENCE",
+  "specification_source": "TASK03_RELIABILITY_BUNDLE_SPEC.md section 2, support contract; section 6",
+  "decision_type": "support",
+  "oracle_status": "HAND_DERIVED_PROVISIONAL",
+  "reviewer_status": "PENDING_INDEPENDENT_ENGINEERING_REVIEW",
+  "assumptions": ["READY fixture preflight is supplied, not verified", "Declared computational review strings are synthetic, unauthenticated", "Expected tuple is study status/run_allowed and candidate a status/priority/reason set; control never priority eligible", "No selection, submission, operational freeze or store invalidation endpoint"],
+  "base_inputs": "One control (none), candidate a (activation), ready engineering backend, assay engineering-assay, dataset engineering-dataset, namespace engineering-id, reviewed mapping m version 1, context mode=fixture. Fixed synthetic IDs/times. Exact mapping hash pinned with declared readout r.",
+  "cases": [
+    {"id":"S01", "family":"compatible", "mutation":"none", "preconditions":"base inputs", "expected":["READY_FOR_COMPUTATIONAL_REVIEW",true,"SUPPORTED_COMPUTATIONALLY",true,[]], "rationale":"All declared compatibility constraints match and mapping is computationally reviewed.", "expected_intermediates":{"control_priority_eligible":false}},
+    {"id":"S02", "family":"missing", "mutation":"missing_mapping", "preconditions":"base inputs except explicit empty mapping registry", "expected":["MAPPING_REQUIRED",false,"MAPPING_REQUIRED",false,["mapping_record_missing"]], "rationale":"Absent declared mapping cannot authorize candidate or study.", "expected_intermediates":{"control_priority_eligible":false}},
+    {"id":"S03", "family":"pending", "mutation":"pending", "preconditions":"base with pending mapping and no reviewer strings; pins reflect these fixture bytes", "expected":["MAPPING_REVIEW_REQUIRED",false,"MAPPING_REVIEW_REQUIRED",false,["mapping_review_required"]], "rationale":"Pending review blocks support, without claiming biological invalidity.", "expected_intermediates":{"control_priority_eligible":false}},
+    {"id":"S04", "family":"context", "mutation":"context", "preconditions":"base with mapping mode=other; pins reflect fixture bytes", "expected":["OUT_OF_SCOPE",false,"OUT_OF_SCOPE",false,["context_mismatch:mode"]], "rationale":"Declared required context differs.", "expected_intermediates":{"control_priority_eligible":false}},
+    {"id":"S05", "family":"combined", "mutation":"pending_context", "preconditions":"pending review plus mapping mode=other", "expected":["MAPPING_REVIEW_REQUIRED",false,"MAPPING_REVIEW_REQUIRED",false,["context_mismatch:mode","mapping_review_required"]], "rationale":"Both failures must remain visible; pending review category takes precedence over generic incompatibility under this declared contract.", "expected_intermediates":{"control_priority_eligible":false}},
+    {"id":"S06", "family":"controls_boundary", "mutation":"controls_only", "preconditions":"base with control only, explicit empty mapping registry", "expected":["MAPPING_REQUIRED",false,null,false,[]], "rationale":"No noncontrol candidate exists; controls alone cannot authorize the study.", "expected_intermediates":{"control_priority_eligible":false}}
+  ],
+  "comparison": "Exact tuple equality; reason sets sorted, no float tolerance, no timestamp/ID normalization. Original versus recomputed full pure support report also compared exactly, excluding only backend_preflight and assessment_hash."
+}

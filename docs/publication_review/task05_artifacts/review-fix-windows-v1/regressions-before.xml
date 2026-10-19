@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="6" time="0.663" timestamp="2026-10-19T19:49:21.914614+07:00" hostname="LAPTOP-40H784NV"><testcase classname="tests.test_workbench_decision_package_review" name="test_loader_executes_hashed_source_not_timestamp_bytecode" time="0.154"><failure message="AssertionError: assert 'OLD' == 'NEW'&#10;  &#10;  - NEW&#10;  + OLD">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_loader_executes_hashed_so0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001C2E8A78830&gt;
+
+    def test_loader_executes_hashed_source_not_timestamp_bytecode(tmp_path, monkeypatch):
+        source = trusted_copy(tmp_path, monkeypatch)
+        old_bytes = source.read_bytes() + b'\nREVIEW_BYTE_PROBE = "OLD"\n'
+        source.write_bytes(old_bytes)
+        stamp = source.stat()
+        # Deliberately seed valid timestamp bytecode for the old equal-size source.
+        py_compile.compile(str(source), doraise=True,
+                           invalidation_mode=py_compile.PycInvalidationMode.TIMESTAMP)
+        new_bytes = old_bytes.replace(b'REVIEW_BYTE_PROBE = "OLD"',
+                                      b'REVIEW_BYTE_PROBE = "NEW"')
+        assert len(old_bytes) == len(new_bytes)
+        source.write_bytes(new_bytes)
+        os.utime(source, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+        _, support = dp.pure_modules()
+&gt;       assert support.REVIEW_BYTE_PROBE == "NEW"
+E       AssertionError: assert 'OLD' == 'NEW'
+E         
+E         - NEW
+E         + OLD
+
+tests\test_workbench_decision_package_review.py:43: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package_review" name="test_failed_load_does_not_cache_partial_modules" time="0.121"><failure message="AssertionError: assert not {'_decision_pure_fd36ed1463f029bd', '_decision_pure_fd36ed1463f029bd.models', '_decision_pure_fd36ed1463f029bd.support'}">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_failed_load_does_not_cach0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001C2E8A7AED0&gt;
+
+    def test_failed_load_does_not_cache_partial_modules(tmp_path, monkeypatch):
+        source = trusted_copy(tmp_path, monkeypatch)
+        source.write_bytes(source.read_bytes() + b'\nraise ValueError("REVIEW_IMPORT_FAILURE")\n')
+        before = set(sys.modules)
+        for _ in range(2):
+            with pytest.raises(ValueError, match="REVIEW_IMPORT_FAILURE"):
+                dp.pure_modules()
+&gt;           assert not {name for name in set(sys.modules) - before
+                        if name.startswith("_decision_pure_")}
+E           AssertionError: assert not {'_decision_pure_fd36ed1463f029bd', '_decision_pure_fd36ed1463f029bd.models', '_decision_pure_fd36ed1463f029bd.support'}
+
+tests\test_workbench_decision_package_review.py:53: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package_review" name="test_export_distinct_roles_with_identical_json" time="0.061"><failure message="AssertionError: assert 'decision-recompute-1/4fb3fdac6564d8a8b316f3935f683b20f78f60fd028c72988919f5a448ba5f18.json' != 'decision-recompute-1/4fb3fdac6564d8a8b316f3935f683b20f78f60fd028c72988919f5a448ba5f18.json'">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_export_distinct_roles_wit0')
+
+    def test_export_distinct_roles_with_identical_json(tmp_path):
+        path = tmp_path / "package"
+        fixture.package(path, fixture.LEDGER["cases"][1])
+        snapshots = fixture.fixture(fixture.LEDGER["cases"][1])
+        # With no mapping, this context does not change the missing-mapping outcome.
+        snapshots["context"] = {"version": dp.POLICY}
+        shutil.rmtree(path / dp.VERSION)
+        dp.export_sidecar(path, snapshots, opt_in=True)
+        manifest = json.loads((path / dp.VERSION / "dependencies.json").read_text())
+        entries = {e["id"]: e for e in manifest["objects"]}
+        assert entries["context"]["sha256"] == entries["policy"]["sha256"]
+&gt;       assert entries["context"]["path"] != entries["policy"]["path"]
+E       AssertionError: assert 'decision-recompute-1/4fb3fdac6564d8a8b316f3935f683b20f78f60fd028c72988919f5a448ba5f18.json' != 'decision-recompute-1/4fb3fdac6564d8a8b316f3935f683b20f78f60fd028c72988919f5a448ba5f18.json'
+
+tests\test_workbench_decision_package_review.py:68: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package_review" name="test_export_rejects_mismatched_bundle_before_writing_sidecar" time="0.067"><failure message="Failed: DID NOT RAISE ValueError">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_export_rejects_mismatched0')
+
+    def test_export_rejects_mismatched_bundle_before_writing_sidecar(tmp_path):
+        path = tmp_path / "package"
+        fixture.package(path)
+        shutil.rmtree(path / dp.VERSION)
+        bundle_path = path / "bundle.json"
+        bundle = json.loads(bundle_path.read_text())
+        bundle["study_id"] = "WRONG_STUDY"
+        bundle_path.write_text(json.dumps(bundle), encoding="utf-8")
+        original = bundle_path.read_bytes()
+&gt;       with pytest.raises(ValueError, match="BUNDLE_STUDY_MISMATCH"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_workbench_decision_package_review.py:83: Failed</failure></testcase><testcase classname="tests.test_workbench_decision_package_review" name="test_export_serialization_failure_does_not_leave_sidecar" time="0.034"><failure message="AssertionError: assert not True&#10; +  where True = exists()&#10; +    where exists = (WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_export_serialization_fail0/package') / 'decision-recompute-1').exists&#10; +      where 'decision-recompute-1' = dp.VERSION">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_export_serialization_fail0')
+
+    def test_export_serialization_failure_does_not_leave_sidecar(tmp_path):
+        path = tmp_path / "package"
+        snapshots = fixture.package(path)
+        shutil.rmtree(path / dp.VERSION)
+        bundle_path = path / "bundle.json"
+        original = bundle_path.read_bytes()
+        # Keep the snapshots bound to the bundle so this reaches serialization,
+        # rather than passing early because of an unrelated BUNDLE_STUDY_MISMATCH.
+        snapshots["context"] = {"invalid_json": float("nan")}
+        with pytest.raises(ValueError, match="Out of range float values"):
+            dp.export_sidecar(path, snapshots, opt_in=True)
+        assert bundle_path.read_bytes() == original
+&gt;       assert not (path / dp.VERSION).exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = (WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-121/test_export_serialization_fail0/package') / 'decision-recompute-1').exists
+E        +      where 'decision-recompute-1' = dp.VERSION
+
+tests\test_workbench_decision_package_review.py:101: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package_review" name="test_import_rejects_duplicate_paths" time="0.042" /></testsuite></testsuites>

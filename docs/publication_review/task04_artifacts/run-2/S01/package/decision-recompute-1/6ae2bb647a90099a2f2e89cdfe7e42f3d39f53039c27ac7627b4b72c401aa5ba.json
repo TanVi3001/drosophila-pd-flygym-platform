@@ -1,0 +1,1 @@
+{"code":{"decision_package.py":"86bed721addb6b72171a5c45b2ac45b1b7721094135ab02ae28f9e793c39af3a","models.py":"4fab58d39bb74c01999e853eb4eff5316654f37cdcda9330546e9d6b404e57ff","support.py":"aa025fa48823091062747b755bff3da73c443447484ec59d3340afc3509131b0"},"dependencies":"stdlib-only","implementation":"CPython","pointer_bits":64,"python":"3.12.10","system":"win32"}

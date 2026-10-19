@@ -1,0 +1,1 @@
+task04-support-oracle-1 SHA256=f75cb973b5c577f1bc230c44c05e9f02958b2e0ebdc810a348c2ddf2d99eb034; recorded before any fixture execution

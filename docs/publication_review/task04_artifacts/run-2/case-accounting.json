@@ -1,0 +1,66 @@
+﻿{
+    "ledger_version":  "task04-support-oracle-1",
+    "ledger_sha256":  "f75cb973b5c577f1bc230c44c05e9f02958b2e0ebdc810a348c2ddf2d99eb034",
+    "inventory":  6,
+    "oracle_resolved_provisional":  6,
+    "oracle_unresolved":  0,
+    "oracle_resolved_fraction":  1,
+    "reviewer_status":  "PENDING_INDEPENDENT_ENGINEERING_REVIEW",
+    "run1":  "6 isolated process errors, 18 other tests passed; no timeout; retained",
+    "run2":  {
+                 "executed":  6,
+                 "errors":  0,
+                 "timeouts":  0,
+                 "skipped":  0,
+                 "oracle_exact_agreement":  "6/6",
+                 "original_exact_agreement":  "6/6",
+                 "closure_valid":  "6/6",
+                 "false_acceptance":  0,
+                 "false_rejection":  0,
+                 "coverage":  "support only: 1 allow, 5 deny; one instance per family; not population estimate"
+             },
+    "cases":  [
+                  {
+                      "case_id":  "S01",
+                      "status":  "RECOMPUTED",
+                      "integrity_closure":  "VALID",
+                      "original_agreement":  true,
+                      "operational_authority":  false
+                  },
+                  {
+                      "case_id":  "S02",
+                      "status":  "RECOMPUTED",
+                      "integrity_closure":  "VALID",
+                      "original_agreement":  true,
+                      "operational_authority":  false
+                  },
+                  {
+                      "case_id":  "S03",
+                      "status":  "RECOMPUTED",
+                      "integrity_closure":  "VALID",
+                      "original_agreement":  true,
+                      "operational_authority":  false
+                  },
+                  {
+                      "case_id":  "S04",
+                      "status":  "RECOMPUTED",
+                      "integrity_closure":  "VALID",
+                      "original_agreement":  true,
+                      "operational_authority":  false
+                  },
+                  {
+                      "case_id":  "S05",
+                      "status":  "RECOMPUTED",
+                      "integrity_closure":  "VALID",
+                      "original_agreement":  true,
+                      "operational_authority":  false
+                  },
+                  {
+                      "case_id":  "S06",
+                      "status":  "RECOMPUTED",
+                      "integrity_closure":  "VALID",
+                      "original_agreement":  true,
+                      "operational_authority":  false
+                  }
+              ]
+}

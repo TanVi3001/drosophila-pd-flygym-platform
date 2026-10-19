@@ -1,0 +1,99 @@
+{
+  "status": "TASK05_REVIEW_FIX_WINDOWS_VERIFIED_BOUNDED_ENGINEERING",
+  "date": "2026-10-19",
+  "timezone": "Asia/Saigon",
+  "head": "03b91b598eb63a72840cacd9dd7bb5fed7ebd4b1",
+  "branch": "feature/evidence-audit-review",
+  "runtime": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "implementation": "CPython",
+    "pytest": "9.1.1",
+    "executable": "E:\\research-\\.venvs\\ai-v2-staging-312\\Scripts\\python.exe"
+  },
+  "review_archive_sha256": "eb771f8cfe2edc2ea0a6c82d9f1cd3acd26e9378b46c0b2f41c40a780f0cf104",
+  "review_archive_inventory_checked": 11,
+  "review_archive_inventory_status": "HASH_AND_SIZE_PASS",
+  "reviewed_implementation_content": "MATCH_AFTER_NEWLINE_AND_TRAILING_BLANK_LINE_NORMALIZATION",
+  "source_files": [
+    {
+      "path": "src/drosophila_pd/workbench/decision_package.py",
+      "before_sha256": "206a1e68ee7451a2eea5cb164dd3dd6e61321ef05a248f3cd6e4dae6403e909c",
+      "after_sha256": "802bc837143bdacc2aa3ffa880632845430a652830eac744c1135c4b23f481cd"
+    },
+    {
+      "path": "tests/test_workbench_support_package_integration.py",
+      "before_sha256": "e7b32efd62add27b45c651e2928110d8c691a7637e3cf0cb40ce652ac9bc205d",
+      "after_sha256": "a2413ab887bbd759c4f7f6d364e7d7676a0fb5f2a394230c807f45730d0411fc"
+    },
+    {
+      "path": "tests/test_workbench_decision_package_review.py",
+      "before_sha256": null,
+      "after_sha256": "cedd0a02e21b134c8a5e5b4d839e0d8fd8194a0f41a9f887647b06904831b195"
+    }
+  ],
+  "test_changes_from_archive": [
+    "Serialization regression uses snapshots matching the bundle and requires the NaN serialization exception.",
+    "Additional importer duplicate-path rejection regression."
+  ],
+  "runs": [
+    {
+      "name": "baseline",
+      "tests": 34,
+      "passed": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "junit_seconds": 8.190,
+      "receipt": "baseline.xml",
+      "sha256": "bce0bece8759aed2ae015ad5465b2d161385224bd6db9026aa9a43f9b0692038"
+    },
+    {
+      "name": "regressions-before",
+      "tests": 6,
+      "passed": 1,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 1,
+      "expected_reproduction_failures": true,
+      "junit_seconds": 0.663,
+      "receipt": "regressions-before.xml",
+      "sha256": "39e050711eae1da01407a88d96cc85d0fca3a7defd99a85611abfc7829f3dcb6"
+    },
+    {
+      "name": "final",
+      "tests": 43,
+      "passed": 43,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "junit_seconds": 9.534,
+      "receipt": "final.xml",
+      "sha256": "6b907a47f3cdf9b040dc17d8218288d64150b66f971133840e5c5c874e3aca42"
+    }
+  ],
+  "integrated": {
+    "cases": ["S01", "S02", "S03", "S04", "S05", "S06"],
+    "oracle_tuple_assertions": "6/6",
+    "original_agreement": "6/6",
+    "integrity_closure_valid": "6/6",
+    "operational_authority": false,
+    "oracle_review": "PENDING_INDEPENDENT_ENGINEERING_REVIEW"
+  },
+  "preserved": {
+    "oracle_sha256": "f75cb973b5c577f1bc230c44c05e9f02958b2e0ebdc810a348c2ddf2d99eb034",
+    "original_review_packet_sha256": "2811759c30c4afc3778f662ca8e541b2dedd5bde7c69a975a60ca746c4e15aed"
+  },
+  "git_diff_check_exit_code": 0,
+  "new_source_and_tests_trailing_whitespace": "PASS",
+  "full_suite_run": false,
+  "provider_called": false,
+  "simulation_run": false,
+  "heldout_read": false,
+  "scientific_validation": "NOT_PERFORMED",
+  "independent_review_claim": false,
+  "commit_or_push": false
+}

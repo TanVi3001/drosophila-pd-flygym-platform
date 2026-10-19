@@ -1,0 +1,81 @@
+{
+  "status": "RECOMPUTED",
+  "integrity_closure": "VALID",
+  "original_agreement": true,
+  "decision": {
+    "schema_version": "study-support-assessment-1",
+    "study_id": "engineering-S01",
+    "study_configuration_hash": "40e1813d735da8e05482939266ae24160589b60cfce78463caa9d2b9429c4725",
+    "backend": "engineering-backend",
+    "assay": "engineering-assay",
+    "status": "READY_FOR_COMPUTATIONAL_REVIEW",
+    "run_allowed": true,
+    "capability": {
+      "name": "engineering-backend",
+      "display_name": "ENGINEERING",
+      "ready": true,
+      "supported_assays": [
+        "engineering-assay"
+      ],
+      "supported_interventions": [
+        "none",
+        "activation"
+      ],
+      "limitations": [],
+      "requirements": [],
+      "supports_explicit_seed": false,
+      "supports_parameter_overrides": false,
+      "supports_timed_stimulus": false,
+      "scientific_scope": "Local computational research orchestration for supported Drosophila backends; simulation output is not biological validation."
+    },
+    "requires_researcher_approval": true,
+    "candidate_assessments": {
+      "control": {
+        "candidate_id": "control",
+        "status": "SUPPORTED_CONTROL",
+        "run_allowed": true,
+        "priority_eligible": false,
+        "mapping_id": null,
+        "mapping_hash": null,
+        "mapping_version": null,
+        "mapping_review_status": null,
+        "dataset_id": null,
+        "id_namespace": null,
+        "target_ids": [],
+        "source_evidence": [],
+        "limitations": [],
+        "reasons": []
+      },
+      "a": {
+        "candidate_id": "a",
+        "status": "SUPPORTED_COMPUTATIONALLY",
+        "run_allowed": true,
+        "priority_eligible": true,
+        "mapping_id": "m",
+        "mapping_hash": "02fc66a5475b7f36ea140e292d53466dba2d021bb9d7bf3de7b42b58e99cd58f",
+        "mapping_version": "1",
+        "mapping_review_status": "COMPUTATIONALLY_REVIEWED",
+        "dataset_id": "engineering-dataset",
+        "id_namespace": "engineering-id",
+        "target_ids": [
+          "t"
+        ],
+        "source_evidence": [
+          {
+            "citation": "ENGINEERING_ONLY"
+          }
+        ],
+        "limitations": [],
+        "reasons": []
+      }
+    },
+    "scientific_scope": "Capability and mapping provenance review; computational support does not establish biological validity."
+  },
+  "operational_authority": false,
+  "approval_evidence_present": true,
+  "loaded_modules": [
+    "_decision_pure_ef33ac0e0ecc65bd",
+    "_decision_pure_ef33ac0e0ecc65bd.models",
+    "_decision_pure_ef33ac0e0ecc65bd.support"
+  ]
+}

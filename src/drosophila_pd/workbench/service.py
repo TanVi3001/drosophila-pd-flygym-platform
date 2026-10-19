@@ -100,8 +100,19 @@ class WorkbenchService:
         study_id: str,
         *,
         required_context: Mapping[str, Any] | None = None,
+        decision_package_target: str | Path | None = None,
     ) -> dict[str, Any]:
+        """Assess support; optionally export the bounded no-job engineering profile.
+
+        Preflight is recorded, not replayed. Export does not grant approval.
+        The default path and assessment return contract are unchanged.
+        """
         study = self.get_study(study_id)
+        if decision_package_target is not None:
+            if study.metadata.get("engineering_only") is not True or self.list_jobs(study_id=study_id):
+                raise ValueError("decision package requires engineering-only study with no jobs")
+            if Path(decision_package_target).exists() or Path(decision_package_target).suffix.lower() == ".zip":
+                raise ValueError("decision package requires a fresh directory target")
         try:
             capability = self._adapter(study.backend).describe()
         except ValueError:
@@ -111,13 +122,14 @@ class WorkbenchService:
                 ready=False,
                 limitations=("backend_not_registered_in_this_workbench",),
             )
+        mappings = {
+            mapping_id: MappingRecord.from_dict(raw)
+            for mapping_id, raw in self.store.list_mappings().items()
+        }
         assessment = assess_study_support(
             study,
             capability,
-            {
-                mapping_id: MappingRecord.from_dict(raw)
-                for mapping_id, raw in self.store.list_mappings().items()
-            },
+            mappings,
             required_context=required_context,
         )
         preflight: dict[str, Any] = {"status": "NOT_RUN", "candidates": {}}
@@ -160,6 +172,24 @@ class WorkbenchService:
         self.store.set_support_assessment(study_id, assessment)
         target = self.artifact_root / _safe_component(study_id) / "support_assessment.json"
         _write_json(target, assessment)
+        if decision_package_target is not None:
+            from . import decision_package
+
+            snapshots = {
+                "study": study.as_dict(), "capability": capability.as_dict(),
+                "mappings": [mapping.as_dict() for mapping in mappings.values()],
+                "support": assessment, "approval": None,
+                "inventory": [{"candidate_id": candidate.candidate_id,
+                               "job_state": "NO_JOB_ENGINEERING_FIXTURE"}
+                              for candidate in study.candidates],
+                "context": dict(required_context or {}),
+                "decision": decision_package.pure_projection(assessment),
+            }
+            # Fail before writing a bundle if this profile cannot represent it.
+            bundle = {"evidence_bundle_version": 2, "study": study.as_dict(), "study_id": study_id}
+            decision_package._validate(dict(snapshots, bundle=bundle))
+            output = self.export_evidence_bundle(study_id, decision_package_target)
+            decision_package.export_sidecar(output, snapshots, opt_in=True)
         return assessment
 
     def get_support_assessment(self, study_id: str) -> dict[str, Any] | None:

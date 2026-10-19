@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="24" time="6.291" timestamp="2026-10-19T18:40:55.719891+07:00" hostname="LAPTOP-40H784NV"><testcase classname="tests.test_workbench_decision_package" name="test_ledger_receipt" time="0.005" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S01]" time="1.263"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 910, in uname&#10;      system, node, release, version, machine = infos = os.uname()&#10;                                                        ^^^^^^^^&#10;  AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\runner.py&quot;, line 15, in &lt;module&gt;&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\trusted-code\decision_package.py&quot;, line 196, in recompute&#10;      objects = _load(Path(root).resolve())&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\trusted-code\decision_package.py&quot;, line 141, in _load&#10;      expected_identity = runtime_identity()&#10;                          ^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\trusted-code\decision_package.py&quot;, line 53, in runtime_identity&#10;      &quot;system&quot;: platform.system(), &quot;machine&quot;: platform.machine(), &quot;dependencies&quot;: &quot;stdlib-only&quot;,&#10;                ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 987, in system&#10;      return uname().system&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 913, in uname&#10;      node = _node()&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 631, in _node&#10;      return socket.gethostname()&#10;             ^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\runner.py&quot;, line 12, in audit&#10;  RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S01_0\\runner.py&quot;, line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-114/test_isolated_slice_S01_0')
+case = {'id': 'S01', 'family': 'compatible', 'mutation': 'none', 'preconditions': 'base inputs', ...}
+
+    @pytest.mark.parametrize("case", LEDGER["cases"], ids=lambda c: c["id"])
+    def test_isolated_slice(tmp_path, case):
+        original = tmp_path / "original-workspace"
+        snapshots = package(original, case)
+        assert outcome(snapshots["decision"]) == case["expected"]
+        portable = tmp_path / "portable"
+        shutil.copytree(original, portable)
+        trusted = tmp_path / "trusted-code"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        shutil.rmtree(original)
+        runner = tmp_path / "runner.py"
+        runner.write_text('''import sys, pathlib, runpy, json, os
+    package, code = map(pathlib.Path, sys.argv[1:])
+    allowed = [package.resolve(), code.resolve(), pathlib.Path(sys.base_prefix).resolve()]
+    def audit(event, args):
+        if event == "open":
+            path = args[0]
+            if isinstance(path, (str, bytes)):
+                p = pathlib.Path(os.fsdecode(path)).resolve()
+                if not any(p.is_relative_to(root) for root in allowed):
+                    raise RuntimeError("FORBIDDEN_READ:" + str(p))
+        if event.startswith(("socket.", "subprocess.", "os.system", "os.spawn")):
+            raise RuntimeError("FORBIDDEN_EXECUTION:" + event)
+    sys.addaudithook(audit)
+    module = runpy.run_path(str(code / "decision_package.py"), run_name="task04_isolated")
+    result = module["recompute"](package)
+    result["loaded_modules"] = sorted(name for name in sys.modules if name.startswith("_decision_pure_"))
+    print(json.dumps(result))
+    ''', encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k.upper() not in {"PYTHONPATH", "PYTHONHOME"}}
+        proc = subprocess.run([sys.executable, "-I", "-B", str(runner), str(portable), str(trusted)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+&gt;       assert proc.returncode == 0, proc.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 910, in uname
+E             system, node, release, version, machine = infos = os.uname()
+E                                                               ^^^^^^^^
+E         AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\runner.py", line 15, in &lt;module&gt;
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\trusted-code\decision_package.py", line 196, in recompute
+E             objects = _load(Path(root).resolve())
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\trusted-code\decision_package.py", line 141, in _load
+E             expected_identity = runtime_identity()
+E                                 ^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\trusted-code\decision_package.py", line 53, in runtime_identity
+E             "system": platform.system(), "machine": platform.machine(), "dependencies": "stdlib-only",
+E                       ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 987, in system
+E             return uname().system
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 913, in uname
+E             node = _node()
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 631, in _node
+E             return socket.gethostname()
+E                    ^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S01_0\runner.py", line 12, in audit
+E         RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S01_0\\runner.py", line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_decision_package.py:142: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S02]" time="0.487"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 910, in uname&#10;      system, node, release, version, machine = infos = os.uname()&#10;                                                        ^^^^^^^^&#10;  AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\runner.py&quot;, line 15, in &lt;module&gt;&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\trusted-code\decision_package.py&quot;, line 196, in recompute&#10;      objects = _load(Path(root).resolve())&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\trusted-code\decision_package.py&quot;, line 141, in _load&#10;      expected_identity = runtime_identity()&#10;                          ^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\trusted-code\decision_package.py&quot;, line 53, in runtime_identity&#10;      &quot;system&quot;: platform.system(), &quot;machine&quot;: platform.machine(), &quot;dependencies&quot;: &quot;stdlib-only&quot;,&#10;                ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 987, in system&#10;      return uname().system&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 913, in uname&#10;      node = _node()&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 631, in _node&#10;      return socket.gethostname()&#10;             ^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\runner.py&quot;, line 12, in audit&#10;  RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S02_0\\runner.py&quot;, line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-114/test_isolated_slice_S02_0')
+case = {'id': 'S02', 'family': 'missing', 'mutation': 'missing_mapping', 'preconditions': 'base inputs except explicit empty mapping registry', ...}
+
+    @pytest.mark.parametrize("case", LEDGER["cases"], ids=lambda c: c["id"])
+    def test_isolated_slice(tmp_path, case):
+        original = tmp_path / "original-workspace"
+        snapshots = package(original, case)
+        assert outcome(snapshots["decision"]) == case["expected"]
+        portable = tmp_path / "portable"
+        shutil.copytree(original, portable)
+        trusted = tmp_path / "trusted-code"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        shutil.rmtree(original)
+        runner = tmp_path / "runner.py"
+        runner.write_text('''import sys, pathlib, runpy, json, os
+    package, code = map(pathlib.Path, sys.argv[1:])
+    allowed = [package.resolve(), code.resolve(), pathlib.Path(sys.base_prefix).resolve()]
+    def audit(event, args):
+        if event == "open":
+            path = args[0]
+            if isinstance(path, (str, bytes)):
+                p = pathlib.Path(os.fsdecode(path)).resolve()
+                if not any(p.is_relative_to(root) for root in allowed):
+                    raise RuntimeError("FORBIDDEN_READ:" + str(p))
+        if event.startswith(("socket.", "subprocess.", "os.system", "os.spawn")):
+            raise RuntimeError("FORBIDDEN_EXECUTION:" + event)
+    sys.addaudithook(audit)
+    module = runpy.run_path(str(code / "decision_package.py"), run_name="task04_isolated")
+    result = module["recompute"](package)
+    result["loaded_modules"] = sorted(name for name in sys.modules if name.startswith("_decision_pure_"))
+    print(json.dumps(result))
+    ''', encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k.upper() not in {"PYTHONPATH", "PYTHONHOME"}}
+        proc = subprocess.run([sys.executable, "-I", "-B", str(runner), str(portable), str(trusted)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+&gt;       assert proc.returncode == 0, proc.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 910, in uname
+E             system, node, release, version, machine = infos = os.uname()
+E                                                               ^^^^^^^^
+E         AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\runner.py", line 15, in &lt;module&gt;
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\trusted-code\decision_package.py", line 196, in recompute
+E             objects = _load(Path(root).resolve())
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\trusted-code\decision_package.py", line 141, in _load
+E             expected_identity = runtime_identity()
+E                                 ^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\trusted-code\decision_package.py", line 53, in runtime_identity
+E             "system": platform.system(), "machine": platform.machine(), "dependencies": "stdlib-only",
+E                       ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 987, in system
+E             return uname().system
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 913, in uname
+E             node = _node()
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 631, in _node
+E             return socket.gethostname()
+E                    ^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S02_0\runner.py", line 12, in audit
+E         RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S02_0\\runner.py", line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_decision_package.py:142: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S03]" time="0.482"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 910, in uname&#10;      system, node, release, version, machine = infos = os.uname()&#10;                                                        ^^^^^^^^&#10;  AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\runner.py&quot;, line 15, in &lt;module&gt;&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\trusted-code\decision_package.py&quot;, line 196, in recompute&#10;      objects = _load(Path(root).resolve())&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\trusted-code\decision_package.py&quot;, line 141, in _load&#10;      expected_identity = runtime_identity()&#10;                          ^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\trusted-code\decision_package.py&quot;, line 53, in runtime_identity&#10;      &quot;system&quot;: platform.system(), &quot;machine&quot;: platform.machine(), &quot;dependencies&quot;: &quot;stdlib-only&quot;,&#10;                ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 987, in system&#10;      return uname().system&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 913, in uname&#10;      node = _node()&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 631, in _node&#10;      return socket.gethostname()&#10;             ^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\runner.py&quot;, line 12, in audit&#10;  RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S03_0\\runner.py&quot;, line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-114/test_isolated_slice_S03_0')
+case = {'id': 'S03', 'family': 'pending', 'mutation': 'pending', 'preconditions': 'base with pending mapping and no reviewer strings; pins reflect these fixture bytes', ...}
+
+    @pytest.mark.parametrize("case", LEDGER["cases"], ids=lambda c: c["id"])
+    def test_isolated_slice(tmp_path, case):
+        original = tmp_path / "original-workspace"
+        snapshots = package(original, case)
+        assert outcome(snapshots["decision"]) == case["expected"]
+        portable = tmp_path / "portable"
+        shutil.copytree(original, portable)
+        trusted = tmp_path / "trusted-code"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        shutil.rmtree(original)
+        runner = tmp_path / "runner.py"
+        runner.write_text('''import sys, pathlib, runpy, json, os
+    package, code = map(pathlib.Path, sys.argv[1:])
+    allowed = [package.resolve(), code.resolve(), pathlib.Path(sys.base_prefix).resolve()]
+    def audit(event, args):
+        if event == "open":
+            path = args[0]
+            if isinstance(path, (str, bytes)):
+                p = pathlib.Path(os.fsdecode(path)).resolve()
+                if not any(p.is_relative_to(root) for root in allowed):
+                    raise RuntimeError("FORBIDDEN_READ:" + str(p))
+        if event.startswith(("socket.", "subprocess.", "os.system", "os.spawn")):
+            raise RuntimeError("FORBIDDEN_EXECUTION:" + event)
+    sys.addaudithook(audit)
+    module = runpy.run_path(str(code / "decision_package.py"), run_name="task04_isolated")
+    result = module["recompute"](package)
+    result["loaded_modules"] = sorted(name for name in sys.modules if name.startswith("_decision_pure_"))
+    print(json.dumps(result))
+    ''', encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k.upper() not in {"PYTHONPATH", "PYTHONHOME"}}
+        proc = subprocess.run([sys.executable, "-I", "-B", str(runner), str(portable), str(trusted)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+&gt;       assert proc.returncode == 0, proc.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 910, in uname
+E             system, node, release, version, machine = infos = os.uname()
+E                                                               ^^^^^^^^
+E         AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\runner.py", line 15, in &lt;module&gt;
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\trusted-code\decision_package.py", line 196, in recompute
+E             objects = _load(Path(root).resolve())
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\trusted-code\decision_package.py", line 141, in _load
+E             expected_identity = runtime_identity()
+E                                 ^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\trusted-code\decision_package.py", line 53, in runtime_identity
+E             "system": platform.system(), "machine": platform.machine(), "dependencies": "stdlib-only",
+E                       ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 987, in system
+E             return uname().system
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 913, in uname
+E             node = _node()
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 631, in _node
+E             return socket.gethostname()
+E                    ^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S03_0\runner.py", line 12, in audit
+E         RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S03_0\\runner.py", line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_decision_package.py:142: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S04]" time="0.611"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 910, in uname&#10;      system, node, release, version, machine = infos = os.uname()&#10;                                                        ^^^^^^^^&#10;  AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\runner.py&quot;, line 15, in &lt;module&gt;&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\trusted-code\decision_package.py&quot;, line 196, in recompute&#10;      objects = _load(Path(root).resolve())&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\trusted-code\decision_package.py&quot;, line 141, in _load&#10;      expected_identity = runtime_identity()&#10;                          ^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\trusted-code\decision_package.py&quot;, line 53, in runtime_identity&#10;      &quot;system&quot;: platform.system(), &quot;machine&quot;: platform.machine(), &quot;dependencies&quot;: &quot;stdlib-only&quot;,&#10;                ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 987, in system&#10;      return uname().system&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 913, in uname&#10;      node = _node()&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 631, in _node&#10;      return socket.gethostname()&#10;             ^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\runner.py&quot;, line 12, in audit&#10;  RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S04_0\\runner.py&quot;, line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-114/test_isolated_slice_S04_0')
+case = {'id': 'S04', 'family': 'context', 'mutation': 'context', 'preconditions': 'base with mapping mode=other; pins reflect fixture bytes', ...}
+
+    @pytest.mark.parametrize("case", LEDGER["cases"], ids=lambda c: c["id"])
+    def test_isolated_slice(tmp_path, case):
+        original = tmp_path / "original-workspace"
+        snapshots = package(original, case)
+        assert outcome(snapshots["decision"]) == case["expected"]
+        portable = tmp_path / "portable"
+        shutil.copytree(original, portable)
+        trusted = tmp_path / "trusted-code"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        shutil.rmtree(original)
+        runner = tmp_path / "runner.py"
+        runner.write_text('''import sys, pathlib, runpy, json, os
+    package, code = map(pathlib.Path, sys.argv[1:])
+    allowed = [package.resolve(), code.resolve(), pathlib.Path(sys.base_prefix).resolve()]
+    def audit(event, args):
+        if event == "open":
+            path = args[0]
+            if isinstance(path, (str, bytes)):
+                p = pathlib.Path(os.fsdecode(path)).resolve()
+                if not any(p.is_relative_to(root) for root in allowed):
+                    raise RuntimeError("FORBIDDEN_READ:" + str(p))
+        if event.startswith(("socket.", "subprocess.", "os.system", "os.spawn")):
+            raise RuntimeError("FORBIDDEN_EXECUTION:" + event)
+    sys.addaudithook(audit)
+    module = runpy.run_path(str(code / "decision_package.py"), run_name="task04_isolated")
+    result = module["recompute"](package)
+    result["loaded_modules"] = sorted(name for name in sys.modules if name.startswith("_decision_pure_"))
+    print(json.dumps(result))
+    ''', encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k.upper() not in {"PYTHONPATH", "PYTHONHOME"}}
+        proc = subprocess.run([sys.executable, "-I", "-B", str(runner), str(portable), str(trusted)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+&gt;       assert proc.returncode == 0, proc.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 910, in uname
+E             system, node, release, version, machine = infos = os.uname()
+E                                                               ^^^^^^^^
+E         AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\runner.py", line 15, in &lt;module&gt;
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\trusted-code\decision_package.py", line 196, in recompute
+E             objects = _load(Path(root).resolve())
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\trusted-code\decision_package.py", line 141, in _load
+E             expected_identity = runtime_identity()
+E                                 ^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\trusted-code\decision_package.py", line 53, in runtime_identity
+E             "system": platform.system(), "machine": platform.machine(), "dependencies": "stdlib-only",
+E                       ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 987, in system
+E             return uname().system
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 913, in uname
+E             node = _node()
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 631, in _node
+E             return socket.gethostname()
+E                    ^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S04_0\runner.py", line 12, in audit
+E         RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S04_0\\runner.py", line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_decision_package.py:142: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S05]" time="0.490"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 910, in uname&#10;      system, node, release, version, machine = infos = os.uname()&#10;                                                        ^^^^^^^^&#10;  AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\runner.py&quot;, line 15, in &lt;module&gt;&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\trusted-code\decision_package.py&quot;, line 196, in recompute&#10;      objects = _load(Path(root).resolve())&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\trusted-code\decision_package.py&quot;, line 141, in _load&#10;      expected_identity = runtime_identity()&#10;                          ^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\trusted-code\decision_package.py&quot;, line 53, in runtime_identity&#10;      &quot;system&quot;: platform.system(), &quot;machine&quot;: platform.machine(), &quot;dependencies&quot;: &quot;stdlib-only&quot;,&#10;                ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 987, in system&#10;      return uname().system&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 913, in uname&#10;      node = _node()&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 631, in _node&#10;      return socket.gethostname()&#10;             ^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\runner.py&quot;, line 12, in audit&#10;  RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S05_0\\runner.py&quot;, line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-114/test_isolated_slice_S05_0')
+case = {'id': 'S05', 'family': 'combined', 'mutation': 'pending_context', 'preconditions': 'pending review plus mapping mode=other', ...}
+
+    @pytest.mark.parametrize("case", LEDGER["cases"], ids=lambda c: c["id"])
+    def test_isolated_slice(tmp_path, case):
+        original = tmp_path / "original-workspace"
+        snapshots = package(original, case)
+        assert outcome(snapshots["decision"]) == case["expected"]
+        portable = tmp_path / "portable"
+        shutil.copytree(original, portable)
+        trusted = tmp_path / "trusted-code"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        shutil.rmtree(original)
+        runner = tmp_path / "runner.py"
+        runner.write_text('''import sys, pathlib, runpy, json, os
+    package, code = map(pathlib.Path, sys.argv[1:])
+    allowed = [package.resolve(), code.resolve(), pathlib.Path(sys.base_prefix).resolve()]
+    def audit(event, args):
+        if event == "open":
+            path = args[0]
+            if isinstance(path, (str, bytes)):
+                p = pathlib.Path(os.fsdecode(path)).resolve()
+                if not any(p.is_relative_to(root) for root in allowed):
+                    raise RuntimeError("FORBIDDEN_READ:" + str(p))
+        if event.startswith(("socket.", "subprocess.", "os.system", "os.spawn")):
+            raise RuntimeError("FORBIDDEN_EXECUTION:" + event)
+    sys.addaudithook(audit)
+    module = runpy.run_path(str(code / "decision_package.py"), run_name="task04_isolated")
+    result = module["recompute"](package)
+    result["loaded_modules"] = sorted(name for name in sys.modules if name.startswith("_decision_pure_"))
+    print(json.dumps(result))
+    ''', encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k.upper() not in {"PYTHONPATH", "PYTHONHOME"}}
+        proc = subprocess.run([sys.executable, "-I", "-B", str(runner), str(portable), str(trusted)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+&gt;       assert proc.returncode == 0, proc.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 910, in uname
+E             system, node, release, version, machine = infos = os.uname()
+E                                                               ^^^^^^^^
+E         AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\runner.py", line 15, in &lt;module&gt;
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\trusted-code\decision_package.py", line 196, in recompute
+E             objects = _load(Path(root).resolve())
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\trusted-code\decision_package.py", line 141, in _load
+E             expected_identity = runtime_identity()
+E                                 ^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\trusted-code\decision_package.py", line 53, in runtime_identity
+E             "system": platform.system(), "machine": platform.machine(), "dependencies": "stdlib-only",
+E                       ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 987, in system
+E             return uname().system
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 913, in uname
+E             node = _node()
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 631, in _node
+E             return socket.gethostname()
+E                    ^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S05_0\runner.py", line 12, in audit
+E         RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S05_0\\runner.py", line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_decision_package.py:142: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S06]" time="0.576"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 910, in uname&#10;      system, node, release, version, machine = infos = os.uname()&#10;                                                        ^^^^^^^^&#10;  AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\runner.py&quot;, line 15, in &lt;module&gt;&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\trusted-code\decision_package.py&quot;, line 196, in recompute&#10;      objects = _load(Path(root).resolve())&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\trusted-code\decision_package.py&quot;, line 141, in _load&#10;      expected_identity = runtime_identity()&#10;                          ^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\trusted-code\decision_package.py&quot;, line 53, in runtime_identity&#10;      &quot;system&quot;: platform.system(), &quot;machine&quot;: platform.machine(), &quot;dependencies&quot;: &quot;stdlib-only&quot;,&#10;                ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 987, in system&#10;      return uname().system&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 913, in uname&#10;      node = _node()&#10;             ^^^^^^^&#10;    File &quot;C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py&quot;, line 631, in _node&#10;      return socket.gethostname()&#10;             ^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\runner.py&quot;, line 12, in audit&#10;  RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S06_0\\runner.py&quot;, line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-114/test_isolated_slice_S06_0')
+case = {'id': 'S06', 'family': 'controls_boundary', 'mutation': 'controls_only', 'preconditions': 'base with control only, explicit empty mapping registry', ...}
+
+    @pytest.mark.parametrize("case", LEDGER["cases"], ids=lambda c: c["id"])
+    def test_isolated_slice(tmp_path, case):
+        original = tmp_path / "original-workspace"
+        snapshots = package(original, case)
+        assert outcome(snapshots["decision"]) == case["expected"]
+        portable = tmp_path / "portable"
+        shutil.copytree(original, portable)
+        trusted = tmp_path / "trusted-code"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        shutil.rmtree(original)
+        runner = tmp_path / "runner.py"
+        runner.write_text('''import sys, pathlib, runpy, json, os
+    package, code = map(pathlib.Path, sys.argv[1:])
+    allowed = [package.resolve(), code.resolve(), pathlib.Path(sys.base_prefix).resolve()]
+    def audit(event, args):
+        if event == "open":
+            path = args[0]
+            if isinstance(path, (str, bytes)):
+                p = pathlib.Path(os.fsdecode(path)).resolve()
+                if not any(p.is_relative_to(root) for root in allowed):
+                    raise RuntimeError("FORBIDDEN_READ:" + str(p))
+        if event.startswith(("socket.", "subprocess.", "os.system", "os.spawn")):
+            raise RuntimeError("FORBIDDEN_EXECUTION:" + event)
+    sys.addaudithook(audit)
+    module = runpy.run_path(str(code / "decision_package.py"), run_name="task04_isolated")
+    result = module["recompute"](package)
+    result["loaded_modules"] = sorted(name for name in sys.modules if name.startswith("_decision_pure_"))
+    print(json.dumps(result))
+    ''', encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k.upper() not in {"PYTHONPATH", "PYTHONHOME"}}
+        proc = subprocess.run([sys.executable, "-I", "-B", str(runner), str(portable), str(trusted)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+&gt;       assert proc.returncode == 0, proc.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 910, in uname
+E             system, node, release, version, machine = infos = os.uname()
+E                                                               ^^^^^^^^
+E         AttributeError: module 'os' has no attribute 'uname'. Did you mean: 'name'?
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\runner.py", line 15, in &lt;module&gt;
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\trusted-code\decision_package.py", line 196, in recompute
+E             objects = _load(Path(root).resolve())
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\trusted-code\decision_package.py", line 141, in _load
+E             expected_identity = runtime_identity()
+E                                 ^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\trusted-code\decision_package.py", line 53, in runtime_identity
+E             "system": platform.system(), "machine": platform.machine(), "dependencies": "stdlib-only",
+E                       ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 987, in system
+E             return uname().system
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 913, in uname
+E             node = _node()
+E                    ^^^^^^^
+E           File "C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\platform.py", line 631, in _node
+E             return socket.gethostname()
+E                    ^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Temp\pytest-of-Le Tan Vi\pytest-114\test_isolated_slice_S06_0\runner.py", line 12, in audit
+E         RuntimeError: FORBIDDEN_EXECUTION:socket.gethostname
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Le Tan Vi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-I', '-B', 'C...114\\test_isolated_slice_S06_0\\runner.py", line 12, in audit\nRuntimeError: FORBIDDEN_EXECUTION:socket.gethostname\n').returncode
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_decision_package.py:142: AssertionError</failure></testcase><testcase classname="tests.test_workbench_decision_package" name="test_failures[missing-MISSING_DEPENDENCY:]" time="0.037" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[tampered-HASH_MISMATCH:]" time="0.036" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[version-UNSUPPORTED_SIDECAR_VERSION]" time="0.055" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[policy-POLICY_MISMATCH]" time="0.139" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[code-CODE_MISMATCH]" time="0.120" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[environment-ENVIRONMENT_MISMATCH]" time="0.116" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[approval-APPROVAL_BINDING_MISMATCH]" time="0.126" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[traversal-UNSAFE_PATH]" time="0.066" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[absolute-UNSAFE_PATH]" time="0.076" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[workspace_only-MISSING_DEPENDENCY:]" time="0.052" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[preflight-UNSUPPORTED_PREFLIGHT]" time="0.101" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[cycle-UNSUPPORTED_DEPENDENCY_GRAPH_OR_SCHEMA]" time="0.066" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[duplicate-DUPLICATE_OBJECT]" time="0.054" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[inventory-INVENTORY_MISMATCH]" time="0.102" /><testcase classname="tests.test_workbench_decision_package" name="test_legacy_opt_in_and_no_overwrite" time="0.045" /><testcase classname="tests.test_workbench_decision_package" name="test_absent_approval_is_explicit_not_inferred" time="0.097" /><testcase classname="tests.test_workbench_decision_package" name="test_original_agreement_is_not_integrity" time="0.243" /></testsuite></testsuites>

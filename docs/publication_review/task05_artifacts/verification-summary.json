@@ -1,0 +1,44 @@
+{
+  "status": "COMPLETE_BOUNDED_ENGINEERING_SUBSET",
+  "independent_review": "PENDING_INDEPENDENT_ENGINEERING_REVIEW",
+  "oracle_revision": "task04-support-oracle-1",
+  "runs": [
+    {
+      "run": 1,
+      "tests": 32,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "run": 2,
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "run": 3,
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "integrated": {
+    "cases": [
+      "S01",
+      "S02",
+      "S05"
+    ],
+    "oracle_agreement": "3/3",
+    "production_agreement": "3/3",
+    "closure_valid": "3/3"
+  },
+  "limitations": [
+    "not OS sandbox",
+    "not full service regression",
+    "preflight not replayed",
+    "not independent reproduction"
+  ]
+}

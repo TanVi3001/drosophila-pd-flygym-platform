@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="32" time="8.923" timestamp="2026-10-19T18:57:03.441785+07:00" hostname="LAPTOP-40H784NV"><testcase classname="tests.test_workbench_support_package_integration" name="test_production_isolated_slice[S01]" time="1.021"><failure message="PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Temp\\pytest-of-Le Tan Vi\\pytest-116\\test_production_isolated_slice0\\original\\state.sqlite3'">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-116/test_production_isolated_slice0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001F0935F23F0&gt;
+case = {'id': 'S01', 'family': 'compatible', 'mutation': 'none', 'preconditions': 'base inputs', ...}
+
+    @pytest.mark.parametrize("case", [fixture_module.LEDGER["cases"][i] for i in (0, 1, 4)], ids=lambda c: c["id"])
+    def test_production_isolated_slice(tmp_path, monkeypatch, case):
+        original = tmp_path / "original"
+        service, store, study = setup_service(original, case, monkeypatch)
+        target = original / "export"
+        report = service.assess_support(study.study_id, required_context={"mode": "fixture"},
+                                        decision_package_target=target)
+        assert fixture_module.outcome(report) == case["expected"]
+        assert store.get_support_approval(study.study_id) is None
+        assert service.list_jobs(study_id=study.study_id) == []
+        before = store.events("study", study.study_id)
+        portable = tmp_path / "portable"
+        shutil.copytree(target, portable)
+        assert dp.recompute(portable)["original_agreement"]
+        assert store.events("study", study.study_id) == before
+        trusted = tmp_path / "trusted"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        # Reuse the reviewed dependency guard verbatim, not the Task04 fixture path.
+        source = (ROOT / "tests/test_workbench_decision_package.py").read_text(encoding="utf-8")
+        runner_text = source.split("runner.write_text('''", 1)[1].split("''', encoding=", 1)[0]
+        runner = tmp_path / "runner.py"
+        runner.write_text(runner_text, encoding="utf-8")
+&gt;       shutil.rmtree(original)
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_support_package_integration.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:781: in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:635: in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-116/test_production_isolated_slice0/original')
+onexc = &lt;function rmtree.&lt;locals&gt;.onexc at 0x000001F093F70CC0&gt;
+
+    def _rmtree_unsafe(path, onexc):
+        def onerror(err):
+            onexc(os.scandir, err.filename, err)
+        results = os.walk(path, topdown=False, onerror=onerror, followlinks=os._walk_symlinks_as_files)
+        for dirpath, dirnames, filenames in results:
+            for name in dirnames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.rmdir(fullname)
+                except OSError as err:
+                    onexc(os.rmdir, fullname, err)
+            for name in filenames:
+                fullname = os.path.join(dirpath, name)
+                try:
+&gt;                   os.unlink(fullname)
+E                   PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Temp\\pytest-of-Le Tan Vi\\pytest-116\\test_production_isolated_slice0\\original\\state.sqlite3'
+
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:633: PermissionError</failure></testcase><testcase classname="tests.test_workbench_support_package_integration" name="test_production_isolated_slice[S02]" time="0.529"><failure message="PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Temp\\pytest-of-Le Tan Vi\\pytest-116\\test_production_isolated_slice1\\original\\state.sqlite3'">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-116/test_production_isolated_slice1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001F09357EC00&gt;
+case = {'id': 'S02', 'family': 'missing', 'mutation': 'missing_mapping', 'preconditions': 'base inputs except explicit empty mapping registry', ...}
+
+    @pytest.mark.parametrize("case", [fixture_module.LEDGER["cases"][i] for i in (0, 1, 4)], ids=lambda c: c["id"])
+    def test_production_isolated_slice(tmp_path, monkeypatch, case):
+        original = tmp_path / "original"
+        service, store, study = setup_service(original, case, monkeypatch)
+        target = original / "export"
+        report = service.assess_support(study.study_id, required_context={"mode": "fixture"},
+                                        decision_package_target=target)
+        assert fixture_module.outcome(report) == case["expected"]
+        assert store.get_support_approval(study.study_id) is None
+        assert service.list_jobs(study_id=study.study_id) == []
+        before = store.events("study", study.study_id)
+        portable = tmp_path / "portable"
+        shutil.copytree(target, portable)
+        assert dp.recompute(portable)["original_agreement"]
+        assert store.events("study", study.study_id) == before
+        trusted = tmp_path / "trusted"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        # Reuse the reviewed dependency guard verbatim, not the Task04 fixture path.
+        source = (ROOT / "tests/test_workbench_decision_package.py").read_text(encoding="utf-8")
+        runner_text = source.split("runner.write_text('''", 1)[1].split("''', encoding=", 1)[0]
+        runner = tmp_path / "runner.py"
+        runner.write_text(runner_text, encoding="utf-8")
+&gt;       shutil.rmtree(original)
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_support_package_integration.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:781: in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:635: in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-116/test_production_isolated_slice1/original')
+onexc = &lt;function rmtree.&lt;locals&gt;.onexc at 0x000001F093F73B00&gt;
+
+    def _rmtree_unsafe(path, onexc):
+        def onerror(err):
+            onexc(os.scandir, err.filename, err)
+        results = os.walk(path, topdown=False, onerror=onerror, followlinks=os._walk_symlinks_as_files)
+        for dirpath, dirnames, filenames in results:
+            for name in dirnames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.rmdir(fullname)
+                except OSError as err:
+                    onexc(os.rmdir, fullname, err)
+            for name in filenames:
+                fullname = os.path.join(dirpath, name)
+                try:
+&gt;                   os.unlink(fullname)
+E                   PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Temp\\pytest-of-Le Tan Vi\\pytest-116\\test_production_isolated_slice1\\original\\state.sqlite3'
+
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:633: PermissionError</failure></testcase><testcase classname="tests.test_workbench_support_package_integration" name="test_production_isolated_slice[S05]" time="0.475"><failure message="PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Temp\\pytest-of-Le Tan Vi\\pytest-116\\test_production_isolated_slice2\\original\\state.sqlite3'">tmp_path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-116/test_production_isolated_slice2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001F09357FB90&gt;
+case = {'id': 'S05', 'family': 'combined', 'mutation': 'pending_context', 'preconditions': 'pending review plus mapping mode=other', ...}
+
+    @pytest.mark.parametrize("case", [fixture_module.LEDGER["cases"][i] for i in (0, 1, 4)], ids=lambda c: c["id"])
+    def test_production_isolated_slice(tmp_path, monkeypatch, case):
+        original = tmp_path / "original"
+        service, store, study = setup_service(original, case, monkeypatch)
+        target = original / "export"
+        report = service.assess_support(study.study_id, required_context={"mode": "fixture"},
+                                        decision_package_target=target)
+        assert fixture_module.outcome(report) == case["expected"]
+        assert store.get_support_approval(study.study_id) is None
+        assert service.list_jobs(study_id=study.study_id) == []
+        before = store.events("study", study.study_id)
+        portable = tmp_path / "portable"
+        shutil.copytree(target, portable)
+        assert dp.recompute(portable)["original_agreement"]
+        assert store.events("study", study.study_id) == before
+        trusted = tmp_path / "trusted"
+        trusted.mkdir()
+        for name in ("decision_package.py", "models.py", "support.py"):
+            shutil.copyfile(CODE / name, trusted / name)
+        # Reuse the reviewed dependency guard verbatim, not the Task04 fixture path.
+        source = (ROOT / "tests/test_workbench_decision_package.py").read_text(encoding="utf-8")
+        runner_text = source.split("runner.write_text('''", 1)[1].split("''', encoding=", 1)[0]
+        runner = tmp_path / "runner.py"
+        runner.write_text(runner_text, encoding="utf-8")
+&gt;       shutil.rmtree(original)
+
+E:\research-\.workbench\ai-v2-dev\tests\test_workbench_support_package_integration.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:781: in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:635: in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Temp/pytest-of-Le Tan Vi/pytest-116/test_production_isolated_slice2/original')
+onexc = &lt;function rmtree.&lt;locals&gt;.onexc at 0x000001F093F73A60&gt;
+
+    def _rmtree_unsafe(path, onexc):
+        def onerror(err):
+            onexc(os.scandir, err.filename, err)
+        results = os.walk(path, topdown=False, onerror=onerror, followlinks=os._walk_symlinks_as_files)
+        for dirpath, dirnames, filenames in results:
+            for name in dirnames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.rmdir(fullname)
+                except OSError as err:
+                    onexc(os.rmdir, fullname, err)
+            for name in filenames:
+                fullname = os.path.join(dirpath, name)
+                try:
+&gt;                   os.unlink(fullname)
+E                   PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Temp\\pytest-of-Le Tan Vi\\pytest-116\\test_production_isolated_slice2\\original\\state.sqlite3'
+
+C:\Users\Le Tan Vi\AppData\Local\Programs\Python\Python312\Lib\shutil.py:633: PermissionError</failure></testcase><testcase classname="tests.test_workbench_support_package_integration" name="test_default_and_legacy_exports" time="0.422" /><testcase classname="tests.test_workbench_support_package_integration" name="test_failed_preflight_not_exported" time="0.133" /><testcase classname="tests.test_workbench_support_package_integration" name="test_capability_binding" time="0.152" /><testcase classname="tests.test_workbench_support_package_integration" name="test_context_input_mismatch_is_not_integrity_failure" time="0.124" /><testcase classname="tests.test_workbench_support_package_integration" name="test_loader_identity_changes_with_source_bytes" time="0.154" /><testcase classname="tests.test_workbench_decision_package" name="test_ledger_receipt" time="0.002" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S01]" time="0.464" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S02]" time="0.538" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S03]" time="0.422" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S04]" time="0.416" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S05]" time="0.424" /><testcase classname="tests.test_workbench_decision_package" name="test_isolated_slice[S06]" time="0.869" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[missing-MISSING_DEPENDENCY:]" time="0.051" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[tampered-HASH_MISMATCH:]" time="0.050" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[version-UNSUPPORTED_SIDECAR_VERSION]" time="0.061" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[policy-POLICY_MISMATCH]" time="0.093" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[code-CODE_MISMATCH]" time="0.153" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[environment-ENVIRONMENT_MISMATCH]" time="0.137" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[approval-APPROVAL_BINDING_MISMATCH]" time="0.125" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[traversal-UNSAFE_PATH]" time="0.067" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[absolute-UNSAFE_PATH]" time="0.080" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[workspace_only-MISSING_DEPENDENCY:]" time="0.077" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[preflight-UNSUPPORTED_PREFLIGHT]" time="0.115" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[cycle-UNSUPPORTED_DEPENDENCY_GRAPH_OR_SCHEMA]" time="0.068" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[duplicate-DUPLICATE_OBJECT]" time="0.063" /><testcase classname="tests.test_workbench_decision_package" name="test_failures[inventory-INVENTORY_MISMATCH]" time="0.102" /><testcase classname="tests.test_workbench_decision_package" name="test_legacy_opt_in_and_no_overwrite" time="0.038" /><testcase classname="tests.test_workbench_decision_package" name="test_absent_approval_is_explicit_not_inferred" time="0.074" /><testcase classname="tests.test_workbench_decision_package" name="test_original_agreement_is_not_integrity" time="0.141" /></testsuite></testsuites>

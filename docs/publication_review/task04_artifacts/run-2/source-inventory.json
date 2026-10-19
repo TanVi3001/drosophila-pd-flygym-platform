@@ -1,0 +1,31 @@
+﻿{
+    "head":  "03b91b598eb63a72840cacd9dd7bb5fed7ebd4b1",
+    "scope":  "Explicit decision source/test/ledger bytes only; excludes report/checkpoint/artifacts and this inventory (no self reference)",
+    "files":  [
+                  {
+                      "path":  "src/drosophila_pd/workbench/decision_package.py",
+                      "size":  10380,
+                      "sha256":  "86bed721addb6b72171a5c45b2ac45b1b7721094135ab02ae28f9e793c39af3a"
+                  },
+                  {
+                      "path":  "src/drosophila_pd/workbench/models.py",
+                      "size":  13501,
+                      "sha256":  "4fab58d39bb74c01999e853eb4eff5316654f37cdcda9330546e9d6b404e57ff"
+                  },
+                  {
+                      "path":  "src/drosophila_pd/workbench/support.py",
+                      "size":  13832,
+                      "sha256":  "aa025fa48823091062747b755bff3da73c443447484ec59d3340afc3509131b0"
+                  },
+                  {
+                      "path":  "tests/test_workbench_decision_package.py",
+                      "size":  13315,
+                      "sha256":  "29d4e699366ec50a76a792221478a747857035d9711d3b3c48c20d0f255f589a"
+                  },
+                  {
+                      "path":  "docs/publication_review/TASK04_ORACLE_LEDGER.json",
+                      "size":  3590,
+                      "sha256":  "f75cb973b5c577f1bc230c44c05e9f02958b2e0ebdc810a348c2ddf2d99eb034"
+                  }
+              ]
+}
